@@ -2,8 +2,8 @@ package br.edu.udc.simuladorControle;
 
 import br.edu.udc.simuladorDominio.BlocoControleProcesso;
 import br.edu.udc.simuladorDominio.Hardware;
-import br.edu.udc.simuladorDominio.ED_Fila;
-import br.edu.udc.simuladorDominio.ED_Lista;
+import br.edu.udc.simuladorED.ED_Fila;
+import br.edu.udc.simuladorED.ED_Lista;
 
 public class SimuladorSO {
 	
@@ -13,4 +13,7 @@ public class SimuladorSO {
 	private ED_Lista<BlocoControleProcesso> listaPausado;//pois pode ser romovido de qualquer lugar da lista, ao contratrio da fila.
 	
 	private Hardware hardware;
+	
+	//VARIAVEIS DE LOGICA
+	private int proximoPidDisponivel;
 }
