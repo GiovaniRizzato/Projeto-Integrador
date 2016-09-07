@@ -13,6 +13,9 @@ public class ED_Fila<T> implements Interface_Lista<T> {
 			this.dado = data;
 		}
 	}
+	
+	public void zueira(){
+	}
 
 	private int tamanho;
 	private No inicio;
