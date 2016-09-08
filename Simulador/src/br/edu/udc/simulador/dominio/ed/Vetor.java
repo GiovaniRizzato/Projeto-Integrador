@@ -1,8 +1,8 @@
-package br.edu.udc.simuladorED;
+package br.edu.udc.simulador.dominio.ed;
 
 import java.util.Random;
 
-public class ED_Vetor<T> {
+public class Vetor<T> {
 
 	@SuppressWarnings("unchecked")
 	private T vetor[] = (T[]) new Object[100];
@@ -37,7 +37,7 @@ public class ED_Vetor<T> {
 		this.quantidade++;
 	}
 
-	public Object obtem(int posicao) {
+	public T obtem(int posicao) {
 		if (!this.posicaoOcupada(posicao)) {
 			throw new IndexOutOfBoundsException("Posição Invalida");
 		}
@@ -100,8 +100,8 @@ public class ED_Vetor<T> {
 	}
 
 	@Override
-	public ED_Vetor<T> clone() {
-		ED_Vetor<T> clone = new ED_Vetor<T>();
+	public Vetor<T> clone() {
+		Vetor<T> clone = new Vetor<T>();
 
 		for (int i = 0; i < this.quantidade; i++) {
 			clone.adiciona(this.vetor[i]);
@@ -110,18 +110,24 @@ public class ED_Vetor<T> {
 		return clone;
 	}
 
-	/**@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj) {
-
-		for (int i = 0; i < this.quantidade; i++) {
-			if (((ED_Vetor<T>) obj).obtem(i).equals(vetor[i])) {// se algum
-																// elemento for
-																// diferente
-				return false;
+	public void organizaCrascente() {
+		
+		for (int i = 0; i < this.quantidade; i++){
+			
+			int posicaoTroca = i;
+			for (int j = i+1; j< this.quantidade; j++){
+				//procura desde elemento para frente, pois, os anteriores já foram processador e são menores.
+				
+				if((int) vetor[posicaoTroca] > (int)vetor[j]){
+					//procura a posicao de um elemento menor da lista de i~"fim do vetor"
+					posicaoTroca = j;
+				}
 			}
-		}
-
-		return false;
-	}**/
+			
+			//faz a troca dos elementos
+			T bufferTroca = vetor[i];
+			vetor[i] = vetor[posicaoTroca];
+			vetor[posicaoTroca] = bufferTroca;
+		}	
+	}
 }

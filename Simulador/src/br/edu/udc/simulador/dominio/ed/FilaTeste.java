@@ -1,12 +1,12 @@
-package br.edu.udc.simuladorED;
+package br.edu.udc.simulador.dominio.ed;
 
-public class ED_FilaTeste {
+public class FilaTeste {
 	public static void main(String[] args) {
 
 	}
 
 	public void test() {
-		ED_Fila<String> lista = new ED_Fila<String>();
+		Fila<String> lista = new Fila<String>();
 
 		for (int i = 0; i < 300; i++) {
 			lista.adiciona("1");
@@ -25,7 +25,7 @@ public class ED_FilaTeste {
 	}
 
 	public void adicionasucesso() {
-		ED_Fila<String> lista = new ED_Fila<String>();
+		Fila<String> lista = new Fila<String>();
 
 		lista.adiciona("olamundo");
 		System.out.println(lista.consulta());

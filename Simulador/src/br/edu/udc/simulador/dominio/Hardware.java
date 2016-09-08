@@ -1,4 +1,4 @@
-package br.edu.udc.simuladorDominio;
+package br.edu.udc.simulador.dominio;
 
 public class Hardware {
 	
