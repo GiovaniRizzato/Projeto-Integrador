@@ -9,7 +9,7 @@ public class SimuladorSO {
 
 	private Processo processadoNoMomento;
 	private Fila<Processo> filaPronto;
-	private Fila<Processo> filaEsperaES[];// 3
+	private Fila<Processo> filaEsperaES[] = new Fila[3];
 
 	private Vetor<Processo> listaPausado;
 	// pois pode ser romovido de qualquer lugar da lista, ao contratrio da fila.

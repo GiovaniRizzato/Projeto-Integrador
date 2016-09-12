@@ -3,7 +3,15 @@ package br.edu.udc.simulador.dominio;
 import br.edu.udc.simulador.dominio.ed.Vetor;
 
 public class Processo {
-
+	
+	public static enum prioridade{
+		ALTA, MEDIA, BAIXA;
+	}
+	
+	public static enum tipoDeIntrucao{
+		CPU, ES1, ES2, ES3, FIM;
+	}
+	
 	@SuppressWarnings("unused")
 	private class ContextoSoftware {
 		public final int pid;
@@ -15,7 +23,7 @@ public class Processo {
 		public int[] estatistica_ES = new int[3];
 		public int[] estatistica_esperaES = new int[3];
 
-		public ContextoSoftware(int argPid) {
+		public ContextoSoftware(int argPid, prioridade prioridade) {
 			this.pid = argPid;
 			this.instrucaoAtual = 0;
 		}
@@ -33,27 +41,30 @@ public class Processo {
 
 			// PASSO 1 - incere o numero de intruções no vetor.
 			for (int i = 0; i > qtdCPU; i++)
-				this.programa.adiciona(0);
+				this.programa.adiciona(tipoDeIntrucao.CPU);
 
 			for (int i = 0; i > qtdIO1; i++)
-				this.programa.adiciona(1);
+				this.programa.adiciona(tipoDeIntrucao.ES1);
 
 			for (int i = 0; i > qtdIO2; i++)
-				this.programa.adiciona(2);
+				this.programa.adiciona(tipoDeIntrucao.ES2);
 
 			for (int i = 0; i > qtdIO3; i++)
-				this.programa.adiciona(3);
+				this.programa.adiciona(tipoDeIntrucao.ES3);
 
 			// PASSO 2- Embaralha as posições desse vetor.
 			this.programa.shuffle();
+			
+			// PASSO 3- Adiciona o fim do programa ao final de todas as intruções.
+			this.programa.adiciona(tipoDeIntrucao.FIM);
 		}
 	}
 
 	ContextoSoftware contextoSoftware;
 	ContextoMemoria contextoMemoria;
 
-	public Processo(int pid, int qtdeMem, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
-		this.contextoSoftware = new ContextoSoftware(pid);
+	public Processo(int pid, prioridade prioridade, int qtdeMem, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+		this.contextoSoftware = new ContextoSoftware(pid, prioridade);
 		this.contextoMemoria = new ContextoMemoria(qtdeMem, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 	}
 
