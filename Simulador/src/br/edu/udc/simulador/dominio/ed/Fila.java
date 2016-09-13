@@ -36,6 +36,8 @@ public class Fila<T> {
 			this.inicio.anterior = noAdicionado;
 			this.inicio = noAdicionado;
 		}
+		
+		this.tamanho++;
 	}
 
 	public void remover() {
@@ -46,6 +48,8 @@ public class Fila<T> {
 			this.fim = this.fim.anterior;
 			this.fim.proximo = null;
 		}
+		
+		this.tamanho--;
 	}
 
 	public T consulta() {

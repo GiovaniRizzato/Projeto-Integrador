@@ -99,6 +99,49 @@ public class Vetor<T> {
 		}
 	}
 
+	public void organizaCrascente() {
+
+		for (int i = 0; i < this.quantidade; i++) {
+
+			int posicaoTroca = i;
+			for (int j = i + 1; j < this.quantidade; j++) {
+				// procura desde elemento para frente, pois, os anteriores já
+				// foram processador e são menores.
+
+				if ((int) vetor[posicaoTroca] > (int) vetor[j]) {
+					// procura a posicao de um elemento menor da lista de i~"fim
+					// do vetor"
+					posicaoTroca = j;
+				}
+			}
+
+			// faz a troca dos elementos
+			T bufferTroca = vetor[i];
+			vetor[i] = vetor[posicaoTroca];
+			vetor[posicaoTroca] = bufferTroca;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (this.getClass() != obj.getClass())
+			return false;
+		if (this == obj)
+			return true;
+		
+		for (int i = 0; i > this.quantidade; i++) {
+			//verifica se todos os elementos são iguais
+			if (!vetor[i].equals(((Vetor<T>) obj).obtem(i))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	@Override
 	public Vetor<T> clone() {
 		Vetor<T> clone = new Vetor<T>();
@@ -110,24 +153,23 @@ public class Vetor<T> {
 		return clone;
 	}
 
-	public void organizaCrascente() {
-		
-		for (int i = 0; i < this.quantidade; i++){
-			
-			int posicaoTroca = i;
-			for (int j = i+1; j< this.quantidade; j++){
-				//procura desde elemento para frente, pois, os anteriores já foram processador e são menores.
-				
-				if((int) vetor[posicaoTroca] > (int)vetor[j]){
-					//procura a posicao de um elemento menor da lista de i~"fim do vetor"
-					posicaoTroca = j;
-				}
-			}
-			
-			//faz a troca dos elementos
-			T bufferTroca = vetor[i];
-			vetor[i] = vetor[posicaoTroca];
-			vetor[posicaoTroca] = bufferTroca;
-		}	
+	@Override
+	public String toString() {
+
+		String stringAcomulador = new String();
+
+		stringAcomulador = stringAcomulador.concat(String.format("["));
+
+		for (int i = 0; i < this.quantidade; i++) {
+			stringAcomulador = stringAcomulador.concat(String.format("%s,", vetor[i].toString()));
+		}
+
+		if (stringAcomulador.endsWith(",")) {
+			stringAcomulador = stringAcomulador.substring(0, stringAcomulador.length() - 1);
+		}
+
+		stringAcomulador = stringAcomulador.concat(String.format("]"));
+
+		return stringAcomulador;
 	}
 }

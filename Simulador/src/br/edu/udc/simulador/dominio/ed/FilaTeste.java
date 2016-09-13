@@ -2,10 +2,12 @@ package br.edu.udc.simulador.dominio.ed;
 
 public class FilaTeste {
 	public static void main(String[] args) {
+		
+		test();
 
 	}
 
-	public void test() {
+	public static void test() {
 		Fila<String> lista = new Fila<String>();
 
 		for (int i = 0; i < 300; i++) {
