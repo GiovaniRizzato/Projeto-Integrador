@@ -2,52 +2,42 @@ package br.edu.udc.simulador.dominio;
 
 import br.edu.udc.simulador.dominio.ed.Vetor;
 
+/**
+ * Teste para criar processo pausar processo continuar processo matar processo
+ * 
+ */
+
 public class Processo {
 
+	// DADOS DE PROCESSO QUE PODEM SER "DECLARADOS" POR OUTRAS CLASSES
 	public enum prioridade {
-		ALTA(0), MEDIA(1), BAIXA(2);
-
-		private final int valor;
-
-		prioridade(int value) {
-			this.valor = value;
-		}
-
-		public int getValor() {
-			return this.valor;
-		}
+		ALTA, MEDIA, BAIXA;
 	}
 
-	public enum tipoDeIntrucao {
-		CPU(0), ES1(1), ES2(2), ES3(3), FIM(-1);
-		
-		private final int valor;
-
-		tipoDeIntrucao(int value) {
-			this.valor = value;
-		}
-
-		public int getValor() {
-			return this.valor;
-		}
+	public class DadosEstatisticos {
+		public int tempoTotalEmSegundos = 0;
+		public int CPU = 0;
+		public int pronto = 0;
+		public int[] ES = new int[3];
+		public int[] esperaES = new int[3];
 	}
 
-	@SuppressWarnings("unused")
+	public final static int instrucaoCPU = 0;
+	public final static int instrucaoES1 = 1;
+	public final static int instrucaoES2 = 2;
+	public final static int instrucaoES3 = 3;
+	public final static int instrucaoFIM = -1;
+
 	private class ContextoSoftware {
 		public final int pid;
 		public prioridade prioridade;
-		
-		public int instrucaoAtual;
-		
-		public int estatistica_tempoTotalEmSegundos;
-		public int estatistica_CPU;
-		public int estatistica_pronto;
-		public int[] estatistica_ES = new int[3];
-		public int[] estatistica_esperaES = new int[3];
+
+		public int instrucaoAtual = 0;
+
+		public DadosEstatisticos dadosEstatisticos = new DadosEstatisticos();
 
 		public ContextoSoftware(int pid, prioridade prioridade) {
 			this.pid = pid;
-			this.instrucaoAtual = 0;
 			this.prioridade = prioridade;
 		}
 	}
@@ -62,29 +52,33 @@ public class Processo {
 			this.quantidadeMemoria = qtdeMemoriaRequerida;
 
 			// PASSO 1 - incere o numero de intruções no vetor.
-			for (int i = 0; i > qtdCPU; i++)
-				this.programa.adiciona(tipoDeIntrucao.CPU.getValor());
+			for (int i = 0; i < qtdCPU; i++) {
+				this.programa.adiciona(instrucaoCPU);
+			}
 
-			for (int i = 0; i > qtdIO1; i++)
-				this.programa.adiciona(tipoDeIntrucao.ES1.getValor());
+			for (int i = 0; i < qtdIO1; i++) {
+				this.programa.adiciona(instrucaoES1);
+			}
 
-			for (int i = 0; i > qtdIO2; i++)
-				this.programa.adiciona(tipoDeIntrucao.ES2.getValor());
+			for (int i = 0; i < qtdIO2; i++) {
+				this.programa.adiciona(instrucaoES2);
+			}
 
-			for (int i = 0; i > qtdIO3; i++)
-				this.programa.adiciona(tipoDeIntrucao.ES3.getValor());
+			for (int i = 0; i < qtdIO3; i++) {
+				this.programa.adiciona(instrucaoES3);
+			}
 
 			// PASSO 2- Embaralha as posições desse vetor.
 			this.programa.shuffle();
 
 			// PASSO 3- Adiciona o fim do programa ao final de todas as
 			// intruções.
-			this.programa.adiciona(tipoDeIntrucao.FIM.getValor());
+			this.programa.adiciona(instrucaoFIM);
 		}
 	}
 
-	ContextoSoftware contextoSoftware;
-	ContextoMemoria contextoMemoria;
+	private ContextoSoftware contextoSoftware;
+	private ContextoMemoria contextoMemoria;
 
 	public Processo(int pid, prioridade prioridade, int qtdeMem, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 		this.contextoSoftware = new ContextoSoftware(pid, prioridade);
@@ -97,17 +91,25 @@ public class Processo {
 		// estatisticos do contexto de software
 
 		switch (this.contextoMemoria.programa.obtem(this.contextoSoftware.instrucaoAtual)) {
-		case 0:
-			this.contextoSoftware.estatistica_CPU++;
+		case Processo.instrucaoCPU: {
+			this.contextoSoftware.dadosEstatisticos.CPU++;
+			break;
+		}
 
-		case 1:
-			this.contextoSoftware.estatistica_ES[0]++;
+		case Processo.instrucaoES1: {
+			this.contextoSoftware.dadosEstatisticos.ES[0]++;
+			break;
+		}
 
-		case 2:
-			this.contextoSoftware.estatistica_ES[1]++;
+		case Processo.instrucaoES2: {
+			this.contextoSoftware.dadosEstatisticos.ES[1]++;
+			break;
+		}
 
-		case 3:
-			this.contextoSoftware.estatistica_ES[2]++;
+		case Processo.instrucaoES3: {
+			this.contextoSoftware.dadosEstatisticos.ES[2]++;
+			break;
+		}
 		}
 
 		this.contextoSoftware.instrucaoAtual++;
@@ -117,13 +119,15 @@ public class Processo {
 		return this.contextoMemoria.programa.obtem(this.contextoSoftware.instrucaoAtual);
 	}
 
-	public void fimDeClock() {
-		// função responsavel por fazer a contabilização, fazendo a contagem de
-		// "fins" de clock
-		this.contextoSoftware.estatistica_tempoTotalEmSegundos++;
-	}
-	
-	public prioridade getPrioridade(){
+	public prioridade getPrioridade() {
 		return this.contextoSoftware.prioridade;
+	}
+
+	public void mataProcesso() {
+		this.contextoMemoria.programa.adiciona(instrucaoFIM, this.contextoSoftware.instrucaoAtual);
+	}
+
+	public int getPID() {
+		return this.contextoSoftware.pid;
 	}
 }

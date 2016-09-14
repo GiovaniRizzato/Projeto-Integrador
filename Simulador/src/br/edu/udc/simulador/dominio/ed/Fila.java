@@ -36,7 +36,7 @@ public class Fila<T> {
 			this.inicio.anterior = noAdicionado;
 			this.inicio = noAdicionado;
 		}
-		
+
 		this.tamanho++;
 	}
 
@@ -48,7 +48,7 @@ public class Fila<T> {
 			this.fim = this.fim.anterior;
 			this.fim.proximo = null;
 		}
-		
+
 		this.tamanho--;
 	}
 
@@ -56,4 +56,40 @@ public class Fila<T> {
 		return this.fim.dado;
 	}
 
+	@Override
+	public Object clone() {
+		Fila<T> filaClone = new Fila<>();
+		No cursor = this.fim;
+
+		for (int i = 0; i < this.tamanho; i++) {
+			filaClone.adiciona(cursor.dado);
+			cursor = cursor.anterior;
+		}
+		return filaClone;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (this.getClass() != obj.getClass())
+			return false;
+		if (this == obj)
+			return true;
+
+		Fila<T> objClone = (Fila<T>) ((Fila<T>) obj).clone();
+		No cursor = this.fim;
+
+		while (cursor != null && objClone.tamanho() > 0) {
+			if (!(cursor.dado.equals(objClone.consulta()))) {
+				return false;
+			} else {
+				objClone.remover();
+				cursor = cursor.anterior;
+			}
+		}
+
+		return true;
+	}
 }

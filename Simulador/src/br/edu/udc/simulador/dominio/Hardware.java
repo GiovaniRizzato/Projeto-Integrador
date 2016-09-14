@@ -4,6 +4,13 @@ public class Hardware {
 
 	private int clockCPU;
 	private int clockES[] = new int[3];
+	
+	public Hardware(int clockCPU, int clockES1, int clockES2, int clockES3){
+		this.clockCPU = clockCPU;
+		this.clockES[0] = clockES1;
+		this.clockES[1] = clockES2;
+		this.clockES[2] = clockES3;
+	}
 
 	public int[] getAllClocksES() {
 		return this.clockES;
@@ -29,12 +36,12 @@ public class Hardware {
 		this.clockES[2] = clock;
 	}
 
-	public int usarCPU(int qtdClockCPU, Processo programa) {
+	public int usarHardware(int qtdClockMaximo, int tipoDeIntrucao, Processo programa) {
 
-		int qtdClocksRestantes = qtdClockCPU;
-		for (int i = 0; i > qtdClockCPU; i++) {
+		int qtdClocksRestantes = qtdClockMaximo;
+		for (int i = 0; i < qtdClockMaximo; i++) {
 
-			if (programa.intrucaoAtual() == Processo.tipoDeIntrucao.CPU.getValor()) {
+			if (programa.intrucaoAtual() == tipoDeIntrucao) {
 				programa.proximaIntrucao();
 				qtdClocksRestantes--;
 			}

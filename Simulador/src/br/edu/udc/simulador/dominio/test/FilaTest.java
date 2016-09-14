@@ -1,4 +1,4 @@
-package br.edu.udc.simulador.dominio.ed;
+package br.edu.udc.simulador.dominio.test;
 
 import static org.junit.Assert.*;
 
@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import br.edu.udc.simulador.dominio.Processo;
 import br.edu.udc.simulador.dominio.Processo.prioridade;
+import br.edu.udc.simulador.dominio.ed.Fila;
 
 public class FilaTest {
 
@@ -77,5 +78,20 @@ public class FilaTest {
 		assertEquals("Deveria ter tamanho 5", 5, fila.tamanho());
 		assertArrayEquals("Elementos excluidos deveriam ser", arrayEsperado, arrayExcluidos);
 	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void cloneTest(){
+		
+		Fila<Integer> filaPrimeira = new Fila<>();
 
+		for (int i = 0; i < 15; i++) {
+			filaPrimeira.adiciona(i);
+		}
+		
+		Fila<Integer> filaSegunda = (Fila<Integer>) filaPrimeira.clone();
+		
+		assertEquals("Deveria ser igual para as duas filas", filaSegunda.tamanho(), filaPrimeira.tamanho());
+		assertEquals("Duas filas deveriam ser iguais", filaSegunda, filaPrimeira);
+	}
 }

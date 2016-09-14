@@ -1,8 +1,10 @@
-package br.edu.udc.simulador.dominio.ed;
+package br.edu.udc.simulador.dominio.test;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import br.edu.udc.simulador.dominio.ed.Vetor;
 
 public class VetorTest {
 
