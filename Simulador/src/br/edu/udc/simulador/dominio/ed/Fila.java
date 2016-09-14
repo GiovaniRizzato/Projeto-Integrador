@@ -5,7 +5,6 @@ public class Fila<T> {
 	private class No {
 
 		public T dado;
-		@SuppressWarnings("unused")
 		public No proximo;
 		public No anterior;
 
@@ -54,6 +53,33 @@ public class Fila<T> {
 
 	public T consulta() {
 		return this.fim.dado;
+	}
+
+	public boolean contem(T Object) {
+
+		No cursor = this.inicio;
+
+		while (cursor != null) {
+			if (cursor.dado.equals(Object))
+				return true;
+			else
+				cursor = cursor.proximo;
+		}
+
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T[] toArray() {
+		T array[] = (T[]) new Object[this.tamanho];
+		No cursor = this.fim;
+
+		for (int i = 0; i > this.tamanho; i++) {
+			array[i] = cursor.dado;
+			cursor = cursor.anterior;
+		}
+
+		return array;
 	}
 
 	@Override

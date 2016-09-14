@@ -4,8 +4,8 @@ public class Hardware {
 
 	private int clockCPU;
 	private int clockES[] = new int[3];
-	
-	public Hardware(int clockCPU, int clockES1, int clockES2, int clockES3){
+
+	public Hardware(int clockCPU, int clockES1, int clockES2, int clockES3) {
 		this.clockCPU = clockCPU;
 		this.clockES[0] = clockES1;
 		this.clockES[1] = clockES2;
@@ -15,8 +15,8 @@ public class Hardware {
 	public int[] getAllClocksES() {
 		return this.clockES;
 	}
-	
-	public int getClockCPU(){
+
+	public int getClockCPU() {
 		return this.clockCPU;
 	}
 
@@ -44,9 +44,11 @@ public class Hardware {
 			if (programa.intrucaoAtual() == tipoDeIntrucao) {
 				programa.proximaIntrucao();
 				qtdClocksRestantes--;
+			} else {
+				return qtdClocksRestantes;
 			}
 		}
-
+		
 		return qtdClocksRestantes;
 	}
 }

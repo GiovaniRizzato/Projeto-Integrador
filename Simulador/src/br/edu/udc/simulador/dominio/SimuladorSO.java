@@ -18,33 +18,55 @@ public class SimuladorSO {
 
 	private Processo estadoCriacao;
 	private Processo estadoFinalizacao;
-	//TODO fazer metodo para retirar estatistca do processo
+	// TODO Marcar processo para ser finalizado
 
 	private Vetor<Processo> listaPausado = new Vetor<>();
-	//TODO fazer metodo para pausar e resumir processo
+	// TODO Fazer metodo para pausar e resumir processo
+	
+	//USAR TO-ARRAY PARA ENCONTRAR OS PROCESSOS DENTRO DAS FILAS
 
 	private Hardware hardware;
+
+	private class EstatisticaSO {
+		public Vetor<Integer> tempoDeCPU = new Vetor<>();
+		public Vetor<Integer> tempoDePronto = new Vetor<>();
+		public Vetor<Integer> tempoDeES1 = new Vetor<>();
+		public Vetor<Integer> tempoDeES2 = new Vetor<>();
+		public Vetor<Integer> tempoDeES3 = new Vetor<>();
+		public Vetor<Integer> tempoDeEsperaES1 = new Vetor<>();
+		public Vetor<Integer> tempoDeEsperaES2 = new Vetor<>();
+		public Vetor<Integer> tempoDeEsperaES3 = new Vetor<>();
+	}
+
+	EstatisticaSO estatisticaSO = new EstatisticaSO();
 
 	public SimuladorSO(int clockCPU, int clockES1, int clockES2, int clockES3) {
 		hardware = new Hardware(clockCPU, clockES1, clockES2, clockES3);
 	}
 
-	// VARIAVEIS DE LOGICA
+	// VARIAVEL DE LOGICA
 	private int proximoPidDisponivel = 0;
-	
-	public int qtdProcessosAtivos(){
-		return 	this.filaProntoAlta.tamanho() +
-				this.filaProntoMedia.tamanho() +
-				this.filaProntoBaixa.tamanho() +
-				this.filaEsperaES1.tamanho() +
-				this.filaEsperaES2.tamanho() +
-				this.filaEsperaES3.tamanho();
+
+	public int qtdProcessosAtivos() {
+		return this.filaProntoAlta.tamanho() + this.filaProntoMedia.tamanho() + this.filaProntoBaixa.tamanho()
+				+ this.filaEsperaES1.tamanho() + this.filaEsperaES2.tamanho() + this.filaEsperaES3.tamanho();
 	}
 
-	public Processo[] listaTodos(){
+	@SuppressWarnings("unchecked")
+	public Processo[] listaTodos() {
 		Processo[] listaDeTodosProcessos = new Processo[qtdProcessosAtivos()];
-		//TODO terminar de fazer metodo que retorna uma lista de todos os processos
+
+		Fila<Processo> filaProntoAltaClone = (Fila<Processo>) this.filaProntoAlta.clone();
+
+		int posicaoAtualArray = 0;
+		for (int i = 0; i > this.filaProntoAlta.tamanho(); i++) {
+			listaDeTodosProcessos[posicaoAtualArray] = filaProntoAltaClone.consulta();
+			filaProntoAltaClone.remover();
+			posicaoAtualArray++;
+		}
 		return null;
+		
+		//TODO Terminar função que retorna TODOS os processos
 	}
 
 	public void criaNovoProcesso(prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
@@ -70,27 +92,44 @@ public class SimuladorSO {
 		this.proximoPidDisponivel++;
 	}
 
+	public void matarProcesso() {
+		Processo.DadosEstatisticos estatistica;
+		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
+		
+		this.estatisticaSO.tempoDeCPU.adiciona(estatistica.CPU);
+		this.estatisticaSO.tempoDePronto.adiciona(estatistica.pronto);
+		this.estatisticaSO.tempoDeEsperaES1.adiciona(estatistica.esperaES[0]);
+		this.estatisticaSO.tempoDeEsperaES2.adiciona(estatistica.esperaES[1]);
+		this.estatisticaSO.tempoDeEsperaES3.adiciona(estatistica.esperaES[2]);
+		this.estatisticaSO.tempoDeES1.adiciona(estatistica.ES[0]);
+		this.estatisticaSO.tempoDeES2.adiciona(estatistica.ES[1]);
+		this.estatisticaSO.tempoDeES3.adiciona(estatistica.ES[2]);
+		
+		this.estadoFinalizacao = null;
+		//Forçando o garbege collector a deleta-lo
+	}
+
 	public void processaFilas() {
 
 		final double porcentagemAlta = 0.6;
 		final double porcentagemMedia = 0.3;
 		final double porcentagemBaixa = 0.1;
 
-		int clockSobrado = processaFilaPronto(filaProntoAlta, Processo.instrucaoCPU,
+		int clockSobrado = processaFila(filaProntoAlta, Processo.instrucaoCPU,
 				(this.hardware.getClockCPU() * porcentagemAlta));
 
-		clockSobrado = processaFilaPronto(filaProntoMedia, Processo.instrucaoCPU,
+		clockSobrado = processaFila(filaProntoMedia, Processo.instrucaoCPU,
 				(this.hardware.getClockCPU() * porcentagemMedia) + clockSobrado);
 
-		processaFilaPronto(filaProntoBaixa, Processo.instrucaoCPU,
+		processaFila(filaProntoBaixa, Processo.instrucaoCPU,
 				(this.hardware.getClockCPU() * porcentagemBaixa) + clockSobrado);
 
-		processaFilaPronto(filaEsperaES1, Processo.instrucaoES1, this.hardware.getAllClocksES()[0]);
-		processaFilaPronto(filaEsperaES2, Processo.instrucaoES2, this.hardware.getAllClocksES()[1]);
-		processaFilaPronto(filaEsperaES3, Processo.instrucaoES3, this.hardware.getAllClocksES()[2]);
+		processaFila(filaEsperaES1, Processo.instrucaoES1, this.hardware.getAllClocksES()[0]);
+		processaFila(filaEsperaES2, Processo.instrucaoES2, this.hardware.getAllClocksES()[1]);
+		processaFila(filaEsperaES3, Processo.instrucaoES3, this.hardware.getAllClocksES()[2]);
 	}
 
-	private int processaFilaPronto(Fila<Processo> fila, int tipoDeIntrucao, double clocksDestaFila) {
+	private int processaFila(Fila<Processo> fila, int tipoDeIntrucao, double clocksDestaFila) {
 
 		int clockRestante = (int) clocksDestaFila;
 		while (fila.tamanho() != 0 && clockRestante != 0) {

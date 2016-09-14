@@ -31,9 +31,7 @@ public class Processo {
 	private class ContextoSoftware {
 		public final int pid;
 		public prioridade prioridade;
-
 		public int instrucaoAtual = 0;
-
 		public DadosEstatisticos dadosEstatisticos = new DadosEstatisticos();
 
 		public ContextoSoftware(int pid, prioridade prioridade) {
@@ -127,7 +125,26 @@ public class Processo {
 		this.contextoMemoria.programa.adiciona(instrucaoFIM, this.contextoSoftware.instrucaoAtual);
 	}
 
+	public DadosEstatisticos getDadosEstatisticos() {
+		return this.contextoSoftware.dadosEstatisticos;
+	}
+
 	public int getPID() {
 		return this.contextoSoftware.pid;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		if (this.getClass() != obj.getClass())
+			return false;
+		if (this == obj)
+			return true;
+
+		if (this.contextoSoftware.pid == ((Processo) obj).getPID())
+			return true;
+		else
+			return false;
 	}
 }

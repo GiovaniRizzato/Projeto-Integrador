@@ -49,9 +49,9 @@ public class FilaTest {
 
 		assertEquals("Deveria ter tamanho 1 - Alta", 1, filaAlta.tamanho());
 		assertEquals("Deveria ter newProcesso no começo - Alta", newProcesso, filaAlta.consulta());
-		
+
 		assertEquals("Deveria ter tamanho 0 - Media", 0, filaMedia.tamanho());
-		
+
 		assertEquals("Deveria ter tamanho 0 - Baixa", 0, filaBaixa.tamanho());
 	}
 
@@ -78,20 +78,38 @@ public class FilaTest {
 		assertEquals("Deveria ter tamanho 5", 5, fila.tamanho());
 		assertArrayEquals("Elementos excluidos deveriam ser", arrayEsperado, arrayExcluidos);
 	}
-	
+
 	@Test
 	@SuppressWarnings("unchecked")
-	public void cloneTest(){
-		
+	public void cloneTest() {
+
 		Fila<Integer> filaPrimeira = new Fila<>();
 
 		for (int i = 0; i < 15; i++) {
 			filaPrimeira.adiciona(i);
 		}
-		
+
 		Fila<Integer> filaSegunda = (Fila<Integer>) filaPrimeira.clone();
-		
+
 		assertEquals("Deveria ser igual para as duas filas", filaSegunda.tamanho(), filaPrimeira.tamanho());
 		assertEquals("Duas filas deveriam ser iguais", filaSegunda, filaPrimeira);
+	}
+
+	@Test
+	public void toArrayTest() {
+		
+		Fila<Integer> fila = new Fila<>();
+
+		for (int i = 0; i < 5; i++) {
+			fila.adiciona(i);
+		}
+		
+		Number[] arrayTest = new Integer[5];
+		for (int i = 0; i < 5; i++) {
+			arrayTest[i] = i;
+		}
+		
+		assertEquals("Tamanhos são diferentes", fila.tamanho(), arrayTest.length);
+		assertArrayEquals("Arrays deveriam ser iguais", fila.toArray(), arrayTest);
 	}
 }
