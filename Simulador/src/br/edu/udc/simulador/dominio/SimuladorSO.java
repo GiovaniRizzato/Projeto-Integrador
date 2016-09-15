@@ -60,7 +60,7 @@ public class SimuladorSO {
 
 		int posicaoAtualArray = 0;
 		for (int i = 0; i > this.filaProntoAlta.tamanho(); i++) {
-			listaDeTodosProcessos[posicaoAtualArray] = filaProntoAltaClone.consulta();
+			listaDeTodosProcessos[posicaoAtualArray] = filaProntoAltaClone.consultaProximoElemento();
 			filaProntoAltaClone.remover();
 			posicaoAtualArray++;
 		}
@@ -142,7 +142,7 @@ public class SimuladorSO {
 				int clockNaoUsadosNestaOperacao = 0;
 
 				// faz "copia" do processo para processamento
-				this.processado = fila.consulta();
+				this.processado = fila.consultaProximoElemento();
 
 				// remove ela dos registros da fila, pois esta em
 				// "processamento"

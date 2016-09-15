@@ -8,7 +8,7 @@ public class Vetor<T> {
 	private T vetor[] = (T[]) new Object[100];
 	// Inicializando um array de Object com capacidade 100.
 
-	private int quantidade = 0;
+	private int tamanho = 0;
 
 	public void adiciona(T object) {
 		this.verificaCapacidade();
@@ -20,21 +20,30 @@ public class Vetor<T> {
 			}
 		}
 
-		this.vetor[quantidade] = object;
-		this.quantidade++;
+		this.vetor[tamanho] = object;
+		this.tamanho++;
 	}
 
 	public void adiciona(T object, int posicao) {
-		if (!this.posicaoOcupada(posicao) && posicao != this.quantidade)
+		if (!this.posicaoOcupada(posicao) && posicao != this.tamanho)
 
 			throw new IndexOutOfBoundsException("Posição Invalida");
 
 		// desloca todos os vetor para a direita a partir da posicao
-		for (int i = this.quantidade - 1; i >= posicao; i -= 1)
+		for (int i = this.tamanho - 1; i >= posicao; i -= 1)
 			this.vetor[i + 1] = this.vetor[i];
 
 		this.vetor[posicao] = object;
-		this.quantidade++;
+		this.tamanho++;
+	}
+
+	public void sobrepoemPosicao(T object, int posicao) {
+		// É um metodo que faz sobreosicação do Object na posição solicitada,
+		if (!this.posicaoOcupada(posicao) && posicao != this.tamanho)
+
+			throw new IndexOutOfBoundsException("Posição Invalida");
+
+		this.vetor[posicao] = object;
 	}
 
 	public T obtem(int posicao) {
@@ -45,21 +54,21 @@ public class Vetor<T> {
 	}
 
 	private boolean posicaoOcupada(int posicao) {
-		return posicao >= 0 && posicao < this.quantidade;
+		return posicao >= 0 && posicao < this.tamanho;
 	}
 
 	public void remove(int posicao) {
 		if (!this.posicaoOcupada(posicao))
 			throw new IndexOutOfBoundsException("Posição Invalida");
 
-		for (int i = posicao; i < this.quantidade - 1; i++)
+		for (int i = posicao; i < this.tamanho - 1; i++)
 			this.vetor[i] = this.vetor[i + 1];
 
-		this.quantidade--;
+		this.tamanho--;
 	}
 
 	public boolean contem(T object) {
-		for (int i = 0; i < this.quantidade; i++) {
+		for (int i = 0; i < this.tamanho; i++) {
 			if (object.equals(this.vetor[i])) {
 				return true;
 			}
@@ -68,12 +77,12 @@ public class Vetor<T> {
 	}
 
 	public int tamanho() {
-		return this.quantidade;
+		return this.tamanho;
 	}
 
 	@SuppressWarnings("unchecked")
 	private void verificaCapacidade() {
-		if (this.quantidade == this.vetor.length) {
+		if (this.tamanho == this.vetor.length) {
 			final Object[] novaArray = new Object[this.vetor.length * 2];
 
 			for (int i = 0; i < this.vetor.length; i++) {
@@ -83,13 +92,18 @@ public class Vetor<T> {
 			this.vetor = (T[]) novaArray;
 		}
 	}
+	
+	public T[] toArray(){
+		//TODO fazer função que retorna um array simples
+		return null;
+	}
 
 	public void shuffle() {
 
 		final Random random = new Random();
 
-		for (int i = 0; i < this.quantidade; i++) {
-			final int posicaoTroca = Math.abs(random.nextInt() % this.quantidade);
+		for (int i = 0; i < this.tamanho; i++) {
+			final int posicaoTroca = Math.abs(random.nextInt() % this.tamanho);
 
 			// Troca a posição "i" por uma posição randomica do vetor,
 			// garantindo que cada elemento foi trocado ao menos uma vez.
@@ -101,10 +115,18 @@ public class Vetor<T> {
 
 	public void organizaCrascente() {
 
-		for (int i = 0; i < this.quantidade; i++) {
+		// Faz a verificação se o vetor é de algum tipo numérico, 
+		//fazendo-se possivel a ordenação
+		
+		//TODO [PROFESSOR] Que exeção coloco neste caso?
+		/**if (vetor[0].getClass() != Number.class) {
+			throw new InvalidClassException("Operação pode apenas ser feita com tipos numéricos");
+		}*/
+
+		for (int i = 0; i < this.tamanho; i++) {
 
 			int posicaoTroca = i;
-			for (int j = i + 1; j < this.quantidade; j++) {
+			for (int j = i + 1; j < this.tamanho; j++) {
 				// procura desde elemento para frente, pois, os anteriores já
 				// foram processador e são menores.
 
@@ -131,9 +153,9 @@ public class Vetor<T> {
 			return false;
 		if (this == obj)
 			return true;
-		
-		for (int i = 0; i > this.quantidade; i++) {
-			//verifica se todos os elementos são iguais
+
+		for (int i = 0; i > this.tamanho; i++) {
+			// verifica se todos os elementos são iguais
 			if (!vetor[i].equals(((Vetor<T>) obj).obtem(i))) {
 				return false;
 			}
@@ -144,13 +166,13 @@ public class Vetor<T> {
 
 	@Override
 	public Vetor<T> clone() {
-		Vetor<T> clone = new Vetor<T>();
+		Vetor<T> vetorClone = new Vetor<T>();
 
-		for (int i = 0; i < this.quantidade; i++) {
-			clone.adiciona(this.vetor[i]);
+		for (int i = 0; i < this.tamanho; i++) {
+			vetorClone.adiciona(this.vetor[i]);
 		}
 
-		return clone;
+		return vetorClone;
 	}
 
 	@Override
@@ -159,8 +181,9 @@ public class Vetor<T> {
 		String stringAcomulador = new String();
 
 		stringAcomulador = stringAcomulador.concat(String.format("["));
-
-		for (int i = 0; i < this.quantidade; i++) {
+		
+		//Acomula os numeros dentro dos conchets
+		for (int i = 0; i < this.tamanho; i++) {
 			stringAcomulador = stringAcomulador.concat(String.format("%s,", vetor[i].toString()));
 		}
 

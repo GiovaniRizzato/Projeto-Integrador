@@ -20,7 +20,7 @@ public class FilaTest {
 		}
 
 		assertEquals("Deveria ter tamanho 15", 15, fila.tamanho());
-		assertEquals("Deveria ser igual ao primeiro elemento adicionado apenas", (Integer) 0, fila.consulta());
+		assertEquals("Deveria ser igual ao primeiro elemento adicionado apenas", (Integer) 0, fila.consultaProximoElemento());
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class FilaTest {
 		}
 
 		assertEquals("Deveria ter tamanho 1 - Alta", 1, filaAlta.tamanho());
-		assertEquals("Deveria ter newProcesso no começo - Alta", newProcesso, filaAlta.consulta());
+		assertEquals("Deveria ter newProcesso no começo - Alta", newProcesso, filaAlta.consultaProximoElemento());
 
 		assertEquals("Deveria ter tamanho 0 - Media", 0, filaMedia.tamanho());
 
@@ -71,7 +71,7 @@ public class FilaTest {
 		final Integer arrayEsperado[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
 		for (int i = 0; i < 10; i++) {
-			arrayExcluidos[i] = fila.consulta();
+			arrayExcluidos[i] = fila.consultaProximoElemento();
 			fila.remover();
 		}
 
