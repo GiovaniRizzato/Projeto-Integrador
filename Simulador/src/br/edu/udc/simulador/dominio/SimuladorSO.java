@@ -22,8 +22,8 @@ public class SimuladorSO {
 
 	private Vetor<Processo> listaPausado = new Vetor<>();
 	// TODO Fazer metodo para pausar e resumir processo
-	
-	//USAR TO-ARRAY PARA ENCONTRAR OS PROCESSOS DENTRO DAS FILAS
+
+	// USAR TO-ARRAY PARA ENCONTRAR OS PROCESSOS DENTRO DAS FILAS
 
 	private Hardware hardware;
 
@@ -52,21 +52,41 @@ public class SimuladorSO {
 				+ this.filaEsperaES1.tamanho() + this.filaEsperaES2.tamanho() + this.filaEsperaES3.tamanho();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Processo[] listaTodos() {
 		Processo[] listaDeTodosProcessos = new Processo[qtdProcessosAtivos()];
-
-		Fila<Processo> filaProntoAltaClone = (Fila<Processo>) this.filaProntoAlta.clone();
-
 		int posicaoAtualArray = 0;
-		for (int i = 0; i > this.filaProntoAlta.tamanho(); i++) {
-			listaDeTodosProcessos[posicaoAtualArray] = filaProntoAltaClone.consultaProximoElemento();
-			filaProntoAltaClone.remover();
+
+		for (Processo processo : this.filaProntoAlta) {
+			listaDeTodosProcessos[posicaoAtualArray] = processo;
 			posicaoAtualArray++;
 		}
-		return null;
-		
-		//TODO Terminar função que retorna TODOS os processos
+
+		for (Processo processo : this.filaProntoMedia) {
+			listaDeTodosProcessos[posicaoAtualArray] = processo;
+			posicaoAtualArray++;
+		}
+
+		for (Processo processo : this.filaProntoBaixa) {
+			listaDeTodosProcessos[posicaoAtualArray] = processo;
+			posicaoAtualArray++;
+		}
+
+		for (Processo processo : this.filaEsperaES1) {
+			listaDeTodosProcessos[posicaoAtualArray] = processo;
+			posicaoAtualArray++;
+		}
+
+		for (Processo processo : this.filaEsperaES2) {
+			listaDeTodosProcessos[posicaoAtualArray] = processo;
+			posicaoAtualArray++;
+		}
+
+		for (Processo processo : this.filaEsperaES3) {
+			listaDeTodosProcessos[posicaoAtualArray] = processo;
+			posicaoAtualArray++;
+		}
+
+		return listaDeTodosProcessos;
 	}
 
 	public void criaNovoProcesso(prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
@@ -95,7 +115,7 @@ public class SimuladorSO {
 	public void matarProcesso() {
 		Processo.DadosEstatisticos estatistica;
 		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
-		
+
 		this.estatisticaSO.tempoDeCPU.adiciona(estatistica.CPU);
 		this.estatisticaSO.tempoDePronto.adiciona(estatistica.pronto);
 		this.estatisticaSO.tempoDeEsperaES1.adiciona(estatistica.esperaES[0]);
@@ -104,9 +124,9 @@ public class SimuladorSO {
 		this.estatisticaSO.tempoDeES1.adiciona(estatistica.ES[0]);
 		this.estatisticaSO.tempoDeES2.adiciona(estatistica.ES[1]);
 		this.estatisticaSO.tempoDeES3.adiciona(estatistica.ES[2]);
-		
+
 		this.estadoFinalizacao = null;
-		//Forçando o garbege collector a deleta-lo
+		// Forçando o garbege collector a deleta-lo
 	}
 
 	public void processaFilas() {

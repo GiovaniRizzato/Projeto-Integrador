@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import br.edu.udc.simulador.dominio.Processo;
-import br.edu.udc.simulador.dominio.Processo.prioridade;
 import br.edu.udc.simulador.dominio.ed.Fila;
 
 public class FilaTest {
@@ -20,39 +18,8 @@ public class FilaTest {
 		}
 
 		assertEquals("Deveria ter tamanho 15", 15, fila.tamanho());
-		assertEquals("Deveria ser igual ao primeiro elemento adicionado apenas", (Integer) 0, fila.consultaProximoElemento());
-	}
-
-	@Test
-	public void adicionarProcesso() {
-
-		Fila<Processo> filaAlta = new Fila<>();
-		Fila<Processo> filaMedia = new Fila<>();
-		Fila<Processo> filaBaixa = new Fila<>();
-
-		Processo newProcesso = new Processo(0, prioridade.ALTA, 5, 5, 5, 5, 5);
-
-		switch (newProcesso.getPrioridade()) {
-		case ALTA: {
-			filaAlta.adiciona(newProcesso);
-			break;
-		}
-		case MEDIA: {
-			filaMedia.adiciona(newProcesso);
-			break;
-		}
-		case BAIXA: {
-			filaBaixa.adiciona(newProcesso);
-			break;
-		}
-		}
-
-		assertEquals("Deveria ter tamanho 1 - Alta", 1, filaAlta.tamanho());
-		assertEquals("Deveria ter newProcesso no começo - Alta", newProcesso, filaAlta.consultaProximoElemento());
-
-		assertEquals("Deveria ter tamanho 0 - Media", 0, filaMedia.tamanho());
-
-		assertEquals("Deveria ter tamanho 0 - Baixa", 0, filaBaixa.tamanho());
+		assertEquals("Deveria ser igual ao primeiro elemento adicionado apenas", (Integer) 0,
+				fila.consultaProximoElemento());
 	}
 
 	@Test
@@ -97,19 +64,45 @@ public class FilaTest {
 
 	@Test
 	public void toArrayTest() {
-		
+
 		Fila<Integer> fila = new Fila<>();
+		Number[] arrayTest = new Integer[5];
 
 		for (int i = 0; i < 5; i++) {
+			arrayTest[i] = i;
 			fila.adiciona(i);
 		}
-		
-		Number[] arrayTest = new Integer[5];
-		for (int i = 0; i < 5; i++) {
-			arrayTest[i] = i;
-		}
-		
+
 		assertEquals("Tamanhos são diferentes", fila.tamanho(), arrayTest.length);
 		assertArrayEquals("Arrays deveriam ser iguais", fila.toArray(), arrayTest);
+	}
+
+	@Test
+	public void iteradorTest() {
+
+		Fila<Integer> fila = new Fila<>();
+
+		Number[] arrayFOR = new Integer[5];
+		for (int i = 0; i < 5; i++) {
+			arrayFOR[i] = i;
+			fila.adiciona(i);
+		}
+
+		Number[] arrayITERADOR = new Integer[5];
+		int i = 0;
+
+		for (Integer numero : fila) {
+			arrayITERADOR[i] = numero;
+			i++;
+		}
+
+		assertEquals("Tamanhos são diferentes", arrayFOR.length, arrayITERADOR.length);
+		assertArrayEquals("Eles são diferentes", arrayFOR, arrayITERADOR);
+
+		for (Integer numero : fila) {
+			numero++;
+			// TODO [PROFESSOR] Posso utilizar For Each desta forma para alterar
+			// algum paramtro dentro da fila? há alguma forma?
+		}
 	}
 }
