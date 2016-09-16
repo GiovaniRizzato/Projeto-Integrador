@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import br.edu.udc.simulador.dominio.ed.Fila;
+import br.edu.udc.simulador.dominio.ed.Iterator;
 
 public class FilaTest {
 
@@ -90,19 +91,15 @@ public class FilaTest {
 
 		Number[] arrayITERADOR = new Integer[5];
 		int i = 0;
+		Iterator<Integer> it = fila.inicio();
 
-		for (Integer numero : fila) {
-			arrayITERADOR[i] = numero;
+		while (it.temProximo()) {
+			arrayITERADOR[i] = it.getDado();
+			it.proximo();
 			i++;
 		}
 
 		assertEquals("Tamanhos são diferentes", arrayFOR.length, arrayITERADOR.length);
 		assertArrayEquals("Eles são diferentes", arrayFOR, arrayITERADOR);
-
-		for (Integer numero : fila) {
-			numero++;
-			// TODO [PROFESSOR] Posso utilizar For Each desta forma para alterar
-			// algum paramtro dentro da fila? há alguma forma?
-		}
 	}
 }

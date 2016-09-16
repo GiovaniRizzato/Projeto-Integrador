@@ -1,19 +1,40 @@
 package br.edu.udc.simulador.dominio.ed;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+/**
+ * ------------------------------------------------------------------------------
+ * Sobre nomes de atributos:
+ * 
+ * Para melhor abstratir o conceito de fila, pensa-se na fila real como exemplo
+ * da fila de pessoas esperando para ser atendidas em um banco:
+ * 
+ * O indivio que acaba de chegar, vai para o "fim" da fila e o elemento à sua
+ * frente é o "proximo"; O individuo que vai ser atendido(por consequancia,
+ * removido da fila), é o elemento que esta no "começo" da fila seguido pelo seu
+ * "anterior".
+ * 
+ * Desta forma vai ser nomeado os atributos e sub-atributos desta classe.
+ * ------------------------------------------------------------------------------
+ * Sobre Iterator:
+ * 
+ * O Iterator concreto implementado nesta classe foi feito para que seja
+ * execultado operações nos objetos contidos na estrutura sem que seja alterado
+ * a estrutura em sí ,OU SEJA, nenhuma operação de lista como: Adiciona, Exclui
+ * o Consulta será feita pelo Iterator intencionalmente para garantir as
+ * propriedades de Fila.
+ * ------------------------------------------------------------------------------
+ */
 
-public class Fila<T> implements Iterable<T> {
+public class Fila<T> {
 
 	private class No {
 
 		public T dado;
-		public No anterior;
 		public No proximo;
+		public No anterior;
 
 		public No(T data) {
 			this.dado = data;
-			this.anterior = this.proximo = null;
+			this.proximo = this.anterior = null;
 		}
 	}
 
@@ -26,38 +47,31 @@ public class Fila<T> implements Iterable<T> {
 		}
 
 		@Override
-		public boolean hasNext() {
-			if (cursor != null) {
+		public void proximo() {
+			this.cursor = this.cursor.anterior;
+		}
+
+		@Override
+		public boolean temProximo() {
+			if (this.cursor != null) {
 				return true;
 			}
 			return false;
 		}
 
 		@Override
-		public T next() {
-			if (this.hasNext()) {
-				No current = this.cursor;
-				this.cursor = this.cursor.proximo;
-				return current.dado;
-			}
-
-			throw new NoSuchElementException();
+		public T getDado() {
+			return this.cursor.dado;
 		}
+	}
 
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
+	public Iterator<T> inicio() {
+		return new IteradorFila(this.inicio);
 	}
 
 	private int tamanho;
 	private No fim;
 	private No inicio;
-
-	@Override
-	public Iterator<T> iterator() {
-		return new IteradorFila(this.inicio);
-	}
 
 	public int tamanho() {
 		return this.tamanho;
@@ -72,8 +86,8 @@ public class Fila<T> implements Iterable<T> {
 			this.fim = this.inicio = noAdicionado;
 
 		} else {
-			noAdicionado.anterior = this.fim;
-			noAdicionado.anterior.proximo = noAdicionado;
+			noAdicionado.proximo = this.fim;
+			noAdicionado.proximo.anterior = noAdicionado;
 			this.fim = noAdicionado;
 		}
 
@@ -94,8 +108,8 @@ public class Fila<T> implements Iterable<T> {
 
 		} else {
 			noRemovido = this.inicio;
-			this.inicio = this.inicio.proximo;
-			this.inicio.anterior = null;
+			this.inicio = this.inicio.anterior;
+			this.inicio.proximo = null;
 		}
 
 		this.tamanho--;
@@ -114,7 +128,7 @@ public class Fila<T> implements Iterable<T> {
 			if (cursor.dado.equals(Object))
 				return true;
 			else
-				cursor = cursor.anterior;
+				cursor = cursor.proximo;
 		}
 
 		return false;
@@ -125,11 +139,12 @@ public class Fila<T> implements Iterable<T> {
 
 		T array[] = (T[]) new Object[this.tamanho];
 
-		int i = 0;
-		for (T Object : this) {
-			array[i] = Object;
-			i++;
+		No cursor = this.inicio;
+		for (int i = 0; i < this.tamanho; i++) {
+			array[i] = cursor.dado;
+			cursor = cursor.anterior;
 		}
+
 		return array;
 	}
 
@@ -142,13 +157,12 @@ public class Fila<T> implements Iterable<T> {
 
 		for (int i = 0; i < this.tamanho; i++) {
 			filaClone.adiciona(cursor.dado);
-			cursor = cursor.proximo;
+			cursor = cursor.anterior;
 		}
 		return filaClone;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public boolean equals(Object obj) {
 
 		if (obj == null)
@@ -159,12 +173,15 @@ public class Fila<T> implements Iterable<T> {
 			return true;
 
 		No cursor = this.inicio;
-		for (T comparado : ((Fila<T>) obj)) {
-			if (!(cursor.dado.equals(comparado))) {
-				return false;//se encontrar algum elemento diferente
-			}else{
-				cursor = cursor.proximo;
+		Iterator<T> it = this.inicio();
+
+		while (it.temProximo()) {
+			if (!(cursor.dado.equals(it.getDado()))) {
+				return false;
 			}
+
+			cursor = cursor.anterior;
+			it.proximo();
 		}
 
 		return true;

@@ -36,14 +36,6 @@ public class VetorTest {
 	}
 	
 	@Test
-	public void shuffleVazioTest() {
-		Vetor<Integer> vetor = new Vetor<Integer>();
-		vetor.shuffle();
-
-		assertNotEquals("Deveria esta vazio", vetor, vetor);
-	}
-	
-	@Test
 	public void organizaTest() {
 		Vetor<Integer> vetorOrdenado = new Vetor<Integer>();
 
@@ -77,5 +69,23 @@ public class VetorTest {
 		Vetor<Integer> vetor = new Vetor<Integer>();
 
 		assertEquals("Deveria ter sido diferente", "[]", vetor.toString());
+	}
+	
+	@Test
+	public void toArrayTest(){
+		
+		Vetor<Integer> vetor = new Vetor<Integer>();
+		Integer[] array = new Integer[4];
+		
+		vetor.adiciona(3);
+		array[0] = 3;
+		vetor.adiciona(2);
+		array[1] = 2;
+		vetor.adiciona(6);
+		array[2] = 6;
+		vetor.adiciona(15);
+		array[3] = 15;
+		
+		assertArrayEquals("Elementos deverias ser iguais", array, vetor.toArray());
 	}
 }

@@ -2,6 +2,7 @@ package br.edu.udc.simulador.dominio;
 
 import br.edu.udc.simulador.dominio.Processo.prioridade;
 import br.edu.udc.simulador.dominio.ed.Fila;
+import br.edu.udc.simulador.dominio.ed.Iterator;
 import br.edu.udc.simulador.dominio.ed.Vetor;
 
 public class SimuladorSO {
@@ -27,7 +28,8 @@ public class SimuladorSO {
 
 	private Hardware hardware;
 
-	private class EstatisticaSO {
+	public class EstatisticaSO {
+		public Vetor<Integer> qtdMemoria = new Vetor<>();
 		public Vetor<Integer> tempoDeCPU = new Vetor<>();
 		public Vetor<Integer> tempoDePronto = new Vetor<>();
 		public Vetor<Integer> tempoDeES1 = new Vetor<>();
@@ -53,37 +55,51 @@ public class SimuladorSO {
 	}
 
 	public Processo[] listaTodos() {
+
 		Processo[] listaDeTodosProcessos = new Processo[qtdProcessosAtivos()];
 		int posicaoAtualArray = 0;
+		Iterator<Processo> it;
 
-		for (Processo processo : this.filaProntoAlta) {
-			listaDeTodosProcessos[posicaoAtualArray] = processo;
+		it = filaProntoAlta.inicio();
+		while (it.temProximo()) {
+			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
+			it.proximo();
 		}
 
-		for (Processo processo : this.filaProntoMedia) {
-			listaDeTodosProcessos[posicaoAtualArray] = processo;
+		it = filaProntoMedia.inicio();
+		while (it.temProximo()) {
+			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
+			it.proximo();
 		}
 
-		for (Processo processo : this.filaProntoBaixa) {
-			listaDeTodosProcessos[posicaoAtualArray] = processo;
+		it = filaProntoBaixa.inicio();
+		while (it.temProximo()) {
+			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
+			it.proximo();
 		}
 
-		for (Processo processo : this.filaEsperaES1) {
-			listaDeTodosProcessos[posicaoAtualArray] = processo;
+		it = filaEsperaES1.inicio();
+		while (it.temProximo()) {
+			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
+			it.proximo();
 		}
 
-		for (Processo processo : this.filaEsperaES2) {
-			listaDeTodosProcessos[posicaoAtualArray] = processo;
+		it = filaEsperaES2.inicio();
+		while (it.temProximo()) {
+			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
+			it.proximo();
 		}
 
-		for (Processo processo : this.filaEsperaES3) {
-			listaDeTodosProcessos[posicaoAtualArray] = processo;
+		it = filaEsperaES3.inicio();
+		while (it.temProximo()) {
+			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
+			it.proximo();
 		}
 
 		return listaDeTodosProcessos;
@@ -113,9 +129,11 @@ public class SimuladorSO {
 	}
 
 	public void matarProcesso() {
+
 		Processo.DadosEstatisticos estatistica;
 		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
-
+		
+		this.estatisticaSO.qtdMemoria.adiciona(estatistica.qtdMemoria);
 		this.estatisticaSO.tempoDeCPU.adiciona(estatistica.CPU);
 		this.estatisticaSO.tempoDePronto.adiciona(estatistica.pronto);
 		this.estatisticaSO.tempoDeEsperaES1.adiciona(estatistica.esperaES[0]);
@@ -127,6 +145,10 @@ public class SimuladorSO {
 
 		this.estadoFinalizacao = null;
 		// Forçando o garbege collector a deleta-lo
+	}
+	
+	public EstatisticaSO getEstatisticas(){
+		return this.estatisticaSO;
 	}
 
 	public void processaFilas() {
@@ -213,6 +235,7 @@ public class SimuladorSO {
 
 				case Processo.instrucaoFIM: {
 					this.estadoFinalizacao = this.processado;
+					this.matarProcesso();
 					break;
 				}
 				}// END SWITCH

@@ -38,7 +38,7 @@ public class Vetor<T> {
 	}
 
 	public void sobrepoemPosicao(T object, int posicao) {
-		// É um metodo que faz sobreosicação do Object na posição solicitada,
+		// É um metodo que faz sobreosicação do Object na posição solicitada
 		if (!this.posicaoOcupada(posicao) && posicao != this.tamanho)
 
 			throw new IndexOutOfBoundsException("Posição Invalida");
@@ -92,10 +92,16 @@ public class Vetor<T> {
 			this.vetor = (T[]) novaArray;
 		}
 	}
-	
-	public T[] toArray(){
-		//TODO fazer função que retorna um array simples
-		return null;
+
+	@SuppressWarnings("unchecked")
+	public T[] toArray() {
+		T[] array = (T[]) new Object[this.tamanho];
+
+		for (int i = 0; i < this.tamanho; i++) {
+			array[i] = vetor[i];
+		}
+
+		return array;
 	}
 
 	public void shuffle() {
@@ -115,13 +121,15 @@ public class Vetor<T> {
 
 	public void organizaCrascente() {
 
-		// Faz a verificação se o vetor é de algum tipo numérico, 
-		//fazendo-se possivel a ordenação
-		
-		//TODO [PROFESSOR] Que exeção coloco neste caso?
-		/**if (vetor[0].getClass() != Number.class) {
-			throw new InvalidClassException("Operação pode apenas ser feita com tipos numéricos");
-		}*/
+		// Faz a verificação se o vetor é de algum tipo numérico,
+		// fazendo-se possivel a ordenação
+
+		// TODO [PROFESSOR] Que exeção coloco neste caso?
+		/**
+		 * if (vetor[0].getClass() != Number.class) { throw new
+		 * InvalidClassException("Operação pode apenas ser feita com tipos
+		 * numéricos"); }
+		 */
 
 		for (int i = 0; i < this.tamanho; i++) {
 
@@ -154,7 +162,10 @@ public class Vetor<T> {
 		if (this == obj)
 			return true;
 
-		for (int i = 0; i > this.tamanho; i++) {
+		if (this.tamanho != (((Vetor<T>) obj).tamanho))
+			return false;
+
+		for (int i = 0; i < this.tamanho; i++) {
 			// verifica se todos os elementos são iguais
 			if (!vetor[i].equals(((Vetor<T>) obj).obtem(i))) {
 				return false;
@@ -181,8 +192,8 @@ public class Vetor<T> {
 		String stringAcomulador = new String();
 
 		stringAcomulador = stringAcomulador.concat(String.format("["));
-		
-		//Acomula os numeros dentro dos conchets
+
+		// Acomula os numeros dentro dos conchets
 		for (int i = 0; i < this.tamanho; i++) {
 			stringAcomulador = stringAcomulador.concat(String.format("%s,", vetor[i].toString()));
 		}

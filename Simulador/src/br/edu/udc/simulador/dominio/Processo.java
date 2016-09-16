@@ -15,6 +15,7 @@ public class Processo {
 	}
 
 	public class DadosEstatisticos {
+		public int qtdMemoria = 0;
 		public int tempoTotalEmSegundos = 0;
 		public int CPU = 0;
 		public int pronto = 0;
@@ -69,7 +70,7 @@ public class Processo {
 			// PASSO 2- Embaralha as posições desse vetor.
 			this.programa.shuffle();
 
-			// PASSO 3- Adiciona o fim do programa ao final de todas as
+			// PASSO 3- Adiciona a intrução "fim" ao final de todas as
 			// intruções.
 			this.programa.adiciona(instrucaoFIM);
 		}
@@ -81,6 +82,8 @@ public class Processo {
 	public Processo(int pid, prioridade prioridade, int qtdeMem, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 		this.contextoSoftware = new ContextoSoftware(pid, prioridade);
 		this.contextoMemoria = new ContextoMemoria(qtdeMem, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
+		
+		this.contextoSoftware.dadosEstatisticos.qtdMemoria = qtdeMem;
 	}
 
 	public void proximaIntrucao() {
@@ -122,7 +125,7 @@ public class Processo {
 	}
 
 	public void mataProcesso() {
-		this.contextoMemoria.programa.adiciona(instrucaoFIM, this.contextoSoftware.instrucaoAtual);
+		this.contextoMemoria.programa.sobrepoemPosicao(instrucaoFIM, this.contextoSoftware.instrucaoAtual);
 	}
 
 	public DadosEstatisticos getDadosEstatisticos() {
@@ -130,6 +133,11 @@ public class Processo {
 	}
 
 	public int getPID() {
+		return this.contextoSoftware.pid;
+	}
+	
+	@Override
+	public int hashCode(){
 		return this.contextoSoftware.pid;
 	}
 

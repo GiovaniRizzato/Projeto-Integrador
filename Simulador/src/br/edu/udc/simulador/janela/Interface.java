@@ -8,7 +8,6 @@ public class Interface {
 
 	public static void main(String[] args) {
 
-		// TODO Auto-generated method stub
 		SimuladorSO simulador = new SimuladorSO(1000000, 0, 0, 0);
 		int qtdMemoria, qtdCPU, qtdES1, qtdES2, qtdES3;
 		Scanner recursos = new Scanner(System.in);
@@ -18,7 +17,7 @@ public class Interface {
 		do {
 			me_nu();
 			switch (opc.nextInt()) {
-			
+
 			case 1: {// criaçao de processo
 				System.out.printf("qtdmemoria");
 				qtdMemoria = recursos.nextInt();
@@ -56,11 +55,12 @@ public class Interface {
 	}
 
 	public static void me_nu() {
-			System.out.printf("entre com 1 para criar processo");
+		System.out.printf("entre com 1 para criar processo");
 	}
+
 	public static void submenu() {
-			System.out.printf("entre com 1 para criar processo de alta prioridade");
-			System.out.printf("entre com 2 para criar processo de media prioridade");
-			System.out.printf("entre com 3 para criar processo de baixa prioridade");
+		System.out.printf("entre com 1 para criar processo de alta prioridade");
+		System.out.printf("entre com 2 para criar processo de media prioridade");
+		System.out.printf("entre com 3 para criar processo de baixa prioridade");
 	}
 }
