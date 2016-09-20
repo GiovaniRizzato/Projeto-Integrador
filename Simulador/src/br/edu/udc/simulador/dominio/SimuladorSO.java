@@ -8,6 +8,10 @@ import br.edu.udc.simulador.dominio.ed.Vetor;
 public class SimuladorSO {
 
 	private Processo processado;
+	
+	//TODO trocar para listas filtradas
+	//o conceito de lista filtrada e que existe apenas uma LISTA de processos
+	//prioridades são feitas a partir de funções que romovem da lista principal
 
 	private Fila<Processo> filaProntoAlta = new Fila<>();
 	private Fila<Processo> filaProntoMedia = new Fila<>();
@@ -60,42 +64,50 @@ public class SimuladorSO {
 		int posicaoAtualArray = 0;
 		Iterator<Processo> it;
 
-		it = filaProntoAlta.inicio();
+		// TODO utilizar a função "toArray()" das filas
+
+		//listaDeTodosProcessos = filaProntoAlta.toArray();
+
+		// TODO [PROFESSOR] Exeite algum metodo que faz isso?
+		// (que eu não precise implementa-las)
+		// listaDeTodosProcessos = listaDeTodosProcessos.concatea(filaProntoMedia.toArray());
+
+		it = this.filaProntoAlta.inicio();
 		while (it.temProximo()) {
 			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
 			it.proximo();
 		}
 
-		it = filaProntoMedia.inicio();
+		it = this.filaProntoMedia.inicio();
 		while (it.temProximo()) {
 			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
 			it.proximo();
 		}
 
-		it = filaProntoBaixa.inicio();
+		it = this.filaProntoBaixa.inicio();
 		while (it.temProximo()) {
 			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
 			it.proximo();
 		}
 
-		it = filaEsperaES1.inicio();
+		it = this.filaEsperaES1.inicio();
 		while (it.temProximo()) {
 			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
 			it.proximo();
 		}
 
-		it = filaEsperaES2.inicio();
+		it = this.filaEsperaES2.inicio();
 		while (it.temProximo()) {
 			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
 			it.proximo();
 		}
 
-		it = filaEsperaES3.inicio();
+		it = this.filaEsperaES3.inicio();
 		while (it.temProximo()) {
 			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
 			posicaoAtualArray++;
@@ -132,7 +144,7 @@ public class SimuladorSO {
 
 		Processo.DadosEstatisticos estatistica;
 		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
-		
+
 		this.estatisticaSO.qtdMemoria.adiciona(estatistica.qtdMemoria);
 		this.estatisticaSO.tempoDeCPU.adiciona(estatistica.CPU);
 		this.estatisticaSO.tempoDePronto.adiciona(estatistica.pronto);
@@ -146,8 +158,8 @@ public class SimuladorSO {
 		this.estadoFinalizacao = null;
 		// Forçando o garbege collector a deleta-lo
 	}
-	
-	public EstatisticaSO getEstatisticas(){
+
+	public EstatisticaSO getEstatisticas() {
 		return this.estatisticaSO;
 	}
 
@@ -247,5 +259,16 @@ public class SimuladorSO {
 		} // END WHILE
 
 		return (int) clockRestante;
+	}
+
+	public void pausarProcesso(int pid) {
+		if(this.contem(pid)){
+			
+		}
+	}
+
+	private boolean contem(int pid) {
+		return false;
+		//TODO terminar de fazer se o elemento com pid "pid" está no sistema
 	}
 }

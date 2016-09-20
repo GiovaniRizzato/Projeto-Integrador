@@ -58,6 +58,23 @@ public class SimuladorSOTest {
 		assertEquals("Clocks de ES3 processador e diferente", (Integer) 0, estatistica.tempoDeES3.obtem(0));
 	}
 	
+	@Test
+	public void PausarProcesso(){
+		
+		SimuladorSO simulador = new SimuladorSO(100, 50, 30, 10);
+		// clock CPU = 100, ClockES1 = 50, ClockES2 = 30, ClockES3 = 10.
+		
+		assertEquals("Não deve ter nenhum processo ativo", 0, simulador.qtdProcessosAtivos());
+		
+		simulador.criaNovoProcesso(Processo.prioridade.ALTA, 10, 10, 0, 0, 0);
+		assertEquals("Deve ter apenas o processo que irá processado", 1, simulador.qtdProcessosAtivos());
+		
+		final int pid = 0;
+		simulador.pausarProcesso(pid);
+		
+		assertEquals("Não deve existir processso ativo", 0, simulador.listaTodos().length);
+	}
+	
 	//TODO Test JUnit de puasar processo
 	
 	//TODO Test Junit de continuar processo pausado

@@ -1,13 +1,23 @@
 package br.edu.udc.simulador.dominio.ed;
 
 public interface Iterator<T> {
-	
+
+	// NAVEGAÇÃO
+	public void anterior();
+
 	public void proximo();
-	//Fazer com que o Iterator se pocicione no proximo elemento da estrutura
-	
+
 	public boolean temProximo();
-	//Se o Iterator pode continuar à avançar na lista
-	
+
+	public boolean temAnterior();
+
+	// MANIPULÇAO DE DADOS
 	public T getDado();
-	//Retorna o dado da posição atual da estrutura
+
+	// MODIFICAÇÃO DA ESTRUTURA DE DADOS
+	public void adicionaDepois(T elementoAdicionado);
+
+	public void adicionaAntes(T elementoAdicionado);
+
+	public void remove();
 }

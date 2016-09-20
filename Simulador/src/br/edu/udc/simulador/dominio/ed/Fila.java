@@ -8,9 +8,9 @@ package br.edu.udc.simulador.dominio.ed;
  * da fila de pessoas esperando para ser atendidas em um banco:
  * 
  * O indivio que acaba de chegar, vai para o "fim" da fila e o elemento à sua
- * frente é o "proximo"; O individuo que vai ser atendido(por consequancia,
- * removido da fila), é o elemento que esta no "começo" da fila seguido pelo seu
- * "anterior".
+ * frente (mais proximo de ser atendido é o "proximo"; O individuo que vai ser
+ * atendido (por consequancia, removido da fila), é o elemento que esta no
+ * "começo" da fila seguido pelo seu "anterior".
  * 
  * Desta forma vai ser nomeado os atributos e sub-atributos desta classe.
  * ------------------------------------------------------------------------------
@@ -19,9 +19,13 @@ package br.edu.udc.simulador.dominio.ed;
  * O Iterator concreto implementado nesta classe foi feito para que seja
  * execultado operações nos objetos contidos na estrutura sem que seja alterado
  * a estrutura em sí ,OU SEJA, nenhuma operação de lista como: Adiciona, Exclui
- * o Consulta será feita pelo Iterator intencionalmente para garantir as
- * propriedades de Fila.
+ * será feita pelo Iterator intencionalmente para garantir as propriedades de
+ * Fila.
  * ------------------------------------------------------------------------------
+ * 
+ * @category Estrutura de dados - concreta
+ * @param Object
+ * @author Giovani Rizzato<giovanirizzato@gmail.com>
  */
 
 public class Fila<T> {
@@ -50,6 +54,13 @@ public class Fila<T> {
 		public void proximo() {
 			this.cursor = this.cursor.anterior;
 		}
+		// TODO comentario de porque os dois estão trocados
+		// pois para utilização do Iterador, fica mais legivel desta forma
+
+		@Override
+		public void anterior() {
+			this.cursor = this.cursor.proximo;
+		}
 
 		@Override
 		public boolean temProximo() {
@@ -60,13 +71,42 @@ public class Fila<T> {
 		}
 
 		@Override
+		public boolean temAnterior() {
+			if (this.cursor != null) {
+				return true;
+			}
+			return false;
+		}
+
+		@Override
 		public T getDado() {
 			return this.cursor.dado;
+		}
+
+		@Override
+		public void adicionaDepois(T noAdicionado) {
+			throw new RuntimeException("Estruturas em fila não suporta adição por iterador");
+			// TODO [PROFESSOR] estas utilizações de exeção estam corretas ?
+		}
+
+		@Override
+		public void adicionaAntes(T noAdicionado) {
+			throw new RuntimeException("Estruturas em fila não suporta adição por iterador");
+
+		}
+
+		@Override
+		public void remove() {
+			throw new RuntimeException("Estruturas em fila não suporta remoção por iterador");
 		}
 	}
 
 	public Iterator<T> inicio() {
 		return new IteradorFila(this.inicio);
+	}
+
+	public Iterator<T> fim() {
+		return new IteradorFila(this.fim);
 	}
 
 	private int tamanho;
@@ -78,6 +118,9 @@ public class Fila<T> {
 	}
 
 	public void adiciona(T adicionado) {
+
+		if (adicionado == null)
+			throw new NullPointerException();
 
 		No noAdicionado = new No(adicionado);
 
@@ -99,8 +142,8 @@ public class Fila<T> {
 		No noRemovido;
 
 		if (this.tamanho == 0)// não há elementos para remover
-			return null;
-		// TODO trow algum erro de que não exite nenhum para remover
+			throw new RuntimeException("Fila está vazia! Não há elementos para remover");
+		// TODO [PROFESSOR] esta utilização de exeção esta correta ?
 
 		if (this.fim == this.inicio) {// tem apenas um elemento ou null
 			noRemovido = this.fim;
@@ -117,10 +160,20 @@ public class Fila<T> {
 	}
 
 	public T consultaProximoElemento() {
-		return this.inicio.dado;
+
+		if (this.inicio == null) {// Não há elementos na lista
+			throw new NullPointerException("Lista vazia, não há elementos para retornar");
+
+		} else {// há, ao menos, um elemento na lista
+			return this.inicio.dado;
+		}
 	}
 
 	public boolean contem(T Object) {
+		
+		if(Object == null){
+			throw new NullPointerException();
+		}
 
 		No cursor = this.fim;
 
@@ -163,6 +216,7 @@ public class Fila<T> {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean equals(Object obj) {
 
 		if (obj == null)
@@ -173,7 +227,7 @@ public class Fila<T> {
 			return true;
 
 		No cursor = this.inicio;
-		Iterator<T> it = this.inicio();
+		Iterator<T> it = ((Fila<T>) obj).inicio();
 
 		while (it.temProximo()) {
 			if (!(cursor.dado.equals(it.getDado()))) {
