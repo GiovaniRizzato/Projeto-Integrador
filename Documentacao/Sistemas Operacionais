@@ -1,1 +1,28 @@
+#1 - Estrutura do processo
+O processo é divido em 3 sub-classes encapsuladas principais: Contexto de software, que contem toda a parte de gerenciamento de informações sobre o estado atual do processo como prioridade, intrução atual no programa e pid. Outra classe seria o contexto de memoria, onde gurda informações sobre  dados que, no caso real, estariam na memoria do computador como sequancia de codigo, no codigo esta com nome de programa) e quantidade de memoria usada.
 
+#2 - Estados do processo
+Atravéz dos filtros da lista
+
+#3 - Mudança de estado do processo
+É feita depois de cada ciclo de execulção, todos os processos voltam para a lista principal de processos, assim que tem outro ciclo de execulção é filtrado para outra fila que representa outro estado.
+
+#4 - Criação e eliminação de processos
+Para criação foi feita uma rotina que cria um processo em um ponteiro fixo e o coloca na lista de processos principais.
+
+Para finalização, o programa sobre escreve a intrução atual do programa por uma intrução de "fim", que ao proximo estagio de execulção que ele tiver chance de fazer, irá ser feito a coleta dos dados estatisticos e eliminação processo da memoria.
+
+#5 - Processos CPU-bound e I/O-bound
+Não há nenhum implementação quanto a otimização ou reconhecimento deles.
+
+#6 - Processos Fowrodground e Background
+Não Implementado, uma vez que todos os processos, mesmo que backgorund, tem o mesmo impacto no escalonador de processo.
+
+#7 - Formas de criação de processos
+Para criação foi feita uma rotina que cria um processo em um ponteiro fixo e o coloca na lista de processos principais.
+
+#8 - Processos independentes, sub-processos e threds
+Nada foi implementado neste sentido.
+
+#9 - Processos do sistema operacional
+Nada foi implementado neste sentido.
