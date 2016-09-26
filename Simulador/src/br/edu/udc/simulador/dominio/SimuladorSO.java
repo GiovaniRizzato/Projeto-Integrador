@@ -3,30 +3,21 @@ package br.edu.udc.simulador.dominio;
 import br.edu.udc.simulador.dominio.Processo.prioridade;
 import br.edu.udc.simulador.dominio.ed.Fila;
 import br.edu.udc.simulador.dominio.ed.Iterator;
+import br.edu.udc.simulador.dominio.ed.Lista;
 import br.edu.udc.simulador.dominio.ed.Vetor;
 
 public class SimuladorSO {
 
 	private Processo processado;
-	
-	//TODO trocar para listas filtradas
-	//o conceito de lista filtrada e que existe apenas uma LISTA de processos
-	//prioridades são feitas a partir de funções que romovem da lista principal
 
-	private Fila<Processo> filaProntoAlta = new Fila<>();
-	private Fila<Processo> filaProntoMedia = new Fila<>();
-	private Fila<Processo> filaProntoBaixa = new Fila<>();
-
-	private Fila<Processo> filaEsperaES1 = new Fila<>();
-	private Fila<Processo> filaEsperaES2 = new Fila<>();
-	private Fila<Processo> filaEsperaES3 = new Fila<>();
+	private Lista<Processo> listaPrincipal = new Lista<>();
 
 	private Processo estadoCriacao;
 	private Processo estadoFinalizacao;
 	// TODO Marcar processo para ser finalizado
 
 	private Vetor<Processo> listaPausado = new Vetor<>();
-	// TODO Fazer metodo para pausar e resumir processo
+	// TODO utilizando rash table
 
 	// USAR TO-ARRAY PARA ENCONTRAR OS PROCESSOS DENTRO DAS FILAS
 
@@ -44,7 +35,7 @@ public class SimuladorSO {
 		public Vetor<Integer> tempoDeEsperaES3 = new Vetor<>();
 	}
 
-	EstatisticaSO estatisticaSO = new EstatisticaSO();
+	private EstatisticaSO estatisticaSO = new EstatisticaSO();
 
 	public SimuladorSO(int clockCPU, int clockES1, int clockES2, int clockES3) {
 		hardware = new Hardware(clockCPU, clockES1, clockES2, clockES3);
@@ -54,88 +45,22 @@ public class SimuladorSO {
 	private int proximoPidDisponivel = 0;
 
 	public int qtdProcessosAtivos() {
-		return this.filaProntoAlta.tamanho() + this.filaProntoMedia.tamanho() + this.filaProntoBaixa.tamanho()
-				+ this.filaEsperaES1.tamanho() + this.filaEsperaES2.tamanho() + this.filaEsperaES3.tamanho();
+		return this.listaPrincipal.tamanho();
 	}
 
 	public Processo[] listaTodos() {
 
-		Processo[] listaDeTodosProcessos = new Processo[qtdProcessosAtivos()];
-		int posicaoAtualArray = 0;
-		Iterator<Processo> it;
-
-		// TODO utilizar a função "toArray()" das filas
-
-		//listaDeTodosProcessos = filaProntoAlta.toArray();
-
-		// TODO [PROFESSOR] Exeite algum metodo que faz isso?
-		// (que eu não precise implementa-las)
-		// listaDeTodosProcessos = listaDeTodosProcessos.concatea(filaProntoMedia.toArray());
-
-		it = this.filaProntoAlta.inicio();
-		while (it.temProximo()) {
-			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
-			posicaoAtualArray++;
-			it.proximo();
-		}
-
-		it = this.filaProntoMedia.inicio();
-		while (it.temProximo()) {
-			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
-			posicaoAtualArray++;
-			it.proximo();
-		}
-
-		it = this.filaProntoBaixa.inicio();
-		while (it.temProximo()) {
-			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
-			posicaoAtualArray++;
-			it.proximo();
-		}
-
-		it = this.filaEsperaES1.inicio();
-		while (it.temProximo()) {
-			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
-			posicaoAtualArray++;
-			it.proximo();
-		}
-
-		it = this.filaEsperaES2.inicio();
-		while (it.temProximo()) {
-			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
-			posicaoAtualArray++;
-			it.proximo();
-		}
-
-		it = this.filaEsperaES3.inicio();
-		while (it.temProximo()) {
-			listaDeTodosProcessos[posicaoAtualArray] = it.getDado();
-			posicaoAtualArray++;
-			it.proximo();
-		}
-
-		return listaDeTodosProcessos;
+		return this.listaPrincipal.toArray();
 	}
 
 	public void criaNovoProcesso(prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
 			int qtdES3) {
 
-		estadoCriacao = new Processo(proximoPidDisponivel, prioridade, qtdMemoria, qtdCPU, qtdES1, qtdES2, qtdES3);
+		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, qtdMemoria, qtdCPU, qtdES1, qtdES2,
+				qtdES3);
 
-		switch (estadoCriacao.getPrioridade()) {
-		case ALTA: {
-			filaProntoAlta.adiciona(estadoCriacao);
-			break;
-		}
-		case MEDIA: {
-			filaProntoMedia.adiciona(estadoCriacao);
-			break;
-		}
-		case BAIXA: {
-			filaProntoBaixa.adiciona(estadoCriacao);
-			break;
-		}
-		}
+		this.listaPrincipal.adiciona(this.estadoCriacao);
+		this.estadoCriacao = null;
 
 		this.proximoPidDisponivel++;
 	}
@@ -169,6 +94,16 @@ public class SimuladorSO {
 		final double porcentagemMedia = 0.3;
 		final double porcentagemBaixa = 0.1;
 
+		// CPU
+		Fila<Processo> filaProntoAlta = this.filtroAlta();
+		Fila<Processo> filaProntoMedia = this.filtroMedia();
+		Fila<Processo> filaProntoBaixa = this.filtroBaixa();
+
+		// I-O
+		Fila<Processo> filaEsperaES1 = this.filtroES1();
+		Fila<Processo> filaEsperaES2 = this.filtroES2();
+		Fila<Processo> filaEsperaES3 = this.filtroES3();
+
 		int clockSobrado = processaFila(filaProntoAlta, Processo.instrucaoCPU,
 				(this.hardware.getClockCPU() * porcentagemAlta));
 
@@ -181,6 +116,36 @@ public class SimuladorSO {
 		processaFila(filaEsperaES1, Processo.instrucaoES1, this.hardware.getAllClocksES()[0]);
 		processaFila(filaEsperaES2, Processo.instrucaoES2, this.hardware.getAllClocksES()[1]);
 		processaFila(filaEsperaES3, Processo.instrucaoES3, this.hardware.getAllClocksES()[2]);
+	}
+
+	private Fila<Processo> filtroES3() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Fila<Processo> filtroES2() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Fila<Processo> filtroES1() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Fila<Processo> filtroBaixa() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Fila<Processo> filtroMedia() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Fila<Processo> filtroAlta() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private int processaFila(Fila<Processo> fila, int tipoDeIntrucao, double clocksDestaFila) {
@@ -202,55 +167,27 @@ public class SimuladorSO {
 				// "processamento"
 				fila.remover();
 
-				clockNaoUsadosNestaOperacao = this.hardware.usarHardware(clockIndividual, tipoDeIntrucao, processado);
+				clockNaoUsadosNestaOperacao = this.hardware.usarHardware(clockIndividual, tipoDeIntrucao,
+						this.processado);
 				// faz o processamento
 
-				switch (processado.intrucaoAtual()) {
-				// coloca o processo na respectiva fila de processamento para o
-				// momento
+				if (this.processado.intrucaoAtual() == tipoDeIntrucao) {
+					// se mesmo depois do processamento pertencer a esta
+					// fila(permance neste estado)
+					fila.adiciona(this.processado);
 
-				case Processo.instrucaoCPU: {
-					switch (this.processado.getPrioridade()) {
-					case ALTA: {
-						filaProntoAlta.adiciona(processado);
-						break;
+				} else {
+					if (this.processado.intrucaoAtual() != Processo.instrucaoFIM) {
+						// agora passa a ser parte de outra fila(outro estado)
+						this.listaPrincipal.adiciona(this.processado);
+
+					} else {
+						// fim do programa, irá ser finalizado
+						this.estadoFinalizacao = this.processado;
+						this.processado = null;
+						this.matarProcesso();
 					}
-
-					case MEDIA: {
-						filaProntoMedia.adiciona(processado);
-						break;
-					}
-
-					case BAIXA: {
-						filaProntoBaixa.adiciona(processado);
-						break;
-					}
-					}
-
-					break;
 				}
-
-				case Processo.instrucaoES1: {
-					this.filaEsperaES1.adiciona(processado);
-					break;
-				}
-
-				case Processo.instrucaoES2: {
-					this.filaEsperaES2.adiciona(processado);
-					break;
-				}
-
-				case Processo.instrucaoES3: {
-					this.filaEsperaES3.adiciona(processado);
-					break;
-				}
-
-				case Processo.instrucaoFIM: {
-					this.estadoFinalizacao = this.processado;
-					this.matarProcesso();
-					break;
-				}
-				}// END SWITCH
 
 				this.processado = null;
 				clockRestante += clockNaoUsadosNestaOperacao;
@@ -262,13 +199,12 @@ public class SimuladorSO {
 	}
 
 	public void pausarProcesso(int pid) {
-		if(this.contem(pid)){
-			
-		}
+		// TODO pausar processo
 	}
 
 	private boolean contem(int pid) {
 		return false;
-		//TODO terminar de fazer se o elemento com pid "pid" está no sistema
+		// TODO terminar de fazer se o elemento com pid "pid" está no sistema
+		//tanto como ativo, e pausado
 	}
 }

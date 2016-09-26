@@ -158,6 +158,10 @@ public class Lista<T> {
 		this.inicio = this.fim = null;
 		this.tamanho = 0;
 	}
+	
+	public int tamanho(){
+		return this.tamanho;
+	}
 
 	public void adiciona(T elementoAdicionado, int posicao) {
 
@@ -300,5 +304,10 @@ public class Lista<T> {
 		}
 
 		return true;
+	}
+
+	public T[] toArray() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
