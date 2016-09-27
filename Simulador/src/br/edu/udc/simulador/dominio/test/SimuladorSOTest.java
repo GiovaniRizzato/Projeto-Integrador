@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import br.edu.udc.simulador.dominio.Processo;
 import br.edu.udc.simulador.dominio.SimuladorSO;
+import br.edu.udc.simulador.dominio.processo.Processo;
 
 public class SimuladorSOTest {
 
@@ -22,6 +22,7 @@ public class SimuladorSOTest {
 		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 10, 0, 30, 0);// ES2
 		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 10, 0, 0, 30);// ES3
 		simulador.criaNovoProcesso(Processo.prioridade.BAIXA, 40, 20, 10, 10, 0);// BALANCEADO
+		
 		Processo[] processosSO = simulador.listaTodos();
 		
 		assertEquals("Deve ter 5 processos neste momento", 5, simulador.qtdProcessosAtivos());

@@ -1,5 +1,7 @@
 package br.edu.udc.simulador.dominio;
 
+import br.edu.udc.simulador.dominio.processo.Processo;
+
 public class Hardware {
 
 	private int clockCPU;

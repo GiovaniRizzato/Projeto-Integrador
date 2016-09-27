@@ -1,10 +1,13 @@
 package br.edu.udc.simulador.dominio;
 
-import br.edu.udc.simulador.dominio.Processo.prioridade;
-import br.edu.udc.simulador.dominio.ed.Fila;
-import br.edu.udc.simulador.dominio.ed.Iterator;
-import br.edu.udc.simulador.dominio.ed.Lista;
-import br.edu.udc.simulador.dominio.ed.Vetor;
+import br.edu.udc.simulador.dominio.processo.Processo;
+import br.edu.udc.simulador.dominio.processo.Processo.prioridade;
+
+import br.edu.udc.simulador.dominio.ed.Fila;//Produto dos filtros
+import br.edu.udc.simulador.dominio.ed.Iterator;//Produção dos filtros
+import br.edu.udc.simulador.dominio.ed.Lista;//Armazenamento principal dos processos
+import br.edu.udc.simulador.dominio.ed.TabelaEspalhameto;//Processos pausados
+import br.edu.udc.simulador.dominio.ed.Vetor;//Dados estatisticos
 
 public class SimuladorSO {
 
@@ -16,14 +19,12 @@ public class SimuladorSO {
 	private Processo estadoFinalizacao;
 	// TODO Marcar processo para ser finalizado
 
-	private Vetor<Processo> listaPausado = new Vetor<>();
-	// TODO utilizando rash table
-
-	// USAR TO-ARRAY PARA ENCONTRAR OS PROCESSOS DENTRO DAS FILAS
+	private TabelaEspalhameto<Processo> listaPausado = new TabelaEspalhameto<>();
 
 	private Hardware hardware;
 
-	public class EstatisticaSO {
+	// Podem ser declaradas por outras classes para "tirar" as estatisiticas
+	public static class EstatisticaSO {
 		public Vetor<Integer> qtdMemoria = new Vetor<>();
 		public Vetor<Integer> tempoDeCPU = new Vetor<>();
 		public Vetor<Integer> tempoDePronto = new Vetor<>();
@@ -49,11 +50,10 @@ public class SimuladorSO {
 	}
 
 	public Processo[] listaTodos() {
-
 		return this.listaPrincipal.toArray();
 	}
 
-	public void criaNovoProcesso(prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
+	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
 			int qtdES3) {
 
 		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, qtdMemoria, qtdCPU, qtdES1, qtdES2,
@@ -94,15 +94,17 @@ public class SimuladorSO {
 		final double porcentagemMedia = 0.3;
 		final double porcentagemBaixa = 0.1;
 
-		// CPU
-		Fila<Processo> filaProntoAlta = this.filtroAlta();
-		Fila<Processo> filaProntoMedia = this.filtroMedia();
-		Fila<Processo> filaProntoBaixa = this.filtroBaixa();
+		// I-O - (necessario ir primeiro pois o filtro de prioridades assume que
+		// todos os processos de I/O foram retirados e não trata tal condição
+		// ,ou seja, filtro de prioridade verifica APENAS a prioridade
+		Fila<Processo> filaEsperaES1 = this.filtroIntrucaoAtual(Processo.instrucaoES1);
+		Fila<Processo> filaEsperaES2 = this.filtroIntrucaoAtual(Processo.instrucaoES2);
+		Fila<Processo> filaEsperaES3 = this.filtroIntrucaoAtual(Processo.instrucaoES3);
 
-		// I-O
-		Fila<Processo> filaEsperaES1 = this.filtroES1();
-		Fila<Processo> filaEsperaES2 = this.filtroES2();
-		Fila<Processo> filaEsperaES3 = this.filtroES3();
+		// PRIORIDADE
+		Fila<Processo> filaProntoAlta = this.filtroPrioridade(Processo.prioridade.ALTA);
+		Fila<Processo> filaProntoMedia = this.filtroPrioridade(Processo.prioridade.MEDIA);
+		Fila<Processo> filaProntoBaixa = this.filtroPrioridade(Processo.prioridade.BAIXA);
 
 		int clockSobrado = processaFila(filaProntoAlta, Processo.instrucaoCPU,
 				(this.hardware.getClockCPU() * porcentagemAlta));
@@ -118,34 +120,36 @@ public class SimuladorSO {
 		processaFila(filaEsperaES3, Processo.instrucaoES3, this.hardware.getAllClocksES()[2]);
 	}
 
-	private Fila<Processo> filtroES3() {
-		// TODO Auto-generated method stub
-		return null;
+	@SuppressWarnings("rawtypes")
+	private Fila<Processo> filtroIntrucaoAtual(int intrucaoAtual) {
+		Fila<Processo> fila = new Fila<>();
+
+		for (Iterator it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+			Processo atual = ((Processo) it.getDado());
+			if (atual.intrucaoAtual() == intrucaoAtual) {
+
+				fila.adiciona(atual);// adiciona a fila, para manter contato
+				it.remove();// remove o elemento da lista
+			}
+		}
+
+		return fila;
 	}
 
-	private Fila<Processo> filtroES2() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	@SuppressWarnings("rawtypes")
+	private Fila<Processo> filtroPrioridade(Processo.prioridade prioridade) {
+		Fila<Processo> fila = new Fila<>();
 
-	private Fila<Processo> filtroES1() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		for (Iterator it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+			Processo atual = ((Processo) it.getDado());
 
-	private Fila<Processo> filtroBaixa() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+			if (atual.getPrioridade() == prioridade) {
+				fila.adiciona(atual);// adiciona a fila, para manter contato
+				it.remove();// remove o elemento da lista
+			}
+		}
 
-	private Fila<Processo> filtroMedia() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private Fila<Processo> filtroAlta() {
-		// TODO Auto-generated method stub
-		return null;
+		return fila;
 	}
 
 	private int processaFila(Fila<Processo> fila, int tipoDeIntrucao, double clocksDestaFila) {
@@ -205,6 +209,6 @@ public class SimuladorSO {
 	private boolean contem(int pid) {
 		return false;
 		// TODO terminar de fazer se o elemento com pid "pid" está no sistema
-		//tanto como ativo, e pausado
+		// tanto como ativo, e pausado
 	}
 }

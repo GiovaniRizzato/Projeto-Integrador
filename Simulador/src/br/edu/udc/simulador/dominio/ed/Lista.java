@@ -1,5 +1,7 @@
 package br.edu.udc.simulador.dominio.ed;
 
+import br.edu.udc.simulador.dominio.processo.Processo;
+
 public class Lista<T> {
 
 	private class No {
@@ -158,8 +160,8 @@ public class Lista<T> {
 		this.inicio = this.fim = null;
 		this.tamanho = 0;
 	}
-	
-	public int tamanho(){
+
+	public int tamanho() {
 		return this.tamanho;
 	}
 
@@ -203,23 +205,27 @@ public class Lista<T> {
 	}
 
 	public void adiciona(T elementoAdicionado) {
-		No noAdicionado;
 
-		if (elementoAdicionado == null)
-			throw new NullPointerException();
+		// adiciona no fim da lista
+		this.adiciona(elementoAdicionado, this.tamanho + 1);
+	}
 
-		if (inicio == null) {// lista vazia
-			noAdicionado = new No(elementoAdicionado);
-			inicio = fim = noAdicionado;
+	public int adiciona(T[] grupoElementos) {
 
-		} else {
-			noAdicionado = new No(null, fim, elementoAdicionado);
-			fim.proximo = noAdicionado;
-			fim = noAdicionado;
+		int numeroElementosAdicionados = 0;
 
+		try {
+			for (int i = 0; i < this.tamanho; i++) {
+
+				this.adiciona(grupoElementos[i]);
+				numeroElementosAdicionados++;
+			}
+
+		} catch (NullPointerException e) {
+			numeroElementosAdicionados--;
 		}
 
-		this.tamanho++;
+		return numeroElementosAdicionados;
 	}
 
 	public void remove(int posicao) {
@@ -306,8 +312,17 @@ public class Lista<T> {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public T[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+
+		T array[] = (T[]) new Object[this.tamanho];
+
+		No cursor = this.inicio;
+		for (int i = 0; i < this.tamanho; i++) {
+			array[i] = cursor.dado;
+			cursor = cursor.proximo;
+		}
+
+		return array;
 	}
 }

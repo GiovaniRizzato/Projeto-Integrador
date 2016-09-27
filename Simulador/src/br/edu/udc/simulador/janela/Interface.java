@@ -2,7 +2,7 @@ package br.edu.udc.simulador.janela;
 
 import java.util.Scanner;
 import br.edu.udc.simulador.dominio.*;
-import br.edu.udc.simulador.dominio.Processo.prioridade;
+import br.edu.udc.simulador.dominio.processo.Processo.prioridade;
 
 public class Interface {
 
