@@ -121,16 +121,6 @@ public class Vetor<T> {
 
 	public void organizaCrascente() {
 
-		// Faz a verificação se o vetor é de algum tipo numérico,
-		// fazendo-se possivel a ordenação
-
-		// TODO [PROFESSOR] Que exeção coloco neste caso?
-		/**
-		 * if (vetor[0].getClass() != Number.class) { throw new
-		 * InvalidClassException("Operação pode apenas ser feita com tipos
-		 * numéricos"); }
-		 */
-
 		for (int i = 0; i < this.tamanho; i++) {
 
 			int posicaoTroca = i;
@@ -138,7 +128,7 @@ public class Vetor<T> {
 				// procura desde elemento para frente, pois, os anteriores já
 				// foram processador e são menores.
 
-				if ((int) vetor[posicaoTroca] > (int) vetor[j]) {
+				if (vetor[posicaoTroca].hashCode() > vetor[j].hashCode()) {
 					// procura a posicao de um elemento menor da lista de i~"fim
 					// do vetor"
 					posicaoTroca = j;
@@ -152,8 +142,8 @@ public class Vetor<T> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;

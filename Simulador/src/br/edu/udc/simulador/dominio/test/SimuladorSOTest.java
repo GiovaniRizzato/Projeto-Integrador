@@ -18,10 +18,12 @@ public class SimuladorSOTest {
 		assertEquals("Não deve ter nenhum processo ativo", 0, simulador.qtdProcessosAtivos());
 		
 		simulador.criaNovoProcesso(Processo.prioridade.ALTA, 40, 40, 0, 0, 0);// CPU
-		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 10, 30, 0, 0);// ES1
-		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 10, 0, 30, 0);// ES2
-		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 10, 0, 0, 30);// ES3
-		simulador.criaNovoProcesso(Processo.prioridade.BAIXA, 40, 20, 10, 10, 0);// BALANCEADO
+		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 0, 30, 0, 0);// ES1
+		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 0, 0, 30, 0);// ES2
+		simulador.criaNovoProcesso(Processo.prioridade.MEDIA, 40, 0, 0, 0, 30);// ES3
+		simulador.criaNovoProcesso(Processo.prioridade.BAIXA, 40, 0, 10, 10, 0);// BALANCEADO
+		
+		simulador.processaFilas();
 		
 		Processo[] processosSO = simulador.listaTodos();
 		

@@ -15,12 +15,12 @@ public class EstatisticaTest {
 		dadosBrutos.adiciona(10);
 		dadosBrutos.adiciona(5);
 		dadosBrutos.adiciona(5);
-		dadosBrutos.adiciona(5);
+		dadosBrutos.adiciona(3);
 	}
 	
 	@Test
 	public void media() {
-		assertEquals("Media esta errada", (double) (25/4), Estatistica.media(dadosBrutos), 2);
+		assertEquals("Media esta errada", (double) (23/4), Estatistica.media(dadosBrutos), 2);
 	}
 	
 	@Test

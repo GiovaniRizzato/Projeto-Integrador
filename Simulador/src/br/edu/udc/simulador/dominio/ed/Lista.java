@@ -1,7 +1,5 @@
 package br.edu.udc.simulador.dominio.ed;
 
-import br.edu.udc.simulador.dominio.processo.Processo;
-
 public class Lista<T> {
 
 	private class No {
@@ -22,7 +20,7 @@ public class Lista<T> {
 		}
 	}
 
-	private class IteratorLista implements Iterator<T> {
+	private class IteratorLista implements IteradorManipulador<T> {
 
 		private No cursor;
 
@@ -32,7 +30,12 @@ public class Lista<T> {
 
 		@Override
 		public void anterior() {
-			this.cursor = this.cursor.anterior;
+			if (cursor != null) {
+				this.cursor = this.cursor.anterior;
+			} else {
+				throw new IndexOutOfBoundsException("Não existe anterior para ser iterado");
+				// TODO procurar uma exeção melhor para este caso
+			}
 		}
 
 		@Override
@@ -71,13 +74,18 @@ public class Lista<T> {
 
 			if (this.cursor == null) {// lista vazia
 				noAdicionado = new No(elementoAdicionado);
-				inicio = fim = noAdicionado;
+				this.cursor = inicio = fim = noAdicionado;
 
 			} else {// já existem elementos na lista
+
 				noAdicionado = new No(this.cursor.proximo, this.cursor, elementoAdicionado);
 
 				if (this.cursor.proximo != null) {
 					this.cursor.proximo.anterior = noAdicionado;
+				} else {
+					// this.cursor esta no fim da lista, ou seja, foi criado um
+					// No que deveria esta no fim, mas sem a referencia de fim
+					fim = this.cursor.proximo;// elemento recem criado
 				}
 
 				this.cursor.proximo = noAdicionado;
@@ -95,13 +103,17 @@ public class Lista<T> {
 
 			if (this.cursor == null) {// lista vazia
 				noAdicionado = new No(elementoAdicionado);
-				inicio = fim = noAdicionado;
+				this.cursor = inicio = fim = noAdicionado;
 
 			} else {// já existem elementos na lista
+
 				noAdicionado = new No(this.cursor, this.cursor.anterior, elementoAdicionado);
 
 				if (this.cursor.anterior != null) {
 					this.cursor.anterior.proximo = noAdicionado;
+				} else {
+					// this.cursor esta no inicio da lista
+					inicio = this.cursor.anterior;// elemento recem criado
 				}
 
 				this.cursor.anterior = noAdicionado;
@@ -116,13 +128,20 @@ public class Lista<T> {
 				throw new RuntimeException("Fila está vazia! Não há elementos para remover");
 
 			} else if (inicio == fim) {// existe apenas um elemento na lista
-				inicio = fim = null;
+				inicio = fim = this.cursor = null;
 
 			} else {// existe mais de um elemento na lista
 				No noRemovido = this.cursor;
-				this.cursor = this.cursor.proximo;
-				// posiciona o cursor em outro elemento para que
+
+				// Posiciona o cursor em outro elemento para que
 				// noRemovido seja deletado
+				if (noRemovido.proximo != null) {
+					this.cursor = this.cursor.proximo;
+				} else {
+					this.cursor = this.cursor.anterior;
+				}
+				// Se ele for o unico elemento da lista, o cursor irá reeber
+				// anterior que é null, previsto pela ideia do Iterador
 
 				if (noRemovido.proximo != null) {
 					noRemovido.proximo.anterior = noRemovido.anterior;
@@ -143,11 +162,11 @@ public class Lista<T> {
 
 	}
 
-	public Iterator<T> inicio() {
+	public IteradorManipulador<T> inicio() {
 		return new IteratorLista(this.inicio);
 	}
 
-	public Iterator<T> fim() {
+	public IteradorManipulador<T> fim() {
 		return new IteratorLista(this.fim);
 	}
 
@@ -214,15 +233,16 @@ public class Lista<T> {
 
 		int numeroElementosAdicionados = 0;
 
-		try {
-			for (int i = 0; i < this.tamanho; i++) {
+		for (int i = 0; i < grupoElementos.length; i++) {
 
+			try {
 				this.adiciona(grupoElementos[i]);
-				numeroElementosAdicionados++;
+
+			} catch (NullPointerException e) {
+				numeroElementosAdicionados--;
 			}
 
-		} catch (NullPointerException e) {
-			numeroElementosAdicionados--;
+			numeroElementosAdicionados++;
 		}
 
 		return numeroElementosAdicionados;
@@ -310,19 +330,5 @@ public class Lista<T> {
 		}
 
 		return true;
-	}
-
-	@SuppressWarnings("unchecked")
-	public T[] toArray() {
-
-		T array[] = (T[]) new Object[this.tamanho];
-
-		No cursor = this.inicio;
-		for (int i = 0; i < this.tamanho; i++) {
-			array[i] = cursor.dado;
-			cursor = cursor.proximo;
-		}
-
-		return array;
 	}
 }

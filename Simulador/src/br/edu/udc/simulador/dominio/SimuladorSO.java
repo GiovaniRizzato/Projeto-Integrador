@@ -1,9 +1,9 @@
 package br.edu.udc.simulador.dominio;
 
 import br.edu.udc.simulador.dominio.processo.Processo;
-import br.edu.udc.simulador.dominio.processo.Processo.prioridade;
 
 import br.edu.udc.simulador.dominio.ed.Fila;//Produto dos filtros
+import br.edu.udc.simulador.dominio.ed.IteradorManipulador;
 import br.edu.udc.simulador.dominio.ed.Iterator;//Produção dos filtros
 import br.edu.udc.simulador.dominio.ed.Lista;//Armazenamento principal dos processos
 import br.edu.udc.simulador.dominio.ed.TabelaEspalhameto;//Processos pausados
@@ -17,7 +17,6 @@ public class SimuladorSO {
 
 	private Processo estadoCriacao;
 	private Processo estadoFinalizacao;
-	// TODO Marcar processo para ser finalizado
 
 	private TabelaEspalhameto<Processo> listaPausado = new TabelaEspalhameto<>();
 
@@ -50,7 +49,16 @@ public class SimuladorSO {
 	}
 
 	public Processo[] listaTodos() {
-		return this.listaPrincipal.toArray();
+
+		Processo[] processos = new Processo[this.listaPrincipal.tamanho()];
+		IteradorManipulador<Processo> it = this.listaPrincipal.inicio();
+
+		for (int i = 0; i < this.listaPrincipal.tamanho(); i++) {
+			processos[i] = it.getDado();
+			it.proximo();
+		}
+		
+		return processos;
 	}
 
 	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
@@ -65,7 +73,18 @@ public class SimuladorSO {
 		this.proximoPidDisponivel++;
 	}
 
-	public void matarProcesso() {
+	public void sinalFinalizacao(int pid) {
+
+		for (Iterator<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+			if (it.getDado().getPID() == pid) {
+				it.getDado().sinalFinalizacao();
+			}
+		}
+
+		throw new IllegalArgumentException("Pid não encontrado nos registros");
+	}
+
+	private void matarProcesso() {
 
 		Processo.DadosEstatisticos estatistica;
 		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
@@ -118,13 +137,15 @@ public class SimuladorSO {
 		processaFila(filaEsperaES1, Processo.instrucaoES1, this.hardware.getAllClocksES()[0]);
 		processaFila(filaEsperaES2, Processo.instrucaoES2, this.hardware.getAllClocksES()[1]);
 		processaFila(filaEsperaES3, Processo.instrucaoES3, this.hardware.getAllClocksES()[2]);
+		
+		// TODO Após ter feito todo o processamento, readiciona os elementos na
+		// lista principal
 	}
 
-	@SuppressWarnings("rawtypes")
 	private Fila<Processo> filtroIntrucaoAtual(int intrucaoAtual) {
 		Fila<Processo> fila = new Fila<>();
 
-		for (Iterator it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+		for (IteradorManipulador<Processo> it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
 			Processo atual = ((Processo) it.getDado());
 			if (atual.intrucaoAtual() == intrucaoAtual) {
 
@@ -136,11 +157,10 @@ public class SimuladorSO {
 		return fila;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private Fila<Processo> filtroPrioridade(Processo.prioridade prioridade) {
 		Fila<Processo> fila = new Fila<>();
 
-		for (Iterator it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+		for (IteradorManipulador<Processo> it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
 			Processo atual = ((Processo) it.getDado());
 
 			if (atual.getPrioridade() == prioridade) {

@@ -11,8 +11,8 @@ public class Processo {
 		public int tempoTotalEmSegundos = 0;
 		public int CPU = 0;
 		public int pronto = 0;
-		public int[] ES = {0, 0, 0};
-		public int[] esperaES = {0, 0, 0};
+		public int[] ES = { 0, 0, 0 };
+		public int[] esperaES = { 0, 0, 0 };
 	}
 
 	public final static int instrucaoCPU = 0;
@@ -27,7 +27,7 @@ public class Processo {
 	public Processo(int pid, prioridade prioridade, int qtdeMem, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 		this.contextoSoftware = new ContextoSoftware(pid, prioridade);
 		this.contextoMemoria = new ContextoMemoria(qtdeMem, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-		
+
 		this.contextoSoftware.dadosEstatisticos.qtdMemoria = qtdeMem;
 	}
 
@@ -69,7 +69,7 @@ public class Processo {
 		return this.contextoSoftware.prioridade;
 	}
 
-	public void mataProcesso() {
+	public void sinalFinalizacao() {
 		this.contextoMemoria.programa.sobrepoemPosicao(instrucaoFIM, this.contextoSoftware.instrucaoAtual);
 	}
 
@@ -80,9 +80,9 @@ public class Processo {
 	public int getPID() {
 		return this.contextoSoftware.pid;
 	}
-	
+
 	@Override
-	public int hashCode(){
+	public int hashCode() {
 		return this.contextoSoftware.pid;
 	}
 

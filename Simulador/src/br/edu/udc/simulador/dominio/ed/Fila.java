@@ -82,23 +82,6 @@ public class Fila<T> {
 		public T getDado() {
 			return this.cursor.dado;
 		}
-
-		@Override
-		public void adicionaDepois(T noAdicionado) {
-			throw new RuntimeException("Estruturas em fila não suporta adição por iterador");
-			// TODO [PROFESSOR] estas utilizações de exeção estam corretas ?
-		}
-
-		@Override
-		public void adicionaAntes(T noAdicionado) {
-			throw new RuntimeException("Estruturas em fila não suporta adição por iterador");
-
-		}
-
-		@Override
-		public void remove() {
-			throw new RuntimeException("Estruturas em fila não suporta remoção por iterador");
-		}
 	}
 
 	public Iterator<T> inicio() {
@@ -185,20 +168,6 @@ public class Fila<T> {
 		}
 
 		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	public T[] toArray() {
-
-		T array[] = (T[]) new Object[this.tamanho];
-
-		No cursor = this.inicio;
-		for (int i = 0; i < this.tamanho; i++) {
-			array[i] = cursor.dado;
-			cursor = cursor.anterior;
-		}
-
-		return array;
 	}
 
 	@Override

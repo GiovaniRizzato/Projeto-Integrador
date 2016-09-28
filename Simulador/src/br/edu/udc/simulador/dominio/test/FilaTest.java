@@ -116,31 +116,6 @@ public class FilaTest {
 		fail("Procurando null na fila, deve disparar o NullPointer");
 	}
 
-	// TO ARRAY
-	@Test
-	public void toArray_CasoFeliz() {
-
-		Fila<Integer> fila = new Fila<>();
-		Number[] arrayTest = new Integer[5];
-
-		for (int i = 0; i < 5; i++) {
-			arrayTest[i] = i;
-			fila.adiciona(i);
-		}
-
-		assertEquals("Tamanhos são diferentes", fila.tamanho(), arrayTest.length);
-		assertArrayEquals("Arrays deveriam ser iguais", fila.toArray(), arrayTest);
-	}
-
-	@Test
-	public void toArray_FilaVazia() {
-		Fila<Integer> fila = new Fila<>();
-		Number[] arrayTest = {};
-
-		assertEquals("Tamanhos são diferentes", fila.tamanho(), arrayTest.length);
-		assertArrayEquals("Arrays deveriam ser iguais", fila.toArray(), arrayTest);
-	}
-
 	// CLONE - Garantia de que o método @Override funciona perfeitamente
 	@Test
 	@SuppressWarnings("unchecked")
@@ -151,7 +126,6 @@ public class FilaTest {
 		for (int i = 0; i < 15; i++) {
 			filaPrimeira.adiciona(i);
 		}
-		Integer[] arrayPrimeiro = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
 
 		Fila<Integer> filaSegunda = (Fila<Integer>) filaPrimeira.clone();
 
@@ -163,12 +137,8 @@ public class FilaTest {
 		filaSegunda.remover();
 		filaSegunda.remover();
 
-		Integer[] arraySegundo = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
-
 		assertEquals("Tamanho do primeiro deve se manter 15", 15, filaPrimeira.tamanho());
 		assertEquals("Tamanho do segundo deve ter diminuido para 13", 13, filaSegunda.tamanho());
-		assertArrayEquals("Comparação por valores (1)", arrayPrimeiro, filaPrimeira.toArray());
-		assertArrayEquals("Comparação por valores (2)", arraySegundo, filaSegunda.toArray());
 		assertNotEquals("Não podem estar iguais neste momento", filaSegunda, filaPrimeira);
 	}
 
@@ -178,12 +148,8 @@ public class FilaTest {
 		Fila<Integer> filaPrimeira = new Fila<>();
 		Fila<Integer> filaSegunda = (Fila<Integer>) filaPrimeira.clone();
 
-		Integer[] arrayVazio = {};
-
 		assertEquals("Devem ter tamanho = 0 (1)", 0, filaPrimeira.tamanho());
 		assertEquals("Devem ter tamanho = 0 (2)", 0, filaSegunda.tamanho());
-		assertArrayEquals("Deve conter nenhum elemento (1)", arrayVazio, filaPrimeira.toArray());
-		assertArrayEquals("Deve conter nenhum elemento (2)", arrayVazio, filaSegunda.toArray());
 		assertEquals("Duas filas deveriam ser iguais", filaSegunda, filaPrimeira);
 	}
 
