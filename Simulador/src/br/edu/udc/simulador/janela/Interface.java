@@ -7,6 +7,7 @@ import br.edu.udc.simulador.processo.Processo.prioridade;
 
 public class Interface {
 
+	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 
 		SimuladorSO simulador = new SimuladorSO(1000000, 0, 0, 0);
