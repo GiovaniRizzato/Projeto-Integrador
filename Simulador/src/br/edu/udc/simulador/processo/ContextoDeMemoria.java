@@ -1,4 +1,4 @@
-package br.edu.udc.simulador.dominio.processo;
+package br.edu.udc.simulador.processo;
 
 import br.edu.udc.ed.vetor.Vetor;
 

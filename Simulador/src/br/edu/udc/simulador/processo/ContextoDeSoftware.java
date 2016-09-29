@@ -1,7 +1,7 @@
-package br.edu.udc.simulador.dominio.processo;
+package br.edu.udc.simulador.processo;
 
-import br.edu.udc.simulador.dominio.processo.Processo.DadosEstatisticos;
-import br.edu.udc.simulador.dominio.processo.Processo.prioridade;
+import br.edu.udc.simulador.processo.Processo.DadosEstatisticos;
+import br.edu.udc.simulador.processo.Processo.prioridade;
 
 class ContextoSoftware {
 	public final int pid;

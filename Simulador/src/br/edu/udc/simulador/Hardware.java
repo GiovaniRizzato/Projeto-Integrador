@@ -1,8 +1,8 @@
-package br.edu.udc.simulador.dominio;
+package br.edu.udc.simulador;
 
-import br.edu.udc.simulador.dominio.processo.Processo;
+import br.edu.udc.simulador.processo.Processo;
 
-public class Hardware {
+class Hardware {
 
 	private int clockCPU;
 	private int clockES[] = new int[3];

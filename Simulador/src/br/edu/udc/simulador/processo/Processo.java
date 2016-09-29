@@ -1,4 +1,4 @@
-package br.edu.udc.simulador.dominio.processo;
+package br.edu.udc.simulador.processo;
 
 public class Processo {
 

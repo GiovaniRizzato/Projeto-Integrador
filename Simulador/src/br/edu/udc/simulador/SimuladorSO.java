@@ -1,11 +1,11 @@
-package br.edu.udc.simulador.dominio;
+package br.edu.udc.simulador;
 
-import br.edu.udc.simulador.dominio.processo.Processo;
 import br.edu.udc.ed.fila.Fila;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterator;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.vetor.Vetor;
+import br.edu.udc.simulador.processo.Processo;
 
 public class SimuladorSO {
 
