@@ -1,13 +1,11 @@
 package br.edu.udc.simulador.dominio;
 
 import br.edu.udc.simulador.dominio.processo.Processo;
-
-import br.edu.udc.simulador.dominio.ed.Fila;//Produto dos filtros
-import br.edu.udc.simulador.dominio.ed.IteradorManipulador;
-import br.edu.udc.simulador.dominio.ed.Iterator;//Produção dos filtros
-import br.edu.udc.simulador.dominio.ed.Lista;//Armazenamento principal dos processos
-import br.edu.udc.simulador.dominio.ed.TabelaEspalhameto;//Processos pausados
-import br.edu.udc.simulador.dominio.ed.Vetor;//Dados estatisticos
+import br.edu.udc.ed.fila.Fila;
+import br.edu.udc.ed.iteradores.IteradorManipulador;
+import br.edu.udc.ed.iteradores.Iterator;
+import br.edu.udc.ed.lista.Lista;
+import br.edu.udc.ed.vetor.Vetor;
 
 public class SimuladorSO {
 
@@ -18,7 +16,8 @@ public class SimuladorSO {
 	private Processo estadoCriacao;
 	private Processo estadoFinalizacao;
 
-	private TabelaEspalhameto<Processo> listaPausado = new TabelaEspalhameto<>();
+	private Vetor<Processo> listaPausado = new Vetor<>();
+	// TODO Alterar para Chave/Valor
 
 	private Hardware hardware;
 
@@ -57,7 +56,7 @@ public class SimuladorSO {
 			processos[i] = it.getDado();
 			it.proximo();
 		}
-		
+
 		return processos;
 	}
 
@@ -81,7 +80,9 @@ public class SimuladorSO {
 			}
 		}
 
-		throw new IllegalArgumentException("Pid não encontrado nos registros");
+		// TODO meio para que dispare uma exeção caso não encontre o pid
+		// throw new IllegalArgumentException("Pid não encontrado nos
+		// registros");
 	}
 
 	private void matarProcesso() {
@@ -137,9 +138,22 @@ public class SimuladorSO {
 		processaFila(filaEsperaES1, Processo.instrucaoES1, this.hardware.getAllClocksES()[0]);
 		processaFila(filaEsperaES2, Processo.instrucaoES2, this.hardware.getAllClocksES()[1]);
 		processaFila(filaEsperaES3, Processo.instrucaoES3, this.hardware.getAllClocksES()[2]);
-		
-		// TODO Após ter feito todo o processamento, readiciona os elementos na
-		// lista principal
+
+		// Para que as filas possam deixar de existir, mas os processo não
+		this.listaPrincipal.adiciona(filaProntoAlta.toVetor());
+		this.listaPrincipal.adiciona(filaProntoMedia.toVetor());
+		this.listaPrincipal.adiciona(filaProntoBaixa.toVetor());
+		this.listaPrincipal.adiciona(filaEsperaES1.toVetor());
+		this.listaPrincipal.adiciona(filaEsperaES2.toVetor());
+		this.listaPrincipal.adiciona(filaEsperaES3.toVetor());
+
+		// Para que não fique lixo na memória
+		filaProntoAlta.removeTodos();
+		filaProntoMedia.removeTodos();
+		filaProntoBaixa.removeTodos();
+		filaEsperaES1.removeTodos();
+		filaEsperaES2.removeTodos();
+		filaEsperaES3.removeTodos();
 	}
 
 	private Fila<Processo> filtroIntrucaoAtual(int intrucaoAtual) {
@@ -189,7 +203,7 @@ public class SimuladorSO {
 
 				// remove ela dos registros da fila, pois esta em
 				// "processamento"
-				fila.remover();
+				fila.remove();
 
 				clockNaoUsadosNestaOperacao = this.hardware.usarHardware(clockIndividual, tipoDeIntrucao,
 						this.processado);
@@ -223,12 +237,13 @@ public class SimuladorSO {
 	}
 
 	public void pausarProcesso(int pid) {
-		// TODO pausar processo
-	}
-
-	private boolean contem(int pid) {
-		return false;
-		// TODO terminar de fazer se o elemento com pid "pid" está no sistema
-		// tanto como ativo, e pausado
+		// TODO altaterar para estrutura assim que alterada
+		for (IteradorManipulador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+			if (it.getDado().getPID() == pid) {
+				this.listaPausado.adiciona(it.getDado());
+				it.remove();
+				break;
+			}
+		}
 	}
 }

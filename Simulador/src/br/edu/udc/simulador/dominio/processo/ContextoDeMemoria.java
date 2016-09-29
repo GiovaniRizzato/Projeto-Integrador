@@ -1,6 +1,6 @@
 package br.edu.udc.simulador.dominio.processo;
 
-import br.edu.udc.simulador.dominio.ed.Vetor;
+import br.edu.udc.ed.vetor.Vetor;
 
 class ContextoMemoria {
 	public final int quantidadeMemoria;

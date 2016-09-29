@@ -1,6 +1,6 @@
 package br.edu.udc.simulador.dominio;
 
-import br.edu.udc.simulador.dominio.ed.Vetor;
+import br.edu.udc.ed.vetor.Vetor;
 
 public class Estatistica {
 

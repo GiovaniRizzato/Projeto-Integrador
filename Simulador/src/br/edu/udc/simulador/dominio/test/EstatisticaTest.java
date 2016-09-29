@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.dominio.Estatistica;
-import br.edu.udc.simulador.dominio.ed.Vetor;
 
 public class EstatisticaTest {
 	
