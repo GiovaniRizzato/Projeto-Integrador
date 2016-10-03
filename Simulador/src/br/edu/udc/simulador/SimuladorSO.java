@@ -2,7 +2,7 @@ package br.edu.udc.simulador;
 
 import br.edu.udc.ed.fila.Fila;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
-import br.edu.udc.ed.iteradores.Iterator;
+import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.processo.Processo;
@@ -74,15 +74,14 @@ public class SimuladorSO {
 
 	public void sinalFinalizacao(int pid) {
 
-		for (Iterator<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+		for (Iterador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
 			if (it.getDado().getPID() == pid) {
 				it.getDado().sinalFinalizacao();
+				return;
 			}
 		}
 
-		// TODO meio para que dispare uma exeção caso não encontre o pid
-		// throw new IllegalArgumentException("Pid não encontrado nos
-		// registros");
+		throw new IllegalArgumentException("Pid não encontrado nos registros");
 	}
 
 	private void matarProcesso() {
@@ -120,7 +119,6 @@ public class SimuladorSO {
 		Fila<Processo> filaEsperaES1 = this.filtroIntrucaoAtual(Processo.instrucaoES1);
 		Fila<Processo> filaEsperaES2 = this.filtroIntrucaoAtual(Processo.instrucaoES2);
 		Fila<Processo> filaEsperaES3 = this.filtroIntrucaoAtual(Processo.instrucaoES3);
-
 		// PRIORIDADE
 		Fila<Processo> filaProntoAlta = this.filtroPrioridade(Processo.prioridade.ALTA);
 		Fila<Processo> filaProntoMedia = this.filtroPrioridade(Processo.prioridade.MEDIA);
@@ -146,14 +144,6 @@ public class SimuladorSO {
 		this.listaPrincipal.adiciona(filaEsperaES1.toVetor());
 		this.listaPrincipal.adiciona(filaEsperaES2.toVetor());
 		this.listaPrincipal.adiciona(filaEsperaES3.toVetor());
-
-		// Para que não fique lixo na memória
-		filaProntoAlta.removeTodos();
-		filaProntoMedia.removeTodos();
-		filaProntoBaixa.removeTodos();
-		filaEsperaES1.removeTodos();
-		filaEsperaES2.removeTodos();
-		filaEsperaES3.removeTodos();
 	}
 
 	private Fila<Processo> filtroIntrucaoAtual(int intrucaoAtual) {
@@ -242,8 +232,23 @@ public class SimuladorSO {
 			if (it.getDado().getPID() == pid) {
 				this.listaPausado.adiciona(it.getDado());
 				it.remove();
-				break;
+				return;
 			}
 		}
+		
+		throw new IllegalArgumentException("Nenhum processo com este PID está ativo");
+	}
+	
+	public void resumePorcesso(int pid){
+		
+		for(int i=0; i>this.listaPausado.tamanho(); i++){
+			if(this.listaPausado.obtem(i).getPID() == pid){
+				this.listaPrincipal.adiciona(this.listaPausado.obtem(i));
+				this.listaPausado.remove(i);
+				return;
+			}
+		}
+		
+		throw new IllegalArgumentException("Nenhum processo com este PID está pausado");
 	}
 }
