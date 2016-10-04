@@ -1,5 +1,5 @@
 #1 - Estrutura do processo
-O processo é divido em 3 subclasse encapsuladas: Contexto de software, que contem toda a parte de gerenciamento de informações sobre o estado atual do processo como prioridade, instrução atual no programa e PID. Outra classe seria o contexto de memoria, onde gurda informações sobre  dados que, no caso real, estariam na memoria do computador como sequência de instruções, (no código esta com nome de programa) e quantidade de memoria usada.
+A classe processo é divido em 3 classes (classe "Processo" possui 3 atributos privados do tipo classe): Contexto de software, que contem toda a parte de gerenciamento de informações sobre o estado atual do processo como prioridade, instrução atual no programa e PID. Outra classe seria o contexto de memoria, onde gurda informações sobre  dados que, no caso real, estariam na memoria do computador como sequência de instruções, (no código esta com nome de programa) e quantidade de memoria usada.
 
 #2 - Estados do processo
 Através dos filtros da lista, ou seja, todos os processos são armazenados em uma lista normal e ao ser necessário o agrupamento por prioridades e esperas de entrada e saída, é aplicado uma operação que tem como saída filas de processos agrupados nesta forma.
