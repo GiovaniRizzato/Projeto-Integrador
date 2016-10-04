@@ -5,9 +5,7 @@ O processo é divido em 3 subclasse encapsuladas: Contexto de software, que cont
 Através dos filtros da lista, ou seja, todos os processos são armazenados em uma lista normal e ao ser necessário o agrupamento por prioridades e esperas de entrada e saída, é aplicado uma operação que tem como saída filas de processos agrupados nesta forma.
 
 #3 - Mudança de estado do processo
-No caso de pronto para execução e vice-versa o simulador pega a fila que irá ser processada (gerada a partir dos filtros) e à executa coloca em um espaço de memoria fixo para processos em execução, e executa o número "x" de instruções que aquele processo tem direito, que o coloca na na fila novamente de que foi tirado, se for o caso.
-
-No caso de execução para espera por I/O, o simulador deixa ele na fila para que no próximo ciclo de execução, este processo seja filtrado e passe a fazer parte da fila de espera.
+No caso de pronto para execução e vice-versa o simulador pega a fila que irá ser processada (gerada a partir dos filtros) e à executa coloca em um espaço de memoria fixo para processos em execução, e executa o número "x" de instruções que aquele processo tem direito, que o coloca na na fila novamente de que foi tirado, se for o caso de continuar no mesmo processo. Caso o processo preciso trocar de estado, ou seja, trocar de fila, ele é enviado novamente a lista principal onde apenas no proximo ciclo será envado a outra fila.
 
 #4 - Criação e eliminação de processos
 Para criação foi feita uma rotina que cria um processo em um ponteiro fixo e o coloca na lista de processos principais.
