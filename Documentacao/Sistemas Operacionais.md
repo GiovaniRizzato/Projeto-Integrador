@@ -29,4 +29,4 @@ Nada foi implementado neste sentido.
 Nada foi implementado neste sentido.
 
 #Memoria
-test
+Será implementdo na alocação de memoria, uma estratégia de <i>First-fit</i>, pois utiliza pouco recurso computacional para implementação e possui uma certa organização de allocação, de forma que as partições menores fiquem nas posições mais baixas, deixando as maiores para as patições maiores , e por consequencia mais dificenis de serem encaixadas, nas posições mais altas.
