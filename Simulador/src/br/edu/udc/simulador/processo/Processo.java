@@ -102,6 +102,10 @@ public class Processo {
 		else
 			return false;
 	}
+	
+	public void allocaMaisMemoria(int posicao, int qtdMemoria){
+		this.contextoMemoria.allocaMaisMemoria(posicao, qtdMemoria);
+	}
 
 	// TODO allocação de memoria adicional
 	// TODO destruturos com desalocação das "duas" memorias (programa e

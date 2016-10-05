@@ -26,6 +26,10 @@ class ContextoMemoria {
 		this.criaPrograma(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 		this.memoriaPrograma = new espacoAllocado(endMemoria, qtdeMemoria);
 	}
+	
+	public void allocaMaisMemoria(int posicao, int qtdMemoria){
+		this.memoriaAdicial.adiciona(new espacoAllocado(posicao, qtdMemoria));
+	}
 
 	private void criaPrograma(int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 		// PASSO 1 - incere o numero de intruções no vetor.

@@ -69,13 +69,37 @@ public class SimuladorSO {
 			this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, qtdMemoria,
 					hardware.allocarMemoria(qtdMemoria, this.proximoPidDisponivel), qtdCPU, qtdES1, qtdES2, qtdES3);
 		} catch (IllegalArgumentException e) {
-			//TODO mensagem de erro que não foi possível allocar memoria para o processo
+			// TODO mensagem de erro que não foi possível allocar memoria para o
+			// processo
 		}
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
 		this.estadoCriacao = null;
 
 		this.proximoPidDisponivel++;
+	}
+
+	public void allocaMaisMemoria(int pid, int qtdRequerida) {
+
+		for (IteradorManipulador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+			if (it.getDado().getPID() == pid) {
+
+				registraAllocacao(it.getDado(), qtdRequerida);
+				return;
+			}
+		}
+	}
+
+	private void registraAllocacao(Processo processo, int qtdMemoria) {
+		int enderecoAllocado;
+		try {
+			enderecoAllocado = hardware.allocarMemoria(qtdMemoria, processo.getPID());
+		} catch (RuntimeException e) {
+			return;
+			// TODO algo para fazer com essa exeção
+		}
+
+		processo.allocaMaisMemoria(enderecoAllocado, qtdMemoria);
 	}
 
 	public void sinalFinalizacao(int pid) {
