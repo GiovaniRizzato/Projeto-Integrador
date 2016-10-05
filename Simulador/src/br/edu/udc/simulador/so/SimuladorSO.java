@@ -1,10 +1,11 @@
-package br.edu.udc.simulador;
+package br.edu.udc.simulador.so;
 
 import br.edu.udc.ed.fila.Fila;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.vetor.Vetor;
+import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
 
 public class SimuladorSO {
@@ -36,12 +37,13 @@ public class SimuladorSO {
 
 	private EstatisticaSO estatisticaSO = new EstatisticaSO();
 
-	public SimuladorSO(int clockCPU, int clockES1, int clockES2, int clockES3) {
-		hardware = new Hardware(clockCPU, clockES1, clockES2, clockES3);
+	public SimuladorSO(Hardware hardware) {
+		this.hardware = hardware;
 	}
 
 	// VARIAVEL DE LOGICA
-	private int proximoPidDisponivel = 0;
+	private int proximoPidDisponivel = Hardware.posicaoMemoriaVazia + 1;
+	// pois posições ocupadas teram o valor do PID
 
 	public int qtdProcessosAtivos() {
 		return this.listaPrincipal.tamanho();
@@ -63,8 +65,12 @@ public class SimuladorSO {
 	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
 			int qtdES3) {
 
-		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, qtdMemoria, qtdCPU, qtdES1, qtdES2,
-				qtdES3);
+		try {
+			this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, qtdMemoria,
+					hardware.allocarMemoria(qtdMemoria, this.proximoPidDisponivel), qtdCPU, qtdES1, qtdES2, qtdES3);
+		} catch (IllegalArgumentException e) {
+			//TODO mensagem de erro que não foi possível allocar memoria para o processo
+		}
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
 		this.estadoCriacao = null;
@@ -227,7 +233,7 @@ public class SimuladorSO {
 	}
 
 	public void pausarProcesso(int pid) {
-		// TODO altaterar para estrutura assim que alterada
+		// TODO altaterar para char/valor assim que implementada
 		for (IteradorManipulador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
 			if (it.getDado().getPID() == pid) {
 				this.listaPausado.adiciona(it.getDado());
@@ -235,20 +241,20 @@ public class SimuladorSO {
 				return;
 			}
 		}
-		
+
 		throw new IllegalArgumentException("Nenhum processo com este PID está ativo");
 	}
-	
-	public void resumePorcesso(int pid){
-		
-		for(int i=0; i>this.listaPausado.tamanho(); i++){
-			if(this.listaPausado.obtem(i).getPID() == pid){
+
+	public void resumePorcesso(int pid) {
+
+		for (int i = 0; i > this.listaPausado.tamanho(); i++) {
+			if (this.listaPausado.obtem(i).getPID() == pid) {
 				this.listaPrincipal.adiciona(this.listaPausado.obtem(i));
 				this.listaPausado.remove(i);
 				return;
 			}
 		}
-		
+
 		throw new IllegalArgumentException("Nenhum processo com este PID está pausado");
 	}
 }

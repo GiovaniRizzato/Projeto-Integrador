@@ -13,6 +13,7 @@ public class Processo {
 		public int pronto = 0;
 		public int[] ES = { 0, 0, 0 };
 		public int[] esperaES = { 0, 0, 0 };
+		// TODO fazer metodo para fazer estatistica de tempo de espera
 	}
 
 	public final static int instrucaoCPU = 0;
@@ -24,9 +25,10 @@ public class Processo {
 	private ContextoSoftware contextoSoftware;
 	private ContextoMemoria contextoMemoria;
 
-	public Processo(int pid, prioridade prioridade, int qtdeMem, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+	public Processo(int pid, prioridade prioridade, int qtdeMem, int endMem, int qtdCPU, int qtdIO1, int qtdIO2,
+			int qtdIO3) {
 		this.contextoSoftware = new ContextoSoftware(pid, prioridade);
-		this.contextoMemoria = new ContextoMemoria(qtdeMem, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
+		this.contextoMemoria = new ContextoMemoria(qtdeMem, endMem, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 
 		this.contextoSoftware.dadosEstatisticos.qtdMemoria = qtdeMem;
 	}
@@ -100,4 +102,8 @@ public class Processo {
 		else
 			return false;
 	}
+
+	// TODO allocação de memoria adicional
+	// TODO destruturos com desalocação das "duas" memorias (programa e
+	// adicinal)
 }

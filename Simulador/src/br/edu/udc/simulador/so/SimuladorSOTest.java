@@ -1,4 +1,4 @@
-package br.edu.udc.simulador;
+package br.edu.udc.simulador.so;
 
 import static org.junit.Assert.*;
 
