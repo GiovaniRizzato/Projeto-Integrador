@@ -159,7 +159,7 @@ public class SimuladorSO {
 
 		Processo.DadosEstatisticos estatistica;
 		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
-
+		
 		this.estatisticaSO.qtdMemoria.adiciona(estatistica.qtdMemoria);
 		this.estatisticaSO.tempoDeCPU.adiciona(estatistica.CPU);
 		this.estatisticaSO.tempoDePronto.adiciona(estatistica.pronto);
@@ -170,6 +170,8 @@ public class SimuladorSO {
 		this.estatisticaSO.tempoDeES2.adiciona(estatistica.ES[1]);
 		this.estatisticaSO.tempoDeES3.adiciona(estatistica.ES[2]);
 
+		//TODO desalocação de momoria
+		
 		this.estadoFinalizacao = null;
 		// Forçando o garbege collector a deleta-lo
 	}
@@ -244,7 +246,7 @@ public class SimuladorSO {
 			Processo atual = ((Processo) it.getDado());
 			if (atual.getPrioridade().equals(prioridade)) {
 
-				fila.adiciona(atual);// adiciona a fila, para manter contato
+				fila.adiciona(atual);// adiciona a fila
 				it.remove();// remove o elemento da lista
 			} else {
 				it.proximo();
