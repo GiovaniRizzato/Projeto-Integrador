@@ -1,7 +1,6 @@
 package br.edu.udc.simulador.hardware;
 
-import javax.management.RuntimeErrorException;
-
+import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.processo.Processo;
 
 public class Hardware {
@@ -9,8 +8,6 @@ public class Hardware {
 	private int clockCPU;
 	private int clockES[] = new int[3];
 	private Memoria memoria;
-	
-	public static int posicaoMemoriaVazia = -1;
 
 	public Hardware(int clockCPU, int clockES1, int clockES2, int clockES3, int qtdMemoria) {
 		this.clockCPU = clockCPU;
@@ -44,7 +41,11 @@ public class Hardware {
 		this.clockES[2] = clock;
 	}
 
-	public int usarHardware(int qtdClockMaximo, int tipoDeIntrucao, Processo programa) {
+	public int getPosicaoMemoria(int posicao) {
+		return this.memoria.getPosicaoMemoria(posicao);
+	}
+
+	public int usarProcessamentoHardware(int qtdClockMaximo, int tipoDeIntrucao, Processo programa) {
 
 		int qtdClocksRestantes = qtdClockMaximo;
 		for (int i = 0; i < qtdClockMaximo; i++) {
@@ -56,16 +57,16 @@ public class Hardware {
 				return qtdClocksRestantes;
 			}
 		}
-		
+
 		return qtdClocksRestantes;
 	}
+
+	public void preencheMemoria(int posicao, Vetor<Integer> programa) throws IllegalArgumentException {
+
+		this.memoria.preencheMemoria(posicao, programa);
+	}
 	
-	public int allocarMemoria(int qtdMemoria, int pid){
-		
-		try{
-			return memoria.alocaMemoria(pid, qtdMemoria);
-		}catch(IllegalArgumentException e){
-			throw new RuntimeErrorException(null, "Não foi possível allocar");
-		}
+	public int tamanhoMemoria(){
+		return this.memoria.getMemoria().length;
 	}
 }

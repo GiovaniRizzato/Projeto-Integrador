@@ -12,17 +12,18 @@ public class Computador {
 	public Computador(){
 		int vetor[] = this.persistencia();
 		this.hardware = new Hardware(vetor[0], vetor[1], vetor[2], vetor[3], vetor[4]);
-		this.simulador = new SimuladorSO(hardware);
+		this.simulador = new SimuladorSO(hardware, vetor[5]);
 	}
 	
 	private int[] persistencia() {
 		//TODO implementar "pegar" do arquivo
 		int vetor[] = new int[5];
-		vetor[0] = 5;
-		vetor[1] = 5;
-		vetor[2] = 5;
-		vetor[3] = 5;
-		vetor[4] = 5;
+		vetor[0] = 5;//tamanhoMemoria
+		vetor[1] = 5;//clockCPU
+		vetor[2] = 5;//clockIO1
+		vetor[3] = 5;//clockIO2
+		vetor[4] = 5;//clockIO3
+		vetor[5] = 1;//tamanhoSO
 		
 		return vetor;
 	}

@@ -13,24 +13,36 @@ public class Processo {
 		public int pronto = 0;
 		public int[] ES = { 0, 0, 0 };
 		public int[] esperaES = { 0, 0, 0 };
-		// TODO fazer metodo para fazer estatistica de tempo de espera
 	}
-
-	public final static int instrucaoCPU = 0;
-	public final static int instrucaoES1 = 1;
-	public final static int instrucaoES2 = 2;
-	public final static int instrucaoES3 = 3;
-	public final static int instrucaoFIM = -1;
 
 	private ContextoSoftware contextoSoftware;
 	private ContextoMemoria contextoMemoria;
 
-	public Processo(int pid, prioridade prioridade, int qtdeMem, int endMem, int qtdCPU, int qtdIO1, int qtdIO2,
-			int qtdIO3) {
+	public Processo(int pid, prioridade prioridade, int endMem, int tamanhoPrograma) {
 		this.contextoSoftware = new ContextoSoftware(pid, prioridade);
-		this.contextoMemoria = new ContextoMemoria(qtdeMem, endMem, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
+		this.contextoMemoria = new ContextoMemoria(endMem, tamanhoPrograma);
+		this.contextoSoftware.dadosEstatisticos.qtdMemoria = tamanhoPrograma;
+	}
 
-		this.contextoSoftware.dadosEstatisticos.qtdMemoria = qtdeMem;
+	public void incrementaEspera(int tempo, int tipoDeIntrucao) {
+		switch (tipoDeIntrucao) {
+		case Programa.instrucaoCPU: {
+			this.contextoSoftware.dadosEstatisticos.pronto += tempo;
+			break;
+		}
+		case Programa.instrucaoES1: {
+			this.contextoSoftware.dadosEstatisticos.esperaES[0] += tempo;
+			break;
+		}
+		case Programa.instrucaoES2: {
+			this.contextoSoftware.dadosEstatisticos.esperaES[1] += tempo;
+			break;
+		}
+		case Programa.instrucaoES3: {
+			this.contextoSoftware.dadosEstatisticos.esperaES[2] += tempo;
+			break;
+		}
+		}
 	}
 
 	public void proximaIntrucao() {
@@ -38,33 +50,36 @@ public class Processo {
 		// "processamento", portanto faz as devidas alterações nos dados
 		// estatisticos do contexto de software
 
-		switch (this.contextoMemoria.programa.obtem(this.contextoSoftware.instrucaoAtual)) {
-		case Processo.instrucaoCPU: {
+		switch (this.intrucaoAtual()) {
+		case Programa.instrucaoCPU: {
 			this.contextoSoftware.dadosEstatisticos.CPU++;
 			break;
 		}
 
-		case Processo.instrucaoES1: {
+		case Programa.instrucaoES1: {
 			this.contextoSoftware.dadosEstatisticos.ES[0]++;
 			break;
 		}
 
-		case Processo.instrucaoES2: {
+		case Programa.instrucaoES2: {
 			this.contextoSoftware.dadosEstatisticos.ES[1]++;
 			break;
 		}
 
-		case Processo.instrucaoES3: {
+		case Programa.instrucaoES3: {
 			this.contextoSoftware.dadosEstatisticos.ES[2]++;
 			break;
 		}
 		}
 
-		this.contextoSoftware.instrucaoAtual++;
+		this.contextoSoftware.PosicaoInstrucaoAtual++;
 	}
 
 	public int intrucaoAtual() {
-		return this.contextoMemoria.programa.obtem(this.contextoSoftware.instrucaoAtual);
+		// return
+		// this.contextoMemoria.programa.obtem(this.contextoSoftware.PosicaoInstrucaoAtual);
+		// TODO intruçãoAtual
+		return 0;
 	}
 
 	public prioridade getPrioridade() {
@@ -72,7 +87,9 @@ public class Processo {
 	}
 
 	public void sinalFinalizacao() {
-		this.contextoMemoria.programa.sobrepoemPosicao(instrucaoFIM, this.contextoSoftware.instrucaoAtual);
+		// this.contextoMemoria.programa.sobrepoemPosicao(instrucaoFIM,
+		// this.contextoSoftware.PosicaoInstrucaoAtual);
+		// TODO sinalFinalização
 	}
 
 	public DadosEstatisticos getDadosEstatisticos() {
@@ -102,12 +119,4 @@ public class Processo {
 		else
 			return false;
 	}
-	
-	public void allocaMaisMemoria(int posicao, int qtdMemoria){
-		this.contextoMemoria.allocaMaisMemoria(posicao, qtdMemoria);
-	}
-
-	// TODO allocação de memoria adicional
-	// TODO destruturos com desalocação das "duas" memorias (programa e
-	// adicinal)
 }

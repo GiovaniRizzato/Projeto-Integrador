@@ -7,10 +7,11 @@ import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
+import br.edu.udc.simulador.processo.Programa;
 
 public class SimuladorSO {
 
-	private Processo processado;
+	private Processo processando;
 
 	private Lista<Processo> listaPrincipal = new Lista<>();
 
@@ -22,7 +23,31 @@ public class SimuladorSO {
 
 	private Hardware hardware;
 
-	// Podem ser declaradas por outras classes para "tirar" as estatisiticas
+	@SuppressWarnings("unused")
+	private class Particao {
+		public Integer pid;
+		public Integer tamanho;
+		public Integer posicao;
+
+		public Particao(int pid, int tamanho, int posicao) {
+			this.pid = pid;
+			this.tamanho = tamanho;
+			this.posicao = posicao;
+		}
+
+		public void setAll(int pid, int tamanho, int posicao) {
+			this.pid = pid;
+			this.tamanho = tamanho;
+			this.posicao = posicao;
+		}
+	}
+
+	private Lista<Particao> listaMemoria = new Lista<>();
+
+	private final int posicaoMemoriaVazia = -1;
+	private final int pidSO = posicaoMemoriaVazia + 1;
+
+	// Podem ser declaradas por outras classes para "copiar" as estatisiticas
 	public static class EstatisticaSO {
 		public Vetor<Integer> qtdMemoria = new Vetor<>();
 		public Vetor<Integer> tempoDeCPU = new Vetor<>();
@@ -37,12 +62,15 @@ public class SimuladorSO {
 
 	private EstatisticaSO estatisticaSO = new EstatisticaSO();
 
-	public SimuladorSO(Hardware hardware) {
+	public SimuladorSO(Hardware hardware, int tamanhoSO) {
 		this.hardware = hardware;
+		this.listaMemoria.adiciona(new Particao(this.pidSO, tamanhoSO, 0));
+		this.listaMemoria.adiciona(
+				new Particao(this.posicaoMemoriaVazia, this.hardware.tamanhoMemoria() - tamanhoSO, tamanhoSO + 1));
 	}
 
 	// VARIAVEL DE LOGICA
-	private int proximoPidDisponivel = Hardware.posicaoMemoriaVazia + 1;
+	private int proximoPidDisponivel = this.pidSO + 1;
 	// pois posições ocupadas teram o valor do PID
 
 	public int qtdProcessosAtivos() {
@@ -62,16 +90,21 @@ public class SimuladorSO {
 		return processos;
 	}
 
-	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdMemoria, int qtdCPU, int qtdES1, int qtdES2,
-			int qtdES3) {
+	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+
+		final Vetor<Integer> programa = Programa.criaPrograma(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
+		final int posicaoAlocada;
 
 		try {
-			this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, qtdMemoria,
-					hardware.allocarMemoria(qtdMemoria, this.proximoPidDisponivel), qtdCPU, qtdES1, qtdES2, qtdES3);
-		} catch (IllegalArgumentException e) {
+			posicaoAlocada = procuraPosicaoMemoria_first(programa.tamanho(), this.proximoPidDisponivel);
+		} catch (RuntimeException e) {
 			// TODO mensagem de erro que não foi possível allocar memoria para o
 			// processo
+			return;
 		}
+
+		this.hardware.preencheMemoria(posicaoAlocada, programa);
+		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, posicaoAlocada, programa.tamanho());
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
 		this.estadoCriacao = null;
@@ -79,27 +112,36 @@ public class SimuladorSO {
 		this.proximoPidDisponivel++;
 	}
 
-	public void allocaMaisMemoria(int pid, int qtdRequerida) {
+	private int procuraPosicaoMemoria_first(int tamanhoPrograma, int pid) {
 
-		for (IteradorManipulador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
-			if (it.getDado().getPID() == pid) {
+		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
+			// Procura por uma partição vazia
+			if (it.getDado().pid == this.posicaoMemoriaVazia) {
 
-				registraAllocacao(it.getDado(), qtdRequerida);
-				return;
-			}
-		}
+				// Verifica se a partição é grande o suficiente para allocação
+				if (it.getDado().tamanho > tamanhoPrograma) {
+					final int posicaoAllocada = it.getDado().posicao;
+
+					// atualiza a posicao vazia
+					it.adicionaAntes(new Particao(pid, tamanhoPrograma, it.getDado().posicao));
+					it.getDado().posicao += tamanhoPrograma;
+					it.getDado().tamanho -= tamanhoPrograma;
+
+					return posicaoAllocada;
+				} // END IF tamanho
+			} // END IF vazio
+		} // END FOR
+
+		throw new RuntimeException("Não há partição grande o suficiente");
+		// [Professor] qual a melhor exeção para este caso?
 	}
 
-	private void registraAllocacao(Processo processo, int qtdMemoria) {
-		int enderecoAllocado;
-		try {
-			enderecoAllocado = hardware.allocarMemoria(qtdMemoria, processo.getPID());
-		} catch (RuntimeException e) {
-			return;
-			// TODO algo para fazer com essa exeção
-		}
+	private int procuraPosicaoMemoria_best(int tamanhoProgama) {
+		return 0;
+	}
 
-		processo.allocaMaisMemoria(enderecoAllocado, qtdMemoria);
+	private int procuraPosicaoMemoria_worst(int tamanhoProgama) {
+		return 0;
 	}
 
 	public void sinalFinalizacao(int pid) {
@@ -135,37 +177,38 @@ public class SimuladorSO {
 
 	public EstatisticaSO getEstatisticas() {
 		return this.estatisticaSO;
+		// [Professor] isto é uma refencia?
 	}
 
 	public void processaFilas() {
 
-		final double porcentagemAlta = 0.6;
-		final double porcentagemMedia = 0.3;
-		final double porcentagemBaixa = 0.1;
+		final int reservadoParaAlta = (int) (this.hardware.getClockCPU() * 0.6F);
+		final int reservadoParaMedia = (int) (this.hardware.getClockCPU() * 0.3F);
+		final int reservadoParaBaixa = (int) (this.hardware.getClockCPU() * 0.1F);
 
 		// I-O - (necessario ir primeiro pois o filtro de prioridades assume que
 		// todos os processos de I/O foram retirados e não trata tal condição
 		// ,ou seja, filtro de prioridade verifica APENAS a prioridade
-		Fila<Processo> filaEsperaES1 = this.filtroIntrucaoAtual(Processo.instrucaoES1);
-		Fila<Processo> filaEsperaES2 = this.filtroIntrucaoAtual(Processo.instrucaoES2);
-		Fila<Processo> filaEsperaES3 = this.filtroIntrucaoAtual(Processo.instrucaoES3);
+		Fila<Processo> filaEsperaES1 = this.filtroIntrucaoAtual(Programa.instrucaoES1);
+		Fila<Processo> filaEsperaES2 = this.filtroIntrucaoAtual(Programa.instrucaoES2);
+		Fila<Processo> filaEsperaES3 = this.filtroIntrucaoAtual(Programa.instrucaoES3);
 		// PRIORIDADE
 		Fila<Processo> filaProntoAlta = this.filtroPrioridade(Processo.prioridade.ALTA);
 		Fila<Processo> filaProntoMedia = this.filtroPrioridade(Processo.prioridade.MEDIA);
 		Fila<Processo> filaProntoBaixa = this.filtroPrioridade(Processo.prioridade.BAIXA);
 
-		int clockSobrado = processaFila(filaProntoAlta, Processo.instrucaoCPU,
-				(this.hardware.getClockCPU() * porcentagemAlta));
+		// Processamento
+		int clockSobrado = processaFila(filaProntoAlta, Programa.instrucaoCPU, reservadoParaAlta, 0);
 
-		clockSobrado = processaFila(filaProntoMedia, Processo.instrucaoCPU,
-				(this.hardware.getClockCPU() * porcentagemMedia) + clockSobrado);
+		clockSobrado = processaFila(filaProntoMedia, Programa.instrucaoCPU, reservadoParaMedia + clockSobrado,
+				reservadoParaAlta - clockSobrado);
 
-		processaFila(filaProntoBaixa, Processo.instrucaoCPU,
-				(this.hardware.getClockCPU() * porcentagemBaixa) + clockSobrado);
+		processaFila(filaProntoBaixa, Programa.instrucaoCPU, reservadoParaBaixa + clockSobrado,
+				(reservadoParaAlta + reservadoParaMedia) - clockSobrado);
 
-		processaFila(filaEsperaES1, Processo.instrucaoES1, this.hardware.getAllClocksES()[0]);
-		processaFila(filaEsperaES2, Processo.instrucaoES2, this.hardware.getAllClocksES()[1]);
-		processaFila(filaEsperaES3, Processo.instrucaoES3, this.hardware.getAllClocksES()[2]);
+		processaFila(filaEsperaES1, Programa.instrucaoES1, this.hardware.getAllClocksES()[0], 0);
+		processaFila(filaEsperaES2, Programa.instrucaoES2, this.hardware.getAllClocksES()[1], 0);
+		processaFila(filaEsperaES3, Programa.instrucaoES3, this.hardware.getAllClocksES()[2], 0);
 
 		// Para que as filas possam deixar de existir, mas os processo não
 		this.listaPrincipal.adiciona(filaProntoAlta.toVetor());
@@ -206,58 +249,59 @@ public class SimuladorSO {
 		return fila;
 	}
 
-	private int processaFila(Fila<Processo> fila, int tipoDeIntrucao, double clocksDestaFila) {
+	private int processaFila(Fila<Processo> fila, int tipoDeIntrucao, int clocksDestaFila, int tempoEsperaAtual) {
 
-		int clockRestante = (int) clocksDestaFila;
+		int clockRestante = clocksDestaFila;
 		while (fila.tamanho() != 0 && clockRestante != 0) {
 
-			int clockIndividual = (int) (clockRestante / fila.tamanho());
+			final int clockIndividual = (int) (clockRestante / fila.tamanho());
 			clockRestante = 0;// para servir de accomulador
 
 			for (int i = 0; i < fila.tamanho(); i++) {
 
-				int clockNaoUsadosNestaOperacao = 0;
-
 				// faz "copia" do processo para processamento
-				this.processado = fila.consultaProximoElemento();
+				this.processando = fila.consultaProximoElemento();
 
 				// remove ela dos registros da fila, pois esta em
 				// "processamento"
 				fila.remove();
 
-				clockNaoUsadosNestaOperacao = this.hardware.usarHardware(clockIndividual, tipoDeIntrucao,
-						this.processado);
+				this.processando.incrementaEspera(tempoEsperaAtual, tipoDeIntrucao);
+				// incrementa as variaveis de estatistica
+				// TODO fazer estatistica de espera APÓS ter sido execultado
+
+				int clockNaoUsadosNestaOperacao = this.hardware.usarProcessamentoHardware(clockIndividual,
+						tipoDeIntrucao, this.processando);
 				// faz o processamento
 
-				if (this.processado.intrucaoAtual() == tipoDeIntrucao) {
+				if (this.processando.intrucaoAtual() == tipoDeIntrucao) {
 					// se mesmo depois do processamento pertencer a esta
 					// fila(permance neste estado)
-					fila.adiciona(this.processado);
+					fila.adiciona(this.processando);
 
 				} else {
-					if (this.processado.intrucaoAtual() != Processo.instrucaoFIM) {
+					if (this.processando.intrucaoAtual() != Programa.instrucaoFIM) {
 						// agora passa a ser parte de outra fila(outro estado)
-						this.listaPrincipal.adiciona(this.processado);
+						this.listaPrincipal.adiciona(this.processando);
 
 					} else {
 						// fim do programa, irá ser finalizado
-						this.estadoFinalizacao = this.processado;
-						this.processado = null;
+						this.estadoFinalizacao = this.processando;
+						this.processando = null;
 						this.matarProcesso();
 					}
 				}
 
-				this.processado = null;
+				this.processando = null;
+				tempoEsperaAtual += (clockIndividual - clockNaoUsadosNestaOperacao);
 				clockRestante += clockNaoUsadosNestaOperacao;
 			} // END FOR
-
 		} // END WHILE
 
 		return (int) clockRestante;
 	}
 
 	public void pausarProcesso(int pid) {
-		// TODO altaterar para char/valor assim que implementada
 		for (IteradorManipulador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
 			if (it.getDado().getPID() == pid) {
 				this.listaPausado.adiciona(it.getDado());
