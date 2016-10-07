@@ -7,12 +7,12 @@ public class Processo {
 	}
 
 	public static class DadosEstatisticos {
-		public int qtdMemoria = 0;
-		public int tempoTotalEmSegundos = 0;
-		public int CPU = 0;
-		public int pronto = 0;
-		public int[] ES = { 0, 0, 0 };
-		public int[] esperaES = { 0, 0, 0 };
+		public Integer qtdMemoria = 0;
+		public Integer tempoTotalEmSegundos = 0;
+		public Integer CPU = 0;
+		public Integer pronto = 0;
+		public Integer[] ES = { 0, 0, 0 };
+		public Integer[] esperaES = { 0, 0, 0 };
 	}
 
 	private ContextoSoftware contextoSoftware;
@@ -45,51 +45,18 @@ public class Processo {
 		}
 	}
 
+	// TODO estatistica de intruções feitas
+
 	public void proximaIntrucao() {
-		// esta função assume que para ir pra a proxima intrução, foi feito o
-		// "processamento", portanto faz as devidas alterações nos dados
-		// estatisticos do contexto de software
-
-		switch (this.intrucaoAtual()) {
-		case Programa.instrucaoCPU: {
-			this.contextoSoftware.dadosEstatisticos.CPU++;
-			break;
-		}
-
-		case Programa.instrucaoES1: {
-			this.contextoSoftware.dadosEstatisticos.ES[0]++;
-			break;
-		}
-
-		case Programa.instrucaoES2: {
-			this.contextoSoftware.dadosEstatisticos.ES[1]++;
-			break;
-		}
-
-		case Programa.instrucaoES3: {
-			this.contextoSoftware.dadosEstatisticos.ES[2]++;
-			break;
-		}
-		}
-
-		this.contextoSoftware.PosicaoInstrucaoAtual++;
+		this.contextoSoftware.instrucaoAtual++;
 	}
 
-	public int intrucaoAtual() {
-		// return
-		// this.contextoMemoria.programa.obtem(this.contextoSoftware.PosicaoInstrucaoAtual);
-		// TODO intruçãoAtual
-		return 0;
+	public int posicaoIntrucaoAtual() {
+		return this.contextoMemoria.posicaoInicial + this.contextoSoftware.instrucaoAtual;
 	}
 
 	public prioridade getPrioridade() {
 		return this.contextoSoftware.prioridade;
-	}
-
-	public void sinalFinalizacao() {
-		// this.contextoMemoria.programa.sobrepoemPosicao(instrucaoFIM,
-		// this.contextoSoftware.PosicaoInstrucaoAtual);
-		// TODO sinalFinalização
 	}
 
 	public DadosEstatisticos getDadosEstatisticos() {

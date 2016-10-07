@@ -23,19 +23,12 @@ public class SimuladorSO {
 
 	private Hardware hardware;
 
-	@SuppressWarnings("unused")
 	private class Particao {
 		public Integer pid;
 		public Integer tamanho;
 		public Integer posicao;
 
 		public Particao(int pid, int tamanho, int posicao) {
-			this.pid = pid;
-			this.tamanho = tamanho;
-			this.posicao = posicao;
-		}
-
-		public void setAll(int pid, int tamanho, int posicao) {
 			this.pid = pid;
 			this.tamanho = tamanho;
 			this.posicao = posicao;
@@ -98,8 +91,7 @@ public class SimuladorSO {
 		try {
 			posicaoAlocada = procuraPosicaoMemoria_first(programa.tamanho(), this.proximoPidDisponivel);
 		} catch (RuntimeException e) {
-			// TODO mensagem de erro que não foi possível allocar memoria para o
-			// processo
+			// TODO mensagem de erro
 			return;
 		}
 
@@ -136,24 +128,31 @@ public class SimuladorSO {
 		// [Professor] qual a melhor exeção para este caso?
 	}
 
-	private int procuraPosicaoMemoria_best(int tamanhoProgama) {
-		return 0;
-	}
+	/**
+	 * private int procuraPosicaoMemoria_best(int tamanhoProgama) { return 0; }
+	 * 
+	 * private int procuraPosicaoMemoria_worst(int tamanhoProgama) { return 0; }
+	 */
 
-	private int procuraPosicaoMemoria_worst(int tamanhoProgama) {
-		return 0;
-	}
+	// TODO outras estratégias de allocação de memória
 
 	public void sinalFinalizacao(int pid) {
 
 		for (Iterador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
 			if (it.getDado().getPID() == pid) {
-				it.getDado().sinalFinalizacao();
+
+				// Intruções de finalização que irá execultar
+				Vetor<Integer> intrucaoFim = new Vetor<>();
+				intrucaoFim.adiciona(Programa.instrucaoFIM);
+
+				// sobre escreve desde a posição
+				this.hardware.preencheMemoria(it.getDado().posicaoIntrucaoAtual(), intrucaoFim);
 				return;
 			}
 		}
 
 		throw new IllegalArgumentException("Pid não encontrado nos registros");
+		// [Professor] qual a melhor exeção neste caso?
 	}
 
 	private void matarProcesso() {
@@ -219,15 +218,18 @@ public class SimuladorSO {
 		this.listaPrincipal.adiciona(filaEsperaES3.toVetor());
 	}
 
-	private Fila<Processo> filtroIntrucaoAtual(int intrucaoAtual) {
+	private Fila<Processo> filtroIntrucaoAtual(int intrucaoFiltro) {
 		Fila<Processo> fila = new Fila<>();
 
-		for (IteradorManipulador<Processo> it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+		IteradorManipulador<Processo> it = listaPrincipal.inicio();
+		while (it.temProximo()) {
 			Processo atual = ((Processo) it.getDado());
-			if (atual.intrucaoAtual() == intrucaoAtual) {
+			if (this.hardware.getPosicaoMemoria(atual.posicaoIntrucaoAtual()) == intrucaoFiltro) {
 
 				fila.adiciona(atual);// adiciona a fila, para manter contato
 				it.remove();// remove o elemento da lista
+			} else {
+				it.proximo();
 			}
 		}
 
@@ -237,12 +239,15 @@ public class SimuladorSO {
 	private Fila<Processo> filtroPrioridade(Processo.prioridade prioridade) {
 		Fila<Processo> fila = new Fila<>();
 
-		for (IteradorManipulador<Processo> it = listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+		IteradorManipulador<Processo> it = listaPrincipal.inicio();
+		while (it.temProximo()) {
 			Processo atual = ((Processo) it.getDado());
+			if (atual.getPrioridade().equals(prioridade)) {
 
-			if (atual.getPrioridade() == prioridade) {
 				fila.adiciona(atual);// adiciona a fila, para manter contato
 				it.remove();// remove o elemento da lista
+			} else {
+				it.proximo();
 			}
 		}
 
@@ -274,18 +279,18 @@ public class SimuladorSO {
 						tipoDeIntrucao, this.processando);
 				// faz o processamento
 
-				if (this.processando.intrucaoAtual() == tipoDeIntrucao) {
+				if (this.processando.posicaoIntrucaoAtual() == tipoDeIntrucao) {
 					// se mesmo depois do processamento pertencer a esta
 					// fila(permance neste estado)
 					fila.adiciona(this.processando);
 
 				} else {
-					if (this.processando.intrucaoAtual() != Programa.instrucaoFIM) {
+					if (this.processando.posicaoIntrucaoAtual() != Programa.instrucaoFIM) {
 						// agora passa a ser parte de outra fila(outro estado)
 						this.listaPrincipal.adiciona(this.processando);
 
 					} else {
-						// fim do programa, irá ser finalizado
+						// fim do programa
 						this.estadoFinalizacao = this.processando;
 						this.processando = null;
 						this.matarProcesso();
@@ -298,7 +303,7 @@ public class SimuladorSO {
 			} // END FOR
 		} // END WHILE
 
-		return (int) clockRestante;
+		return clockRestante;
 	}
 
 	public void pausarProcesso(int pid) {

@@ -50,7 +50,7 @@ public class Hardware {
 		int qtdClocksRestantes = qtdClockMaximo;
 		for (int i = 0; i < qtdClockMaximo; i++) {
 
-			if (programa.intrucaoAtual() == tipoDeIntrucao) {
+			if (this.memoria.getPosicaoMemoria(programa.posicaoIntrucaoAtual()) == tipoDeIntrucao) {
 				programa.proximaIntrucao();
 				qtdClocksRestantes--;
 			} else {
@@ -65,8 +65,8 @@ public class Hardware {
 
 		this.memoria.preencheMemoria(posicao, programa);
 	}
-	
-	public int tamanhoMemoria(){
+
+	public int tamanhoMemoria() {
 		return this.memoria.getMemoria().length;
 	}
 }
