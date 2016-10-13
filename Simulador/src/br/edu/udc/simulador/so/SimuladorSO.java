@@ -4,6 +4,7 @@ import br.edu.udc.ed.fila.Fila;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
+import br.edu.udc.ed.mapa.Mapa;
 import br.edu.udc.ed.vetor.ConjuntoAmostral;
 import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.hardware.Hardware;
@@ -12,25 +13,32 @@ import br.edu.udc.simulador.processo.Programa;
 
 public class SimuladorSO {
 
+	// Abstração de estados do processo
 	private Processo processando;
-
-	private Lista<Processo> listaPrincipal = new Lista<>();
-
 	private Processo estadoCriacao;
 	private Processo estadoFinalizacao;
 
-	private Vetor<Processo> listaPausado = new Vetor<>();
-	// TODO Alterar para Chave/Valor
+	// Armazenamento de processos
+	private Lista<Processo> listaPrincipal = new Lista<>();
+	private Mapa<Integer, Processo> listaPausado = new Mapa<>();
 
+	// Referencias
 	private Hardware referenciaHardware;
+
+	// Veriaveis lógicas
+	private final int posicaoMemoriaVazia = -1;
+	private final int pidSO = posicaoMemoriaVazia + 1;
+	private Integer proximoPidDisponivel = this.pidSO + 1;
 
 	private Float porcentagemCPUAlta;
 	private Float porcentagemCPUMedia;
 	private Float porcentagemCPUBaixa;
 
+	// Gerencianmento de memória
 	@SuppressWarnings("unused")
 	private class Particao {
 		public Processo processo;
+		// referenca do processo para fazer a desfragmentação
 		public Integer pid;
 		public Integer tamanho;
 		public Integer posicao;
@@ -52,9 +60,7 @@ public class SimuladorSO {
 
 	private Lista<Particao> listaMemoria = new Lista<>();
 
-	private final int posicaoMemoriaVazia = -1;
-	private final int pidSO = posicaoMemoriaVazia + 1;
-
+	// Armazenamento de dados estatisticos
 	// Podem ser declaradas por outras classes para "copiar" as estatisiticas
 	public static class EstatisticaSO {
 		public ConjuntoAmostral<Integer> qtdMemoria = new ConjuntoAmostral<>();
@@ -66,6 +72,23 @@ public class SimuladorSO {
 		public ConjuntoAmostral<Integer> tempoDeEsperaES1 = new ConjuntoAmostral<>();
 		public ConjuntoAmostral<Integer> tempoDeEsperaES2 = new ConjuntoAmostral<>();
 		public ConjuntoAmostral<Integer> tempoDeEsperaES3 = new ConjuntoAmostral<>();
+
+		@Override
+		public EstatisticaSO clone() {
+			EstatisticaSO clonado = new EstatisticaSO();
+			// [Professor] como fazer para que não precise de casting
+			clonado.qtdMemoria = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDeCPU = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDePronto = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDeES1 = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDeES2 = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDeES3 = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDeEsperaES1 = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDeEsperaES2 = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+			clonado.tempoDeEsperaES3 = (ConjuntoAmostral<Integer>) this.qtdMemoria.clone();
+
+			return clonado;
+		}
 	}
 
 	private EstatisticaSO estatisticaSO = new EstatisticaSO();
@@ -82,12 +105,12 @@ public class SimuladorSO {
 		this.porcentagemCPUBaixa = ((porcentagemAlta + porcentagemMedia) - 1);
 	}
 
-	// VARIAVEL DE LOGICA
-	private Integer proximoPidDisponivel = this.pidSO + 1;
-	// pois posições ocupadas teram o valor do PID
-
 	public int qtdProcessosAtivos() {
 		return this.listaPrincipal.tamanho();
+	}
+
+	public int qtdProcessosPausados() {
+		return this.listaPausado.tamanho();
 	}
 
 	public Processo[] listaTodos() {
@@ -105,7 +128,7 @@ public class SimuladorSO {
 
 	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 
-		final Vetor<Integer> programa = Programa.criaPrograma(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
+		final Programa programa = new Programa(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 		final IteradorManipulador<Particao> particaoLivre;
 
 		try {
@@ -135,7 +158,6 @@ public class SimuladorSO {
 				// Verifica se a partição é grande o suficiente para allocação
 				if (it.getDado().tamanho > tamanhoPrograma) {
 					return it;
-
 				}
 			}
 		}
@@ -151,36 +173,12 @@ public class SimuladorSO {
 		particaoLivre.getDado().tamanho -= tamanhoPrograma;
 	}
 
-	/**
-	 * private int procuraPosicaoMemoria_first(int tamanhoPrograma, int pid) {
-	 * 
-	 * for (IteradorManipulador<Particao> it = this.listaMemoria.inicio();
-	 * it.temProximo(); it.proximo()) { // Procura por uma partição vazia if
-	 * (it.getDado().pid == this.posicaoMemoriaVazia) {
-	 * 
-	 * // Verifica se a partição é grande o suficiente para allocação if
-	 * (it.getDado().tamanho > tamanhoPrograma) { final int posicaoAllocada =
-	 * it.getDado().posicao;
-	 * 
-	 * // atualiza a posicao vazia it.adicionaAntes(new Particao(pid,
-	 * tamanhoPrograma, it.getDado().posicao)); it.getDado().posicao +=
-	 * tamanhoPrograma; it.getDado().tamanho -= tamanhoPrograma;
-	 * 
-	 * return posicaoAllocada; } // END IF tamanho } // END IF vazio } // END
-	 * FOR
-	 * 
-	 * throw new RuntimeException("Não há partição grande o suficiente");
-	 * 
-	 * // [Professor] qual a melhor exeção para este caso? }
-	 */
-
+	// TODO outras estratégias de allocação de memória
 	/**
 	 * private int procuraPosicaoMemoria_best(int tamanhoProgama) { return 0; }
 	 * 
 	 * private int procuraPosicaoMemoria_worst(int tamanhoProgama) { return 0; }
 	 */
-
-	// TODO outras estratégias de allocação de memória
 
 	public void sinalFinalizacao(int pid) {
 
@@ -231,6 +229,7 @@ public class SimuladorSO {
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			if (it.getDado().pid == pid) {
 				it.getDado().pid = this.posicaoMemoriaVazia;
+				this.verificaEspacoLivreAdjacente();
 				return;
 			}
 		}
@@ -238,9 +237,28 @@ public class SimuladorSO {
 		throw new IllegalArgumentException("PID não esta na lista de memória");
 	}
 
+	private void verificaEspacoLivreAdjacente() {
+
+		// TODO Fazer testes espaçoVaziaAdjacente
+		for (int i = 0; i > (this.listaMemoria.tamanho() - 1); i++) {
+
+			final Particao particaoAnterior = this.listaMemoria.obtem(i);
+			if (particaoAnterior.pid == this.posicaoMemoriaVazia) {
+				// Verifica se a partição representa memoria vazia
+
+				final Particao particaoPosterior = this.listaMemoria.obtem(i + 1);
+				if (particaoAnterior.pid == particaoPosterior.pid) {
+					// Verifica se a posição posterior é vazia também
+
+					particaoAnterior.tamanho += particaoPosterior.tamanho;
+					this.listaMemoria.remove(i + 1);
+				}
+			}
+		}
+	}
+
 	public EstatisticaSO getEstatisticas() {
-		return this.estatisticaSO;
-		// [Professor] isto é uma refencia?
+		return this.estatisticaSO.clone();
 	}
 
 	public void processaFilas() {
@@ -316,7 +334,6 @@ public class SimuladorSO {
 
 				fila.adiciona(atual);// adiciona a fila
 				it.remove();// remove o elemento da lista
-				// TODO detectar e concertar problema como it.remove
 			} else {
 				it.proximo();
 			}
@@ -382,8 +399,10 @@ public class SimuladorSO {
 
 	public void pausarProcesso(int pid) {
 		for (IteradorManipulador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
-			if (it.getDado().getPID() == pid) {
-				this.listaPausado.adiciona(it.getDado());
+
+			final int pidProcesso = it.getDado().getPID();
+			if (pidProcesso == pid) {
+				this.listaPausado.adiciona(pidProcesso, it.getDado());
 				it.remove();
 				return;
 			}
@@ -394,14 +413,12 @@ public class SimuladorSO {
 
 	public void resumePorcesso(int pid) {
 
-		for (int i = 0; i > this.listaPausado.tamanho(); i++) {
-			if (this.listaPausado.obtem(i).getPID() == pid) {
-				this.listaPrincipal.adiciona(this.listaPausado.obtem(i));
-				this.listaPausado.remove(i);
-				return;
-			}
+		if (!this.listaPausado.contem(pid)) {
+			throw new IllegalArgumentException("Nenhum processo com este PID está pausado");
 		}
 
-		throw new IllegalArgumentException("Nenhum processo com este PID está pausado");
+		final Processo processoResumido = this.listaPausado.obtem(pid);
+		this.listaPrincipal.adiciona(processoResumido);
+		this.listaPausado.remove(pid);
 	}
 }
