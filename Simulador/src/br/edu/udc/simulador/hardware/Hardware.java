@@ -51,7 +51,7 @@ public class Hardware {
 		for (int i = 0; i < qtdClockMaximo; i++) {
 
 			if (this.memoria.getPosicaoMemoria(programa.posicaoIntrucaoAtual()) == tipoDeIntrucao) {
-				programa.proximaIntrucao();
+				programa.atualizarParaProximaIntrucao();
 				qtdClocksRestantes--;
 			} else {
 				return qtdClocksRestantes;

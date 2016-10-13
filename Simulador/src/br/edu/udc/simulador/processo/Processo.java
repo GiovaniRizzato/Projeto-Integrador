@@ -47,7 +47,7 @@ public class Processo {
 
 	// TODO estatistica de intruções feitas
 
-	public void proximaIntrucao() {
+	public void atualizarParaProximaIntrucao() {
 		this.contextoSoftware.instrucaoAtual++;
 	}
 
@@ -65,6 +65,14 @@ public class Processo {
 
 	public int getPID() {
 		return this.contextoSoftware.pid;
+	}
+	
+	public int getInicioPrograma(){
+		return this.contextoMemoria.posicaoInicial;
+	}
+	
+	public int getFimPrograma(){
+		return this.contextoMemoria.posicaoFinal;
 	}
 
 	@Override

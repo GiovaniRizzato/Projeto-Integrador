@@ -4,6 +4,7 @@ import br.edu.udc.ed.fila.Fila;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
+import br.edu.udc.ed.vetor.ConjuntoAmostral;
 import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
@@ -21,15 +22,29 @@ public class SimuladorSO {
 	private Vetor<Processo> listaPausado = new Vetor<>();
 	// TODO Alterar para Chave/Valor
 
-	private Hardware hardware;
+	private Hardware referenciaHardware;
 
+	private Float porcentagemCPUAlta;
+	private Float porcentagemCPUMedia;
+	private Float porcentagemCPUBaixa;
+
+	@SuppressWarnings("unused")
 	private class Particao {
+		public Processo processo;
 		public Integer pid;
 		public Integer tamanho;
 		public Integer posicao;
 
 		public Particao(int pid, int tamanho, int posicao) {
+			this.processo = null;
 			this.pid = pid;
+			this.tamanho = tamanho;
+			this.posicao = posicao;
+		}
+
+		public Particao(Processo processo, int tamanho, int posicao) {
+			this.processo = null;
+			this.pid = processo.getPID();
 			this.tamanho = tamanho;
 			this.posicao = posicao;
 		}
@@ -42,28 +57,33 @@ public class SimuladorSO {
 
 	// Podem ser declaradas por outras classes para "copiar" as estatisiticas
 	public static class EstatisticaSO {
-		public Vetor<Integer> qtdMemoria = new Vetor<>();
-		public Vetor<Integer> tempoDeCPU = new Vetor<>();
-		public Vetor<Integer> tempoDePronto = new Vetor<>();
-		public Vetor<Integer> tempoDeES1 = new Vetor<>();
-		public Vetor<Integer> tempoDeES2 = new Vetor<>();
-		public Vetor<Integer> tempoDeES3 = new Vetor<>();
-		public Vetor<Integer> tempoDeEsperaES1 = new Vetor<>();
-		public Vetor<Integer> tempoDeEsperaES2 = new Vetor<>();
-		public Vetor<Integer> tempoDeEsperaES3 = new Vetor<>();
+		public ConjuntoAmostral<Integer> qtdMemoria = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDeCPU = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDePronto = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDeES1 = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDeES2 = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDeES3 = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDeEsperaES1 = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDeEsperaES2 = new ConjuntoAmostral<>();
+		public ConjuntoAmostral<Integer> tempoDeEsperaES3 = new ConjuntoAmostral<>();
 	}
 
 	private EstatisticaSO estatisticaSO = new EstatisticaSO();
 
-	public SimuladorSO(Hardware hardware, int tamanhoSO) {
-		this.hardware = hardware;
+	public SimuladorSO(Hardware hardware, int tamanhoSO, float porcentagemAlta, float porcentagemMedia) {
+		this.referenciaHardware = hardware;
 		this.listaMemoria.adiciona(new Particao(this.pidSO, tamanhoSO, 0));
-		this.listaMemoria.adiciona(
-				new Particao(this.posicaoMemoriaVazia, this.hardware.tamanhoMemoria() - tamanhoSO, tamanhoSO + 1));
+
+		final int espacoVazio = this.referenciaHardware.tamanhoMemoria() - tamanhoSO;
+		this.listaMemoria.adiciona(new Particao(this.posicaoMemoriaVazia, espacoVazio, tamanhoSO));
+
+		this.porcentagemCPUAlta = porcentagemAlta;
+		this.porcentagemCPUMedia = porcentagemMedia;
+		this.porcentagemCPUBaixa = ((porcentagemAlta + porcentagemMedia) - 1);
 	}
 
 	// VARIAVEL DE LOGICA
-	private int proximoPidDisponivel = this.pidSO + 1;
+	private Integer proximoPidDisponivel = this.pidSO + 1;
 	// pois posições ocupadas teram o valor do PID
 
 	public int qtdProcessosAtivos() {
@@ -73,8 +93,8 @@ public class SimuladorSO {
 	public Processo[] listaTodos() {
 
 		Processo[] processos = new Processo[this.listaPrincipal.tamanho()];
-		IteradorManipulador<Processo> it = this.listaPrincipal.inicio();
 
+		Iterador<Processo> it = this.listaPrincipal.inicio();
 		for (int i = 0; i < this.listaPrincipal.tamanho(); i++) {
 			processos[i] = it.getDado();
 			it.proximo();
@@ -86,17 +106,19 @@ public class SimuladorSO {
 	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 
 		final Vetor<Integer> programa = Programa.criaPrograma(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-		final int posicaoAlocada;
+		final IteradorManipulador<Particao> particaoLivre;
 
 		try {
-			posicaoAlocada = procuraPosicaoMemoria_first(programa.tamanho(), this.proximoPidDisponivel);
+			particaoLivre = procuraPosicaoMemoria_first(programa.tamanho(), this.proximoPidDisponivel);
 		} catch (RuntimeException e) {
 			// TODO mensagem de erro
 			return;
 		}
 
-		this.hardware.preencheMemoria(posicaoAlocada, programa);
-		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, posicaoAlocada, programa.tamanho());
+		final int posicaoLivre = particaoLivre.getDado().posicao;
+
+		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, posicaoLivre, programa.tamanho());
+		this.allocaMemoria(this.estadoCriacao, programa.tamanho(), particaoLivre);
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
 		this.estadoCriacao = null;
@@ -104,7 +126,7 @@ public class SimuladorSO {
 		this.proximoPidDisponivel++;
 	}
 
-	private int procuraPosicaoMemoria_first(int tamanhoPrograma, int pid) {
+	private IteradorManipulador<Particao> procuraPosicaoMemoria_first(int tamanhoPrograma, int pid) {
 
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			// Procura por uma partição vazia
@@ -112,21 +134,45 @@ public class SimuladorSO {
 
 				// Verifica se a partição é grande o suficiente para allocação
 				if (it.getDado().tamanho > tamanhoPrograma) {
-					final int posicaoAllocada = it.getDado().posicao;
+					return it;
 
-					// atualiza a posicao vazia
-					it.adicionaAntes(new Particao(pid, tamanhoPrograma, it.getDado().posicao));
-					it.getDado().posicao += tamanhoPrograma;
-					it.getDado().tamanho -= tamanhoPrograma;
-
-					return posicaoAllocada;
-				} // END IF tamanho
-			} // END IF vazio
-		} // END FOR
+				}
+			}
+		}
 
 		throw new RuntimeException("Não há partição grande o suficiente");
-		// [Professor] qual a melhor exeção para este caso?
+		// TODO [Professor] qual a melhor exeção para este caso?
 	}
+
+	private void allocaMemoria(Processo processo, int tamanhoPrograma, IteradorManipulador<Particao> particaoLivre) {
+
+		particaoLivre.adicionaAntes(new Particao(processo, tamanhoPrograma, particaoLivre.getDado().posicao));
+		particaoLivre.getDado().posicao += tamanhoPrograma;
+		particaoLivre.getDado().tamanho -= tamanhoPrograma;
+	}
+
+	/**
+	 * private int procuraPosicaoMemoria_first(int tamanhoPrograma, int pid) {
+	 * 
+	 * for (IteradorManipulador<Particao> it = this.listaMemoria.inicio();
+	 * it.temProximo(); it.proximo()) { // Procura por uma partição vazia if
+	 * (it.getDado().pid == this.posicaoMemoriaVazia) {
+	 * 
+	 * // Verifica se a partição é grande o suficiente para allocação if
+	 * (it.getDado().tamanho > tamanhoPrograma) { final int posicaoAllocada =
+	 * it.getDado().posicao;
+	 * 
+	 * // atualiza a posicao vazia it.adicionaAntes(new Particao(pid,
+	 * tamanhoPrograma, it.getDado().posicao)); it.getDado().posicao +=
+	 * tamanhoPrograma; it.getDado().tamanho -= tamanhoPrograma;
+	 * 
+	 * return posicaoAllocada; } // END IF tamanho } // END IF vazio } // END
+	 * FOR
+	 * 
+	 * throw new RuntimeException("Não há partição grande o suficiente");
+	 * 
+	 * // [Professor] qual a melhor exeção para este caso? }
+	 */
 
 	/**
 	 * private int procuraPosicaoMemoria_best(int tamanhoProgama) { return 0; }
@@ -146,7 +192,7 @@ public class SimuladorSO {
 				intrucaoFim.adiciona(Programa.instrucaoFIM);
 
 				// sobre escreve desde a posição
-				this.hardware.preencheMemoria(it.getDado().posicaoIntrucaoAtual(), intrucaoFim);
+				this.referenciaHardware.preencheMemoria(it.getDado().posicaoIntrucaoAtual(), intrucaoFim);
 				return;
 			}
 		}
@@ -159,7 +205,7 @@ public class SimuladorSO {
 
 		Processo.DadosEstatisticos estatistica;
 		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
-		
+
 		this.estatisticaSO.qtdMemoria.adiciona(estatistica.qtdMemoria);
 		this.estatisticaSO.tempoDeCPU.adiciona(estatistica.CPU);
 		this.estatisticaSO.tempoDePronto.adiciona(estatistica.pronto);
@@ -170,10 +216,26 @@ public class SimuladorSO {
 		this.estatisticaSO.tempoDeES2.adiciona(estatistica.ES[1]);
 		this.estatisticaSO.tempoDeES3.adiciona(estatistica.ES[2]);
 
-		//TODO desalocação de momoria
-		
+		this.desalocaMemoria(this.estadoFinalizacao.getPID());
+
 		this.estadoFinalizacao = null;
 		// Forçando o garbege collector a deleta-lo
+	}
+
+	public void desfragmentacaoMemoria() {
+
+	}
+
+	private void desalocaMemoria(int pid) {
+
+		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
+			if (it.getDado().pid == pid) {
+				it.getDado().pid = this.posicaoMemoriaVazia;
+				return;
+			}
+		}
+
+		throw new IllegalArgumentException("PID não esta na lista de memória");
 	}
 
 	public EstatisticaSO getEstatisticas() {
@@ -183,9 +245,9 @@ public class SimuladorSO {
 
 	public void processaFilas() {
 
-		final int reservadoParaAlta = (int) (this.hardware.getClockCPU() * 0.6F);
-		final int reservadoParaMedia = (int) (this.hardware.getClockCPU() * 0.3F);
-		final int reservadoParaBaixa = (int) (this.hardware.getClockCPU() * 0.1F);
+		final int reservadoParaAlta = (int) (this.referenciaHardware.getClockCPU() * this.porcentagemCPUAlta);
+		final int reservadoParaMedia = (int) (this.referenciaHardware.getClockCPU() * this.porcentagemCPUMedia);
+		final int reservadoParaBaixa = (int) (this.referenciaHardware.getClockCPU() * this.porcentagemCPUBaixa);
 
 		// I-O - (necessario ir primeiro pois o filtro de prioridades assume que
 		// todos os processos de I/O foram retirados e não trata tal condição
@@ -198,18 +260,24 @@ public class SimuladorSO {
 		Fila<Processo> filaProntoMedia = this.filtroPrioridade(Processo.prioridade.MEDIA);
 		Fila<Processo> filaProntoBaixa = this.filtroPrioridade(Processo.prioridade.BAIXA);
 
-		// Processamento
-		int clockSobrado = processaFila(filaProntoAlta, Programa.instrucaoCPU, reservadoParaAlta, 0);
+		// Processamento Alta
+		int tempoEsperaAtual = 0;
+		int clockDisponivel = reservadoParaAlta;
+		int clockSobrado = processaFila(filaProntoAlta, Programa.instrucaoCPU, clockDisponivel, tempoEsperaAtual);
 
-		clockSobrado = processaFila(filaProntoMedia, Programa.instrucaoCPU, reservadoParaMedia + clockSobrado,
-				reservadoParaAlta - clockSobrado);
+		// Processamento Media
+		tempoEsperaAtual = reservadoParaAlta - clockSobrado;
+		clockDisponivel = reservadoParaMedia + clockSobrado;
+		clockSobrado = processaFila(filaProntoMedia, Programa.instrucaoCPU, clockDisponivel, tempoEsperaAtual);
 
-		processaFila(filaProntoBaixa, Programa.instrucaoCPU, reservadoParaBaixa + clockSobrado,
-				(reservadoParaAlta + reservadoParaMedia) - clockSobrado);
+		// Processamento Baixa
+		tempoEsperaAtual = (reservadoParaAlta + reservadoParaMedia) - clockSobrado;
+		clockDisponivel = reservadoParaBaixa + clockSobrado;
+		processaFila(filaProntoBaixa, Programa.instrucaoCPU, clockDisponivel, tempoEsperaAtual);
 
-		processaFila(filaEsperaES1, Programa.instrucaoES1, this.hardware.getAllClocksES()[0], 0);
-		processaFila(filaEsperaES2, Programa.instrucaoES2, this.hardware.getAllClocksES()[1], 0);
-		processaFila(filaEsperaES3, Programa.instrucaoES3, this.hardware.getAllClocksES()[2], 0);
+		processaFila(filaEsperaES1, Programa.instrucaoES1, this.referenciaHardware.getAllClocksES()[0], 0);
+		processaFila(filaEsperaES2, Programa.instrucaoES2, this.referenciaHardware.getAllClocksES()[1], 0);
+		processaFila(filaEsperaES3, Programa.instrucaoES3, this.referenciaHardware.getAllClocksES()[2], 0);
 
 		// Para que as filas possam deixar de existir, mas os processo não
 		this.listaPrincipal.adiciona(filaProntoAlta.toVetor());
@@ -226,7 +294,7 @@ public class SimuladorSO {
 		IteradorManipulador<Processo> it = listaPrincipal.inicio();
 		while (it.temProximo()) {
 			Processo atual = ((Processo) it.getDado());
-			if (this.hardware.getPosicaoMemoria(atual.posicaoIntrucaoAtual()) == intrucaoFiltro) {
+			if (this.referenciaHardware.getPosicaoMemoria(atual.posicaoIntrucaoAtual()) == intrucaoFiltro) {
 
 				fila.adiciona(atual);// adiciona a fila, para manter contato
 				it.remove();// remove o elemento da lista
@@ -248,6 +316,7 @@ public class SimuladorSO {
 
 				fila.adiciona(atual);// adiciona a fila
 				it.remove();// remove o elemento da lista
+				// TODO detectar e concertar problema como it.remove
 			} else {
 				it.proximo();
 			}
@@ -277,17 +346,20 @@ public class SimuladorSO {
 				// incrementa as variaveis de estatistica
 				// TODO fazer estatistica de espera APÓS ter sido execultado
 
-				int clockNaoUsadosNestaOperacao = this.hardware.usarProcessamentoHardware(clockIndividual,
+				int clockNaoUsadosNestaOperacao = this.referenciaHardware.usarProcessamentoHardware(clockIndividual,
 						tipoDeIntrucao, this.processando);
 				// faz o processamento
 
-				if (this.processando.posicaoIntrucaoAtual() == tipoDeIntrucao) {
+				final int instrucaoAtual = this.referenciaHardware
+						.getPosicaoMemoria(this.processando.posicaoIntrucaoAtual());
+
+				if (instrucaoAtual == tipoDeIntrucao) {
 					// se mesmo depois do processamento pertencer a esta
 					// fila(permance neste estado)
 					fila.adiciona(this.processando);
 
 				} else {
-					if (this.processando.posicaoIntrucaoAtual() != Programa.instrucaoFIM) {
+					if (instrucaoAtual != Programa.instrucaoFIM) {
 						// agora passa a ser parte de outra fila(outro estado)
 						this.listaPrincipal.adiciona(this.processando);
 
