@@ -5,26 +5,29 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Canvas;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 
 public class Interface0_1 extends JFrame {
 
-	private JPanel contentPane;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane = new JPanel();;
 	private JTable table;
-
+	TableModel tableModel;
 	/**
 	 * Launch the application.
 	 */
@@ -48,20 +51,34 @@ public class Interface0_1 extends JFrame {
 		super("Simulador");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		
+		SpringLayout layout = new SpringLayout();
+		contentPane.setLayout(layout);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
 		JMenu Processos = new JMenu("Processos");
 		menuBar.add(Processos);
 		
-		JMenuItem Adicionar = new JMenuItem("Adicionar");
+		JMenuItem Adicionar = new JMenuItem("Criar");
 		Adicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String obj1 = JOptionPane.showInputDialog(null,"vai se fuder software");
+				CriaProcessoFrame processo = new CriaProcessoFrame();
+				processo.setVisible(true);
 			}
 		});
 		Processos.add(Adicionar);
+		
+		JMenu AlterarPrioridade = new JMenu("Alterar prioridade");
+		Processos.add(AlterarPrioridade);
+		
+		JMenuItem Alta = new JMenuItem("para Alta...");
+		AlterarPrioridade.add(Alta);
+		
+		JMenuItem Media = new JMenuItem("para Media...");
+		AlterarPrioridade.add(Media);
+		
+		JMenuItem Baixa = new JMenuItem("para Baixa...");
+		AlterarPrioridade.add(Baixa);
 		
 		JMenuItem Finalizar = new JMenuItem("Finalizar");
 		Processos.add(Finalizar);
@@ -69,7 +86,7 @@ public class Interface0_1 extends JFrame {
 		JMenuItem Pausa = new JMenuItem("Pausar");
 		Processos.add(Pausa);
 		
-		JMenuItem Retomar = new JMenuItem("Resumir");
+		JMenuItem Retomar = new JMenuItem("Retomar");
 		Processos.add(Retomar);
 		
 		JMenu Hardware = new JMenu("Hardware");
@@ -98,7 +115,7 @@ public class Interface0_1 extends JFrame {
 		
 		JMenuItem Sobre = new JMenuItem("Sobre");
 		Ajuda.add(Sobre);
-		contentPane = new JPanel();
+		
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
@@ -110,36 +127,42 @@ public class Interface0_1 extends JFrame {
 		tabbedPane.addTab("Detalhes", null, panel, null);
 		
 		table = new JTable();
+		//table.setModel(tableModel);
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
 			},
 			new String[] {
 				"Nome", "pid", "Status", "CPU", "Memoria"
 			}
 		));
-		panel.add(table);
+		panel.add(new JScrollPane(table));
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Grafico", null, panel_1, null);
 		
 		Canvas canvas = new Canvas();
-		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
-		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addComponent(canvas, GroupLayout.PREFERRED_SIZE, 417, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		gl_panel_1.setVerticalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addComponent(canvas, GroupLayout.DEFAULT_SIZE, 202, Short.MAX_VALUE)
-		);
-		panel_1.setLayout(gl_panel_1);
+		panel_1.add(canvas);
+		
+	}
+}
+class TableModel extends AbstractTableModel{
+	private static final long serialVersionUID = 1L;
+	@Override
+	public int getColumnCount() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
+	@Override
+	public int getRowCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Object getValueAt(int arg0, int arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }
