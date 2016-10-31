@@ -2,6 +2,7 @@ package br.edu.udc.simulador.janela;
 
 import java.awt.BorderLayout;
 
+import javax.management.monitor.CounterMonitorMBean;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -55,7 +56,7 @@ class ViewTabelaModel extends AbstractTableModel{
 	@Override
 	public int getColumnCount() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 4;
 	}
 
 	public void atualizar() {

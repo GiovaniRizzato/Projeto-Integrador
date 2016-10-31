@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.ViewportUI;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -17,6 +18,7 @@ import javax.swing.SpringLayout;
 import br.edu.udc.simulador.Computador;
 
 import java.awt.Canvas;
+import javax.swing.JTable;
 
 public class Interface0_1 extends JFrame {
 
@@ -25,18 +27,19 @@ public class Interface0_1 extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane = new JPanel();;
-	
-	Computador computador = new Computador();
-	ViewTabela viewTabela;
+	private JScrollPane scrollTabela = new JScrollPane();
+	private Computador computador = new Computador();
+	private ViewTabela viewTabela;
 //	TableModel tableModel;
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			Computador computador = new Computador();
 			public void run() {
 				try {
-					Interface0_1 frame = new Interface0_1();
+					Interface0_1 frame = new Interface0_1(computador);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -48,8 +51,9 @@ public class Interface0_1 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Interface0_1() {
+	public Interface0_1(Computador computador) {
 		super("Simulador");
+		this.computador = computador;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		SpringLayout layout = new SpringLayout();
@@ -127,8 +131,11 @@ public class Interface0_1 extends JFrame {
 		JPanel panel = new JPanel();
 		tabbedPane.addTab("Detalhes", null, panel, null);
 		
-		viewTabela = new ViewTabela(computador);
-		panel.add(new JScrollPane(viewTabela));
+		viewTabela = new ViewTabela(this.computador);
+		scrollTabela.setViewportView(viewTabela);
+		panel.add(viewTabela);
+		
+		
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Grafico", null, panel_1, null);
