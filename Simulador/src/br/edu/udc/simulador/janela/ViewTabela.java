@@ -8,7 +8,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import br.edu.udc.simulador.controle.Controle;
+import br.edu.udc.simulador.Computador;
 
 public class ViewTabela extends JPanel{
 	/**
@@ -18,28 +18,30 @@ public class ViewTabela extends JPanel{
 	private JTable table;
 	private ViewTabelaModel tbModel;
 	
-	public ViewTabela(Controle controle){
+	public ViewTabela(Computador computador){
 		setLayout(new BorderLayout(0,0));
 		
-		tbModel = new ViewTabelaModel(controle);
+		tbModel = new ViewTabelaModel(computador);
 		table = new JTable();
 		table.setModel((TableModel) tbModel);
 		add(new JScrollPane(table), BorderLayout.CENTER);
 	}
-	public void Atualizar(){
-		tbModel.Atualizar();
+	public void atualizar(){
+		tbModel.atualizar();
 	}
 }
 class ViewTabelaModel extends AbstractTableModel{
 	
 	private static final long serialVersionUID = 1;
-	private final String columnNames[]=new String[]{"pid","Nome","Memoria","CPU","Status"};
-	private final Class<?> columnTypes[] = new Class[]{Integer.class,String.class,Integer.class,Integer.class,String.class};
+	private final String columnNames[]=new String[]{"pid","prioridade","PosicaoIntruçãoAtaul","Estado do processo"};
+	private final Class<?> columnTypes[] = new Class[]{String.class,String.class,String.class,String.class};
 	
-	private Controle controle;
-	public ViewTabelaModel(Controle controle) {
+	private Computador computador;
+	private String tabela[][];
+	public ViewTabelaModel(Computador computador) {
 		// TODO Auto-generated constructor stub
-		this.controle = controle;
+		this.computador = computador;
+		this.tabela = computador.tabelaProcessos();
 	}
 	
 	public Class<?> getColumnClass(int columnIndex){
@@ -56,21 +58,19 @@ class ViewTabelaModel extends AbstractTableModel{
 		return 0;
 	}
 
-	public void Atualizar() {
+	public void atualizar() {
 		// TODO Auto-generated method stub
 		fireTableDataChanged();
 	}
 
 	@Override
 	public int getRowCount() {
-		// TODO Auto-generated method stub
-		return /*controle.qtdProcesso*/0;
+		return computador.qtdProcessos();
 	}
 
 	@Override
-	public Object getValueAt(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object getValueAt(int i, int j) {
+		return this.tabela[i][j];
 	}
 	
 }

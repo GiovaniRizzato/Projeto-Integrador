@@ -13,10 +13,9 @@ import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.SpringLayout;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
+import br.edu.udc.simulador.Computador;
+
 import java.awt.Canvas;
 
 public class Interface0_1 extends JFrame {
@@ -26,8 +25,10 @@ public class Interface0_1 extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane = new JPanel();;
-	private JTable table;
-	TableModel tableModel;
+	
+	Computador computador = new Computador();
+	ViewTabela viewTabela;
+//	TableModel tableModel;
 	/**
 	 * Launch the application.
 	 */
@@ -126,16 +127,8 @@ public class Interface0_1 extends JFrame {
 		JPanel panel = new JPanel();
 		tabbedPane.addTab("Detalhes", null, panel, null);
 		
-		table = new JTable();
-		//table.setModel(tableModel);
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"Nome", "pid", "Status", "CPU", "Memoria"
-			}
-		));
-		panel.add(new JScrollPane(table));
+		viewTabela = new ViewTabela(computador);
+		panel.add(new JScrollPane(viewTabela));
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Grafico", null, panel_1, null);
@@ -145,24 +138,4 @@ public class Interface0_1 extends JFrame {
 		
 	}
 }
-class TableModel extends AbstractTableModel{
-	private static final long serialVersionUID = 1L;
-	@Override
-	public int getColumnCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
-	@Override
-	public int getRowCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public Object getValueAt(int arg0, int arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-}

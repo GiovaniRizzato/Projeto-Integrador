@@ -1,30 +1,77 @@
 package br.edu.udc.simulador;
 
 import br.edu.udc.simulador.hardware.Hardware;
+import br.edu.udc.simulador.processo.Processo;
+import br.edu.udc.simulador.processo.Programa;
 import br.edu.udc.simulador.so.SimuladorSO;
 
 public class Computador {
-	
-	@SuppressWarnings("unused")
+
 	private SimuladorSO simulador;
 	private Hardware hardware;
-	
-	public Computador(){
-		int vetor[] = this.persistencia();
-		this.hardware = new Hardware(vetor[0], vetor[1], vetor[2], vetor[3], vetor[4]);
-		this.simulador = new SimuladorSO(hardware, vetor[5]);
+
+	public static final String prioridadeAlta = "Alta";
+	public static final String prioridadeMedia = "Media";
+	public static final String prioridadeBaixa = "Baixa";
+
+	public static final String first_fit = "First-fit";
+	public static final String best_fit = "Best-fit";
+	public static final String worst_fit = "Worst-fit";
+
+	public Computador() {
+		this.hardware = new Hardware(500, 10, 10, 10, 10);
+		this.simulador = new SimuladorSO(hardware, 5);
+
+		System.out.println(Processo.prioridade.ALTA);
+	}
+
+	public void criaProcesso(String prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3, String alocacao)
+			throws RuntimeException {
+		switch (prioridade) {
+		case Computador.prioridadeAlta: {
+			this.simulador.criaNovoProcesso(Processo.prioridade.ALTA, qtdCPU, qtdIO1, qtdIO2, qtdIO3, alocacao);
+			break;
+		}
+
+		case Computador.prioridadeMedia: {
+			this.simulador.criaNovoProcesso(Processo.prioridade.MEDIA, qtdCPU, qtdIO1, qtdIO2, qtdIO3, alocacao);
+			break;
+		}
+
+		case Computador.prioridadeBaixa: {
+			this.simulador.criaNovoProcesso(Processo.prioridade.BAIXA, qtdCPU, qtdIO1, qtdIO2, qtdIO3, alocacao);
+			break;
+		}
+		}
+	}
+
+	public String[][] tabelaProcessos() {
+		// 0 - pid
+		// 1 - prioridade
+		// 2 - PosicaoIntruçãoAtaul
+		// 3 - "Estado do processo"
+
+		final Processo[] todosProcessos = this.simulador.listaTodos();
+		String[][] retorno = new String[todosProcessos.length][4];
+
+		for (int i = 0; i > todosProcessos.length; i++) {
+			final Processo processo = todosProcessos[i];
+			retorno[i][0] = String.format("%d", processo.getPID());
+			retorno[i][1] = String.format("%s", processo.getPrioridade());
+			retorno[i][2] = String.format("%d", processo.posicaoIntrucaoAtual());
+			
+			final int instrucaoAtual = this.hardware.getPosicaoMemoria(processo.posicaoIntrucaoAtual());
+			if (instrucaoAtual == Programa.instrucaoCPU) {
+				retorno[i][3] = String.format("Pronto");
+			}else{
+				retorno[i][3] = String.format("Espera");
+			}
+		}
+
+		return retorno;
 	}
 	
-	private int[] persistencia() {
-		//TODO implementar "pegar" do arquivo
-		int vetor[] = new int[5];
-		vetor[0] = 5;//tamanhoMemoria
-		vetor[1] = 5;//clockCPU
-		vetor[2] = 5;//clockIO1
-		vetor[3] = 5;//clockIO2
-		vetor[4] = 5;//clockIO3
-		vetor[5] = 1;//tamanhoSO
-		
-		return vetor;
+	public int qtdProcessos(){
+		return this.simulador.qtdProcessosAtivos();
 	}
 }

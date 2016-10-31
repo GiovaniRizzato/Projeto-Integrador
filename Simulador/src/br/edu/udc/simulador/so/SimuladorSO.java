@@ -5,6 +5,7 @@ import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.vetor.Vetor;
+import br.edu.udc.simulador.Computador;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.processo.Programa;
@@ -83,19 +84,34 @@ public class SimuladorSO {
 		return processos;
 	}
 
-	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3,
+			String alocacao) throws RuntimeException {
+		// TODO Fazer case de string = prioridade...
+		// TODO switch alocaçao...
 
 		final Vetor<Integer> programa = Programa.criaPrograma(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-		final int posicaoAlocada;
+		int posicaoAlocada = 0;
 
-		try {
+		// Area de probabilidade de acontecer "RunTimeExeption"
+		switch (alocacao) {
+		case Computador.first_fit:
 			posicaoAlocada = procuraPosicaoMemoria_first(programa.tamanho(), this.proximoPidDisponivel);
-		} catch (RuntimeException e) {
-			// TODO mensagem de erro
-			return;
+			break;
+
+		/**
+		 * case Computador.best_fit: posicaoAlocada =
+		 * procuraPosicaoMemoria_best(programa.tamanho(),
+		 * this.proximoPidDisponivel); break;
+		 * 
+		 * case Computador.worst_fit: posicaoAlocada =
+		 * procuraPosicaoMemoria_worst(programa.tamanho(),
+		 * this.proximoPidDisponivel); break;
+		 */
 		}
+		// Fim área de erro
 
 		this.hardware.preencheMemoria(posicaoAlocada, programa);
+
 		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, posicaoAlocada, programa.tamanho());
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
@@ -125,7 +141,6 @@ public class SimuladorSO {
 		} // END FOR
 
 		throw new RuntimeException("Não há partição grande o suficiente");
-		// [Professor] qual a melhor exeção para este caso?
 	}
 
 	/**
@@ -159,7 +174,7 @@ public class SimuladorSO {
 
 		Processo.DadosEstatisticos estatistica;
 		estatistica = this.estadoFinalizacao.getDadosEstatisticos();
-		
+
 		this.estatisticaSO.qtdMemoria.adiciona(estatistica.qtdMemoria);
 		this.estatisticaSO.tempoDeCPU.adiciona(estatistica.CPU);
 		this.estatisticaSO.tempoDePronto.adiciona(estatistica.pronto);
@@ -170,8 +185,8 @@ public class SimuladorSO {
 		this.estatisticaSO.tempoDeES2.adiciona(estatistica.ES[1]);
 		this.estatisticaSO.tempoDeES3.adiciona(estatistica.ES[2]);
 
-		//TODO desalocação de momoria
-		
+		// TODO desalocação de momoria
+
 		this.estadoFinalizacao = null;
 		// Forçando o garbege collector a deleta-lo
 	}
