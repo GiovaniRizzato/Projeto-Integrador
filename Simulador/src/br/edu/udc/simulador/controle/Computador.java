@@ -1,4 +1,4 @@
-package br.edu.udc.simulador;
+package br.edu.udc.simulador.controle;
 
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.so.SimuladorSO;
