@@ -1,11 +1,12 @@
 package br.edu.udc.simulador.so;
 
+import javax.crypto.IllegalBlockSizeException;
+
 import br.edu.udc.ed.fila.Fila;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.mapa.Mapa;
-import br.edu.udc.ed.vetor.ConjuntoAmostral;
 import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
@@ -35,72 +36,18 @@ public class SimuladorSO {
 	private Float porcentagemCPUBaixa;
 
 	// Gerencianmento de memória
-	@SuppressWarnings("unused")
-	private class Particao {
-		public Processo processo;
-		// referenca do processo para fazer a desfragmentação
-		public Integer pid;
-		public Integer tamanho;
-		public Integer posicao;
-
-		public Particao(int pid, int tamanho, int posicao) {
-			this.processo = null;
-			this.pid = pid;
-			this.tamanho = tamanho;
-			this.posicao = posicao;
-		}
-
-		public Particao(Processo processo, int tamanho, int posicao) {
-			this.processo = null;
-			this.pid = processo.getPID();
-			this.tamanho = tamanho;
-			this.posicao = posicao;
-		}
-	}
-
 	private Lista<Particao> listaMemoria = new Lista<>();
-	private Iterador<Particao> posicaoMaisAltaAllocada;
-
-	// Armazenamento de dados estatisticos
-	// Podem ser declaradas por outras classes para "copiar" as estatisiticas
-	public static class EstatisticaSO {
-		public ConjuntoAmostral<Integer> qtdMemoria = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDeCPU = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDePronto = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDeES1 = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDeES2 = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDeES3 = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDeEsperaES1 = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDeEsperaES2 = new ConjuntoAmostral<>();
-		public ConjuntoAmostral<Integer> tempoDeEsperaES3 = new ConjuntoAmostral<>();
-
-		@Override
-		public EstatisticaSO clone() {
-			EstatisticaSO clonado = new EstatisticaSO();
-			// [Professor] como fazer para que não precise de casting
-			clonado.qtdMemoria = this.qtdMemoria.clone();
-			clonado.tempoDeCPU = this.qtdMemoria.clone();
-			clonado.tempoDePronto = this.qtdMemoria.clone();
-			clonado.tempoDeES1 = this.qtdMemoria.clone();
-			clonado.tempoDeES2 = this.qtdMemoria.clone();
-			clonado.tempoDeES3 = this.qtdMemoria.clone();
-			clonado.tempoDeEsperaES1 = this.qtdMemoria.clone();
-			clonado.tempoDeEsperaES2 = this.qtdMemoria.clone();
-			clonado.tempoDeEsperaES3 = this.qtdMemoria.clone();
-
-			return clonado;
-		}
-	}
+	private Lista<Particao> listaMemoriaVazia = new Lista<>();
 
 	private EstatisticaSO estatisticaSO = new EstatisticaSO();
 
 	public SimuladorSO(Hardware hardware, int tamanhoSO, float porcentagemAlta, float porcentagemMedia) {
 		this.referenciaHardware = hardware;
 		this.listaMemoria.adiciona(new Particao(this.pidSO, tamanhoSO, 0));
-		this.posicaoMaisAltaAllocada = this.listaMemoria.inicio();
 
 		final int espacoVazio = this.referenciaHardware.tamanhoMemoria() - tamanhoSO;
 		this.listaMemoria.adiciona(new Particao(this.posicaoMemoriaVazia, espacoVazio, tamanhoSO));
+		this.listaMemoriaVazia.adiciona(this.listaMemoria.obtem(0));
 
 		this.porcentagemCPUAlta = porcentagemAlta;
 		this.porcentagemCPUMedia = porcentagemMedia;
@@ -113,6 +60,10 @@ public class SimuladorSO {
 
 	public int qtdProcessosPausados() {
 		return this.listaPausado.tamanho();
+	}
+	
+	public EstatisticaSO getEstatisticas() {
+		return this.estatisticaSO.clone();
 	}
 
 	public Processo[] listaTodos() {
@@ -136,17 +87,12 @@ public class SimuladorSO {
 
 		try {
 			particaoLivre = procuraPosicaoMemoria_first(tamanhoPrograma);
-		} catch (RuntimeException e) {
+		} catch (IllegalBlockSizeException e) {
 			// TODO mensagem de erro
 			return;
 		}
 
 		final int posicaoLivre = particaoLivre.getDado().posicao;
-		final int posicaoMaisAltaAllocada = this.posicaoMaisAltaAllocada.getDado().posicao;
-
-		if (posicaoMaisAltaAllocada < posicaoLivre) {
-			this.posicaoMaisAltaAllocada = particaoLivre;
-		}
 
 		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, posicaoLivre, tamanhoPrograma);
 		this.allocaMemoria(this.estadoCriacao, tamanhoPrograma, particaoLivre);
@@ -158,7 +104,8 @@ public class SimuladorSO {
 		this.proximoPidDisponivel++;
 	}
 
-	private IteradorManipulador<Particao> procuraPosicaoMemoria_first(int tamanhoPrograma) {
+	private IteradorManipulador<Particao> procuraPosicaoMemoria_first(int tamanhoPrograma)
+			throws IllegalBlockSizeException {
 
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			// Procura por uma partição vazia
@@ -171,62 +118,17 @@ public class SimuladorSO {
 			}
 		}
 
-		throw new RuntimeException("Não há partição livre grande o suficiente");
-		// TODO [Professor] qual a melhor exeção para este caso?
+		throw new IllegalBlockSizeException("Não há partição livre grande o suficiente");
 	}
 
 	private IteradorManipulador<Particao> procuraPosicaoMemoria_best(int tamanhoPrograma) {
-
-		int tamanhoParticaoEncontrada = this.referenciaHardware.tamanhoMemoria();
-		IteradorManipulador<Particao> retorno = null;
-
-		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
-			// Procura por uma partição vazia
-			if (it.getDado().pid == this.posicaoMemoriaVazia) {
-
-				final Particao cursor = it.getDado();
-				// Verifica se a partição é grande o suficiente para allocação
-				if (cursor.tamanho >= tamanhoPrograma) {
-					if (cursor.tamanho < tamanhoParticaoEncontrada) {
-						tamanhoParticaoEncontrada = cursor.tamanho;
-						retorno = it;
-					}
-				}
-			}
-		}
-
-		if (tamanhoParticaoEncontrada == this.referenciaHardware.tamanhoMemoria()) {
-			throw new RuntimeException("Não há partição livre grande o suficiente");
-		}
-
-		return retorno;
+		// TODO refazer
+		return null;
 	}
 
 	private IteradorManipulador<Particao> procuraPosicaoMemoria_worst(int tamanhoPrograma) {
-
-		int tamanhoParticaoEncontrada = this.referenciaHardware.tamanhoMemoria();
-		IteradorManipulador<Particao> retorno = null;
-
-		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
-			// Procura por uma partição vazia
-			if (it.getDado().pid == this.posicaoMemoriaVazia) {
-
-				final Particao cursor = it.getDado();
-				// Verifica se a partição é grande o suficiente para allocação
-				if (cursor.tamanho >= tamanhoPrograma) {
-					if (cursor.tamanho > tamanhoParticaoEncontrada) {
-						tamanhoParticaoEncontrada = cursor.tamanho;
-						retorno = it;
-					}
-				}
-			}
-		}
-
-		if (tamanhoParticaoEncontrada == this.referenciaHardware.tamanhoMemoria()) {
-			throw new RuntimeException("Não há partição livre grande o suficiente");
-		}
-
-		return retorno;
+		// TODO refazer
+		return null;
 	}
 
 	private void allocaMemoria(Processo processo, int tamanhoPrograma, IteradorManipulador<Particao> particaoLivre) {
@@ -239,7 +141,14 @@ public class SimuladorSO {
 		} else {
 			particaoLivre.getDado().tamanho = tamanhoAtualizadoLivre;
 			particaoLivre.getDado().posicao += tamanhoPrograma;
+
+			this.reordenaListaMemoriaVazia();
 		}
+	}
+
+	private void reordenaListaMemoriaVazia() {
+		// TODO Auto-generated method stub
+
 	}
 
 	public void alteraPrioridade(int pid, Processo.prioridade novaPrioridade) {
@@ -261,8 +170,7 @@ public class SimuladorSO {
 			}
 		}
 
-		throw new IllegalArgumentException("Pid não encontrado nos registros");
-		// [Professor] qual a melhor exeção neste caso?
+		throw new IllegalArgumentException("Pid não encontrado");
 	}
 
 	private void matarProcesso() {
@@ -287,14 +195,38 @@ public class SimuladorSO {
 	}
 
 	public void desfragmentacaoMemoria() {
-
-		IteradorManipulador<Particao> it;
-		for (it = this.listaMemoria.inicio(); it != this.posicaoMaisAltaAllocada; it.proximo()) {
-			if (it.getDado().pid == this.posicaoMemoriaVazia) {
-
-			}
-		}
+		this.desfragmentacaoMemoria(this.listaMemoria.inicio());
 	}
+
+	private void desfragmentacaoMemoria(IteradorManipulador<Particao> inicio) {
+
+		IteradorManipulador<Particao> it_vazio;
+		for (it_vazio = inicio; it_vazio.temProximo(); it_vazio.proximo()) {
+			if (it_vazio.getDado().pid == this.posicaoMemoriaVazia) {
+				// Encontrou uma posição vazia
+
+				IteradorManipulador<Particao> it_realocados;
+				for (it_realocados = it_vazio; it_realocados.temProximo(); it_realocados.proximo()) {
+					// Percorre todod as partições a frente para "realocalas"
+					// sem espaços
+
+					final Particao realocada = it_realocados.getDado();
+					if (realocada.pid != this.posicaoMemoriaVazia) {
+						// A partição é um programa e deve ser realocado
+						final Processo processo = realocada.processo;
+						final int tamanhoPrograma = processo.getInicioPrograma() - processo.getInicioPrograma();
+						final Programa programa = this.programaNaParticao(realocada);
+
+						this.allocaMemoria(processo, tamanhoPrograma, it_vazio);
+						this.referenciaHardware.preencheMemoria(it_vazio.getDado().posicao, programa.toVetor());
+					} else {
+						// encontrou mais uma posição vazia na memória
+						this.desfragmentacaoMemoria(it_realocados);
+					} // END ELSE partiçãoVazia
+				} // END FOR realocando programas
+			} // END IF procurando vazio
+		} // END FOR procurando vazio
+	}// END método
 
 	private Programa programaNaParticao(Particao particao) {
 		Programa programa = new Programa();
@@ -311,7 +243,10 @@ public class SimuladorSO {
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			if (it.getDado().pid == pid) {
 				it.getDado().pid = this.posicaoMemoriaVazia;
+				//"marca" como vazio
+				
 				this.verificaEspacoLivreAdjacente();
+				this.reordenaListaMemoriaVazia();
 				return;
 			}
 		}
@@ -322,26 +257,22 @@ public class SimuladorSO {
 	private void verificaEspacoLivreAdjacente() {
 
 		// TODO Fazer testes espaçoVaziaAdjacente
-		for (int i = 0; i > (this.listaMemoria.tamanho() - 1); i++) {
+		for (int i = 1; i > (this.listaMemoria.tamanho()); i++) {
 
-			final Particao particaoAnterior = this.listaMemoria.obtem(i);
+			final Particao particaoAnterior = this.listaMemoria.obtem(i - 1);
 			if (particaoAnterior.pid == this.posicaoMemoriaVazia) {
 				// Verifica se a partição representa memoria vazia
 
-				final Particao particaoPosterior = this.listaMemoria.obtem(i + 1);
+				final Particao particaoPosterior = this.listaMemoria.obtem(i);
 				if (particaoPosterior.pid == this.posicaoMemoriaVazia) {
 					// Verifica se a posição posterior é vazia também
 
 					particaoAnterior.tamanho += particaoPosterior.tamanho;
-					this.listaMemoria.remove(i + 1);// posterior
-				}
-			}
-		}
-	}
-
-	public EstatisticaSO getEstatisticas() {
-		return this.estatisticaSO.clone();
-	}
+					this.listaMemoria.remove(i);// posterior
+				} // END if partiçãoPosterior
+			} // END if partiçãoAnterior
+		} // END for
+	}// END método
 
 	public void execultarProcessos() {
 
@@ -499,8 +430,7 @@ public class SimuladorSO {
 			throw new IllegalArgumentException("Nenhum processo com este PID está pausado");
 		}
 
-		final Processo processoResumido = this.listaPausado.obtem(pid);
-		this.listaPrincipal.adiciona(processoResumido);
+		this.listaPrincipal.adiciona(this.listaPausado.obtem(pid));
 		this.listaPausado.remove(pid);
 	}
 }

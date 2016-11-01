@@ -13,6 +13,7 @@ public class Programa {
 	public final static int instrucaoFIM = -1;
 
 	public Programa() {
+		this.conjuntoIntrucoes = new Vetor<>();
 	}
 
 	public Programa(int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
@@ -35,7 +36,7 @@ public class Programa {
 		}
 
 		// PASSO 2- Embaralha as posições desse vetor.
-		conjuntoIntrucoes.shuffle();
+		conjuntoIntrucoes.randomiza();
 
 		// PASSO 3- Adiciona a intrução "fim" ao final de todas as
 		// intruções.
@@ -48,5 +49,6 @@ public class Programa {
 
 	public void adicionaIntrucao(int intrucao) {
 		conjuntoIntrucoes.adiciona(intrucao);
+		//adiciona ao fim do vetor
 	}
 }
