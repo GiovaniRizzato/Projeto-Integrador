@@ -83,15 +83,37 @@ public class Interface0_1 extends JFrame {
 				alteraPrioridadeDialog.setVisible(true);
 			}
 		});
-		JMenuItem Finalizar = new JMenuItem("Finalizar");
-		processos.add(Finalizar);
+		JMenuItem finalizar = new JMenuItem("Finalizar");
+		processos.add(finalizar);
+		finalizar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAcoes finalizaProcesso = new DialogAcoes("Finalizar processo");
+				finalizaProcesso.setVisible(true);
+			}
+		});
 
-		JMenuItem Pausa = new JMenuItem("Pausar");
-		processos.add(Pausa);
-
-		JMenuItem Retomar = new JMenuItem("Retomar");
-		processos.add(Retomar);
-
+		JMenuItem pausa = new JMenuItem("Pausar");
+		processos.add(pausa);
+		pausa.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAcoes pausaProcesso = new DialogAcoes("Pausar Processo");
+				pausaProcesso.setVisible(true);
+			}
+		});
+		JMenuItem retomar = new JMenuItem("Retomar");
+		processos.add(retomar);
+		retomar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAcoes retomaProcesso = new DialogAcoes("Retomar Processo");
+				retomaProcesso.setVisible(true);
+			}
+		});
 		JMenu hardware = new JMenu("Hardware");
 		menuBar.add(hardware);
 
