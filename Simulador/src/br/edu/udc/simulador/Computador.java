@@ -1,6 +1,8 @@
 package br.edu.udc.simulador;
 
+import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.simulador.hardware.Hardware;
+import br.edu.udc.simulador.janela.AttView;
 import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.processo.Programa;
 import br.edu.udc.simulador.so.SimuladorSO;
@@ -9,7 +11,9 @@ public class Computador {
 
 	private SimuladorSO simulador;
 	private Hardware hardware;
-
+	
+	private Lista<AttView> listaView = new Lista<>();
+	
 	public static final String prioridadeAlta = "Alta";
 	public static final String prioridadeMedia = "Media";
 	public static final String prioridadeBaixa = "Baixa";
@@ -19,11 +23,24 @@ public class Computador {
 	public static final String worst_fit = "Worst-fit";
 
 	public Computador() {
+		
 		this.hardware = new Hardware(500, 10, 10, 10, 10);
 		this.simulador = new SimuladorSO(hardware, 5);
 
-		System.out.println(Processo.prioridade.ALTA);
+		//System.out.println(Processo.prioridade.ALTA);
 	}
+	
+	public void adicionaView(AttView view){
+		listaView.adiciona(view);
+		//TODO temos que adicionar adicionafim...
+	}
+	public void removeView(AttView view){
+		//listaView.
+		//TODO temos que adicionar pesquisa/consulta... remove.
+	}
+	/*private void atualizarView(){
+		//TODO atualiza view...
+	}*/
 
 	public void criaProcesso(String prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3, String alocacao)
 			throws RuntimeException {

@@ -24,7 +24,6 @@ public class CriaProcessoFrame extends JFrame {
 	public final static int OK = 1;
 	public final static int CANCEL = 0;
 	private Computador computador = new Computador();
-	private ViewTabela viewTabela = new ViewTabela(computador);
 	
 	private JComboBox<?> estrategiaComboBox;
 	private JComboBox<?> prioridadeComboBox;
@@ -171,7 +170,6 @@ public class CriaProcessoFrame extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					viewTabela.atualizar();
 					final String prioridade = (String) prioridadeComboBox.getSelectedItem();
 					final int instrucoesCPU = (int) clockCPU.getValue();
 					final int instrucoesES[] = { (int) clockES1.getValue(), (int) clockES2.getValue(),

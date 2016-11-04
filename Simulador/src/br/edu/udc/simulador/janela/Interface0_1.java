@@ -7,7 +7,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ViewportUI;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -18,7 +17,6 @@ import javax.swing.SpringLayout;
 import br.edu.udc.simulador.Computador;
 
 import java.awt.Canvas;
-import javax.swing.JTable;
 
 public class Interface0_1 extends JFrame {
 
@@ -30,13 +28,15 @@ public class Interface0_1 extends JFrame {
 	private JScrollPane scrollTabela = new JScrollPane();
 	private Computador computador = new Computador();
 	private ViewTabela viewTabela;
-//	TableModel tableModel;
+
+	// TableModel tableModel;
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			Computador computador = new Computador();
+
 			public void run() {
 				try {
 					Interface0_1 frame = new Interface0_1(computador);
@@ -60,89 +60,120 @@ public class Interface0_1 extends JFrame {
 		contentPane.setLayout(layout);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
-		JMenu Processos = new JMenu("Processos");
-		menuBar.add(Processos);
-		
-		JMenuItem Adicionar = new JMenuItem("Criar");
-		Adicionar.addActionListener(new ActionListener() {
+
+		JMenu processos = new JMenu("Processos");
+		menuBar.add(processos);
+
+		JMenuItem adicionar = new JMenuItem("Criar");
+		adicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CriaProcessoFrame processo = new CriaProcessoFrame();
 				processo.setVisible(true);
 			}
 		});
-		Processos.add(Adicionar);
-		
-		JMenu AlterarPrioridade = new JMenu("Alterar prioridade");
-		Processos.add(AlterarPrioridade);
-		
-		JMenuItem Alta = new JMenuItem("para Alta...");
-		AlterarPrioridade.add(Alta);
-		
-		JMenuItem Media = new JMenuItem("para Media...");
-		AlterarPrioridade.add(Media);
-		
-		JMenuItem Baixa = new JMenuItem("para Baixa...");
-		AlterarPrioridade.add(Baixa);
-		
+		processos.add(adicionar);
+
+		JMenuItem alterarPrioridade = new JMenuItem("Alterar prioridade");
+		processos.add(alterarPrioridade);
+		alterarPrioridade.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAlteraPrioridade alteraPrioridadeDialog = new DialogAlteraPrioridade("Altera prioridade");
+				alteraPrioridadeDialog.setVisible(true);
+			}
+		});
 		JMenuItem Finalizar = new JMenuItem("Finalizar");
-		Processos.add(Finalizar);
-		
+		processos.add(Finalizar);
+
 		JMenuItem Pausa = new JMenuItem("Pausar");
-		Processos.add(Pausa);
-		
+		processos.add(Pausa);
+
 		JMenuItem Retomar = new JMenuItem("Retomar");
-		Processos.add(Retomar);
-		
-		JMenu Hardware = new JMenu("Hardware");
-		menuBar.add(Hardware);
-		
-		JMenuItem AlteraClockCpu = new JMenuItem("Altera clock CPU");
-		Hardware.add(AlteraClockCpu);
-		
-		JMenuItem AlteraClockEs = new JMenuItem("Altera clock E/S 1");
-		Hardware.add(AlteraClockEs);
-		
-		JMenuItem AlteraClockEs_1 = new JMenuItem("Altera clock E/S 2");
-		Hardware.add(AlteraClockEs_1);
-		
-		JMenuItem AlteraClockEs_2 = new JMenuItem("Altera clock E/S 3");
-		Hardware.add(AlteraClockEs_2);
-		
-		JMenuItem Defragmenta = new JMenuItem("Desfragmenta");
-		Hardware.add(Defragmenta);
-		
+		processos.add(Retomar);
+
+		JMenu hardware = new JMenu("Hardware");
+		menuBar.add(hardware);
+
+		JMenuItem alteraClockCpu = new JMenuItem("Altera clock CPU");
+		hardware.add(alteraClockCpu);
+		alteraClockCpu.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAlteraClock alteraClock = new DialogAlteraClock("Altera numero de Intruçoes CPU");
+				alteraClock.setVisible(true);
+			}
+		});
+		JMenuItem alteraClockEs_1 = new JMenuItem("Altera clock E/S 1");
+		hardware.add(alteraClockEs_1);
+		alteraClockEs_1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAlteraClock alteraClockES1 = new DialogAlteraClock("Altera numero de Intruçoes E/S.1");
+				alteraClockES1.setVisible(true);
+			}
+		});
+
+		JMenuItem alteraClockEs_2 = new JMenuItem("Altera clock E/S 2");
+		hardware.add(alteraClockEs_2);
+		alteraClockEs_2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAlteraClock alteraClockES2 = new DialogAlteraClock("Altera numero de Intruçoes E/S.2");
+				alteraClockES2.setVisible(true);
+			}
+		});
+		JMenuItem alteraClockEs_3 = new JMenuItem("Altera clock E/S 3");
+		hardware.add(alteraClockEs_3);
+		alteraClockEs_3.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DialogAlteraClock alteraClockES3 = new DialogAlteraClock("Altera numero de Intruçoes E/S.3");
+				alteraClockES3.setVisible(true);
+
+			}
+		});
+		JMenuItem desfragmenta = new JMenuItem("Desfragmenta");
+		hardware.add(desfragmenta);
+		desfragmenta.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		JMenu Ajuda = new JMenu("Ajuda");
 		menuBar.add(Ajuda);
-		
+
 		JMenuItem Manual = new JMenuItem("Manual");
 		Ajuda.add(Manual);
-		
+
 		JMenuItem Sobre = new JMenuItem("Sobre");
 		Ajuda.add(Sobre);
-		
+
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
+
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
-		
+
 		JPanel panel = new JPanel();
 		tabbedPane.addTab("Detalhes", null, panel, null);
-		
+
 		viewTabela = new ViewTabela(this.computador);
 		scrollTabela.setViewportView(viewTabela);
+
 		panel.add(viewTabela);
-		
-		
-		
+
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Grafico", null, panel_1, null);
-		
+
 		Canvas canvas = new Canvas();
 		panel_1.add(canvas);
-		
+
 	}
 }
-

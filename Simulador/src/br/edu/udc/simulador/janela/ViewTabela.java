@@ -11,7 +11,7 @@ import javax.swing.table.TableModel;
 
 import br.edu.udc.simulador.Computador;
 
-public class ViewTabela extends JPanel{
+public class ViewTabela extends JPanel implements AttView{
 	/**
 	 * 
 	 */
@@ -36,13 +36,21 @@ class ViewTabelaModel extends AbstractTableModel{
 	private static final long serialVersionUID = 1;
 	private final String columnNames[]=new String[]{"pid","prioridade","PosicaoIntruçãoAtaul","Estado do processo"};
 	private final Class<?> columnTypes[] = new Class[]{String.class,String.class,String.class,String.class};
-	
+	private String[][] teste={{"hola","teste","haha","dia"}};
+	public String[][] getTeste() {
+		return teste;
+	}
+
 	private Computador computador;
-	private String tabela[][];
+	private String tabela[][]={{"hola","teste","teste1","teste2"},
+			{"hola","teste","teste1","teste2"},
+			{"hola","teste","teste1","teste2"},
+			{"hola","teste","teste1","teste2"},
+			{"hola","teste","teste1","teste2"}};
+	
 	public ViewTabelaModel(Computador computador) {
-		// TODO Auto-generated constructor stub
 		this.computador = computador;
-		this.tabela = computador.tabelaProcessos();
+		//this.tabela = computador.tabelaProcessos();
 	}
 	
 	public Class<?> getColumnClass(int columnIndex){
@@ -66,12 +74,13 @@ class ViewTabelaModel extends AbstractTableModel{
 
 	@Override
 	public int getRowCount() {
-		return computador.qtdProcessos();
+		return tabela.length;
 	}
 
 	@Override
-	public Object getValueAt(int i, int j) {
-		return this.tabela[i][j];
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		return this.tabela[rowIndex][columnIndex];
+		
 	}
 	
 }
