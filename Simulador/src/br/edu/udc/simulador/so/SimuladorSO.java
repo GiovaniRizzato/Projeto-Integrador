@@ -45,9 +45,10 @@ public class SimuladorSO {
 		this.referenciaHardware = hardware;
 		this.listaMemoria.adiciona(new Particao(this.pidSO, tamanhoSO, 0));
 
-		final int espacoVazio = this.referenciaHardware.tamanhoMemoria() - tamanhoSO;
-		this.listaMemoria.adiciona(new Particao(this.posicaoMemoriaVazia, espacoVazio, tamanhoSO));
-		this.listaMemoriaVazia.adiciona(this.listaMemoria.obtem(0));
+		final int tamanhoEspacoVazio = this.referenciaHardware.tamanhoMemoria() - tamanhoSO;
+		final Particao particaoMemoriaVazia = new Particao(this.posicaoMemoriaVazia, tamanhoEspacoVazio, tamanhoSO);
+		this.listaMemoria.adiciona(particaoMemoriaVazia);
+		this.listaMemoriaVazia.adiciona(particaoMemoriaVazia);
 
 		this.porcentagemCPUAlta = porcentagemAlta;
 		this.porcentagemCPUMedia = porcentagemMedia;
@@ -61,12 +62,12 @@ public class SimuladorSO {
 	public int qtdProcessosPausados() {
 		return this.listaPausado.tamanho();
 	}
-	
+
 	public EstatisticaSO getEstatisticas() {
 		return this.estatisticaSO.clone();
 	}
 
-	public Processo[] listaTodos() {
+	public Processo[] listaTodosAtivos() {
 
 		Processo[] processos = new Processo[this.listaPrincipal.tamanho()];
 
@@ -79,7 +80,7 @@ public class SimuladorSO {
 		return processos;
 	}
 
-	public void criaNovoProcesso(Processo.prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+	public void criaNovoProcesso(Processo.Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 
 		final Programa programa = new Programa(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 		final int tamanhoPrograma = qtdCPU + qtdIO1 + qtdIO2 + qtdIO3;
@@ -134,10 +135,14 @@ public class SimuladorSO {
 	private void allocaMemoria(Processo processo, int tamanhoPrograma, IteradorManipulador<Particao> particaoLivre) {
 
 		particaoLivre.adicionaAntes(new Particao(processo, tamanhoPrograma, particaoLivre.getDado().posicao));
+		processo.setPosicaoMemoria(particaoLivre.getDado().posicao);
 
 		final int tamanhoAtualizadoLivre = particaoLivre.getDado().tamanho - tamanhoPrograma;
+		particaoLivre.getDado().tamanho = tamanhoAtualizadoLivre;
+
 		if (tamanhoAtualizadoLivre == 0) {// patição agora é "nula"
 			particaoLivre.remove();
+			// TODO algum modo para remover de this.listaMemoriaVazia tambem
 		} else {
 			particaoLivre.getDado().tamanho = tamanhoAtualizadoLivre;
 			particaoLivre.getDado().posicao += tamanhoPrograma;
@@ -147,12 +152,25 @@ public class SimuladorSO {
 	}
 
 	private void reordenaListaMemoriaVazia() {
-		// TODO Auto-generated method stub
 
+		for (IteradorManipulador<Particao> it = this.listaMemoriaVazia.inicio(); it.temProximo(); it.proximo()) {
+			final int tamanhoParticao = it.getDado().tamanho;
+			if (tamanhoParticao == 0) {
+				it.remove();
+			}
+		}
 	}
 
-	public void alteraPrioridade(int pid, Processo.prioridade novaPrioridade) {
-		// TODO altera prioridade
+	public void alteraPrioridade(int pid, Processo.Prioridade novaPrioridade) {
+
+		for (IteradorManipulador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+			final Processo processo = it.getDado();
+			if (processo.getPID() == pid) {
+				processo.setPrioridade(novaPrioridade);
+			}
+		}
+
+		throw new IllegalArgumentException("Pid não encontrado");
 	}
 
 	public void sinalFinalizacao(int pid) {
@@ -207,7 +225,7 @@ public class SimuladorSO {
 
 				IteradorManipulador<Particao> it_realocados;
 				for (it_realocados = it_vazio; it_realocados.temProximo(); it_realocados.proximo()) {
-					// Percorre todod as partições a frente para "realocalas"
+					// Percorre todos as partições a frente para "realocalas"
 					// sem espaços
 
 					final Particao realocada = it_realocados.getDado();
@@ -217,16 +235,18 @@ public class SimuladorSO {
 						final int tamanhoPrograma = processo.getInicioPrograma() - processo.getInicioPrograma();
 						final Programa programa = this.programaNaParticao(realocada);
 
-						this.allocaMemoria(processo, tamanhoPrograma, it_vazio);
+						// Realocação do espaço de memoria
+						this.desalocaMemoria(realocada.pid);
 						this.referenciaHardware.preencheMemoria(it_vazio.getDado().posicao, programa.toVetor());
+						this.allocaMemoria(processo, tamanhoPrograma, it_vazio);
 					} else {
-						// encontrou mais uma posição vazia na memória
+						// Encontrou mais uma posição vazia na memória
 						this.desfragmentacaoMemoria(it_realocados);
 					} // END ELSE partiçãoVazia
 				} // END FOR realocando programas
 			} // END IF procurando vazio
 		} // END FOR procurando vazio
-	}// END método
+	}
 
 	private Programa programaNaParticao(Particao particao) {
 		Programa programa = new Programa();
@@ -243,8 +263,8 @@ public class SimuladorSO {
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			if (it.getDado().pid == pid) {
 				it.getDado().pid = this.posicaoMemoriaVazia;
-				//"marca" como vazio
-				
+				// "marca" como vazio
+
 				this.verificaEspacoLivreAdjacente();
 				this.reordenaListaMemoriaVazia();
 				return;
@@ -256,7 +276,6 @@ public class SimuladorSO {
 
 	private void verificaEspacoLivreAdjacente() {
 
-		// TODO Fazer testes espaçoVaziaAdjacente
 		for (int i = 1; i > (this.listaMemoria.tamanho()); i++) {
 
 			final Particao particaoAnterior = this.listaMemoria.obtem(i - 1);
@@ -287,9 +306,9 @@ public class SimuladorSO {
 		Fila<Processo> filaEsperaES2 = this.filtroIntrucaoAtual(Programa.instrucaoES2);
 		Fila<Processo> filaEsperaES3 = this.filtroIntrucaoAtual(Programa.instrucaoES3);
 		// PRIORIDADE
-		Fila<Processo> filaProntoAlta = this.filtroPrioridade(Processo.prioridade.ALTA);
-		Fila<Processo> filaProntoMedia = this.filtroPrioridade(Processo.prioridade.MEDIA);
-		Fila<Processo> filaProntoBaixa = this.filtroPrioridade(Processo.prioridade.BAIXA);
+		Fila<Processo> filaProntoAlta = this.filtroPrioridade(Processo.Prioridade.ALTA);
+		Fila<Processo> filaProntoMedia = this.filtroPrioridade(Processo.Prioridade.MEDIA);
+		Fila<Processo> filaProntoBaixa = this.filtroPrioridade(Processo.Prioridade.BAIXA);
 
 		// Processamento Alta
 		int tempoEsperaAtual = 0;
@@ -337,7 +356,7 @@ public class SimuladorSO {
 		return fila;
 	}
 
-	private Fila<Processo> filtroPrioridade(Processo.prioridade prioridade) {
+	private Fila<Processo> filtroPrioridade(Processo.Prioridade prioridade) {
 		Fila<Processo> fila = new Fila<>();
 
 		IteradorManipulador<Processo> it = listaPrincipal.inicio();
