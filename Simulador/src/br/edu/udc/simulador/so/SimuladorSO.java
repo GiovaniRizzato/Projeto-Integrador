@@ -1,13 +1,14 @@
 package br.edu.udc.simulador.so;
 
-import javax.crypto.IllegalBlockSizeException;
-
 import br.edu.udc.ed.fila.Fila;
+import br.edu.udc.ed.fila.encadeada.FilaEncadeada;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
+import br.edu.udc.ed.lista.Ordenavel;
+import br.edu.udc.ed.lista.encadeada.ListaEncadeada;
+import br.edu.udc.ed.lista.encadeada.ListaOrdenavel;
 import br.edu.udc.ed.mapa.Mapa;
-import br.edu.udc.ed.vetor.Vetor;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.processo.Programa;
@@ -20,7 +21,7 @@ public class SimuladorSO {
 	private Processo estadoFinalizacao;
 
 	// Armazenamento de processos
-	private Lista<Processo> listaPrincipal = new Lista<>();
+	private Lista<Processo> listaPrincipal = new ListaEncadeada<>();
 	private Mapa<Integer, Processo> listaPausado = new Mapa<>();
 
 	// Referencias
@@ -36,8 +37,8 @@ public class SimuladorSO {
 	private Float porcentagemCPUBaixa;
 
 	// Gerencianmento de memória
-	private Lista<Particao> listaMemoria = new Lista<>();
-	private Lista<Particao> listaMemoriaVazia = new Lista<>();
+	private Ordenavel<Particao> listaMemoria = new ListaOrdenavel<>();
+	private Ordenavel<Particao> listaMemoriaVazia = new ListaOrdenavel<>();
 
 	private EstatisticaSO estatisticaSO = new EstatisticaSO();
 
@@ -83,21 +84,21 @@ public class SimuladorSO {
 	public void criaNovoProcesso(Processo.Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 
 		final Programa programa = new Programa(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-		final int tamanhoPrograma = qtdCPU + qtdIO1 + qtdIO2 + qtdIO3;
+		final int tamanhoPrograma = programa.tamanho();
 		final IteradorManipulador<Particao> particaoLivre;
 
 		try {
 			particaoLivre = procuraPosicaoMemoria_first(tamanhoPrograma);
-		} catch (IllegalBlockSizeException e) {
-			// TODO mensagem de erro
+		} catch (RuntimeException e) {
+			//TODO SO - Mensagem de erro, criarProcesso
 			return;
 		}
 
-		final int posicaoLivre = particaoLivre.getDado().posicao;
+		final int posicaoLivre = particaoLivre.getDado().getPosicao();
 
 		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, posicaoLivre, tamanhoPrograma);
 		this.allocaMemoria(this.estadoCriacao, tamanhoPrograma, particaoLivre);
-		this.referenciaHardware.preencheMemoria(posicaoLivre, programa.toVetor());
+		this.referenciaHardware.preencheMemoria(posicaoLivre, programa);
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
 		this.estadoCriacao = null;
@@ -105,59 +106,49 @@ public class SimuladorSO {
 		this.proximoPidDisponivel++;
 	}
 
-	private IteradorManipulador<Particao> procuraPosicaoMemoria_first(int tamanhoPrograma)
-			throws IllegalBlockSizeException {
+	private IteradorManipulador<Particao> procuraPosicaoMemoria_first(int tamanhoPrograma) throws RuntimeException {
 
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			// Procura por uma partição vazia
-			if (it.getDado().pid == this.posicaoMemoriaVazia) {
+			if (it.getDado().getPid() == this.posicaoMemoriaVazia) {
 
 				// Verifica se a partição é grande o suficiente para allocação
-				if (it.getDado().tamanho >= tamanhoPrograma) {
+				if (it.getDado().getTamanho() >= tamanhoPrograma) {
 					return it;
 				}
 			}
 		}
 
-		throw new IllegalBlockSizeException("Não há partição livre grande o suficiente");
+		throw new RuntimeException("Não há partição livre grande o suficiente");
 	}
 
 	private IteradorManipulador<Particao> procuraPosicaoMemoria_best(int tamanhoPrograma) {
-		// TODO refazer
+		// TODO SO - Worst-fit
 		return null;
 	}
 
 	private IteradorManipulador<Particao> procuraPosicaoMemoria_worst(int tamanhoPrograma) {
-		// TODO refazer
+		// TODO SO - Best-fit
 		return null;
 	}
 
 	private void allocaMemoria(Processo processo, int tamanhoPrograma, IteradorManipulador<Particao> particaoLivre) {
 
-		particaoLivre.adicionaAntes(new Particao(processo, tamanhoPrograma, particaoLivre.getDado().posicao));
-		processo.setPosicaoMemoria(particaoLivre.getDado().posicao);
+		processo.setPosicaoMemoria(particaoLivre.getDado().getPosicao());
+		particaoLivre.adicionaAntes(new Particao(processo, tamanhoPrograma, particaoLivre.getDado().getPosicao()));
 
-		final int tamanhoAtualizadoLivre = particaoLivre.getDado().tamanho - tamanhoPrograma;
-		particaoLivre.getDado().tamanho = tamanhoAtualizadoLivre;
+		final int tamanhoAtualizadoLivre = particaoLivre.getDado().getTamanho() - tamanhoPrograma;
 
 		if (tamanhoAtualizadoLivre == 0) {// patição agora é "nula"
 			particaoLivre.remove();
-			// TODO algum modo para remover de this.listaMemoriaVazia tambem
+			// TODO SO - remover de this.listaMemoriaVazia tambem
 		} else {
-			particaoLivre.getDado().tamanho = tamanhoAtualizadoLivre;
-			particaoLivre.getDado().posicao += tamanhoPrograma;
+			particaoLivre.getDado().setTamanho(tamanhoAtualizadoLivre);
 
-			this.reordenaListaMemoriaVazia();
-		}
-	}
+			final int posicaoAtualizadaLivre = particaoLivre.getDado().getPosicao() + tamanhoPrograma;
+			particaoLivre.getDado().setPosicao(posicaoAtualizadaLivre);
 
-	private void reordenaListaMemoriaVazia() {
-
-		for (IteradorManipulador<Particao> it = this.listaMemoriaVazia.inicio(); it.temProximo(); it.proximo()) {
-			final int tamanhoParticao = it.getDado().tamanho;
-			if (tamanhoParticao == 0) {
-				it.remove();
-			}
+			this.listaMemoriaVazia.organizaCrascente();
 		}
 	}
 
@@ -179,7 +170,7 @@ public class SimuladorSO {
 			if (it.getDado().getPID() == pid) {
 
 				// "Sequencia" intruções de finalização que irá execultar
-				Vetor<Integer> intrucaoFim = new Vetor<>();
+				Programa intrucaoFim = new Programa();
 				intrucaoFim.adiciona(Programa.instrucaoFIM);
 
 				// sobre escreve desde a posição
@@ -220,7 +211,7 @@ public class SimuladorSO {
 
 		IteradorManipulador<Particao> it_vazio;
 		for (it_vazio = inicio; it_vazio.temProximo(); it_vazio.proximo()) {
-			if (it_vazio.getDado().pid == this.posicaoMemoriaVazia) {
+			if (it_vazio.getDado().getPid() == this.posicaoMemoriaVazia) {
 				// Encontrou uma posição vazia
 
 				IteradorManipulador<Particao> it_realocados;
@@ -229,15 +220,15 @@ public class SimuladorSO {
 					// sem espaços
 
 					final Particao realocada = it_realocados.getDado();
-					if (realocada.pid != this.posicaoMemoriaVazia) {
+					if (realocada.getPid() != this.posicaoMemoriaVazia) {
 						// A partição é um programa e deve ser realocado
-						final Processo processo = realocada.processo;
+						final Processo processo = realocada.getProcesso();
 						final int tamanhoPrograma = processo.getInicioPrograma() - processo.getInicioPrograma();
 						final Programa programa = this.programaNaParticao(realocada);
 
 						// Realocação do espaço de memoria
-						this.desalocaMemoria(realocada.pid);
-						this.referenciaHardware.preencheMemoria(it_vazio.getDado().posicao, programa.toVetor());
+						this.desalocaMemoria(realocada.getPid());
+						this.referenciaHardware.preencheMemoria(it_vazio.getDado().getPosicao(), programa);
 						this.allocaMemoria(processo, tamanhoPrograma, it_vazio);
 					} else {
 						// Encontrou mais uma posição vazia na memória
@@ -250,9 +241,9 @@ public class SimuladorSO {
 
 	private Programa programaNaParticao(Particao particao) {
 		Programa programa = new Programa();
-		for (int i = 0; i > particao.tamanho; i++) {
-			final int posicaoIntrucao = particao.posicao + i;
-			programa.adicionaIntrucao(this.referenciaHardware.getPosicaoMemoria(posicaoIntrucao));
+		for (int i = 0; i > particao.getTamanho(); i++) {
+			final int posicaoIntrucao = particao.getPosicao() + i;
+			programa.adiciona(this.referenciaHardware.getPosicaoMemoria(posicaoIntrucao));
 		}
 
 		return programa;
@@ -261,12 +252,14 @@ public class SimuladorSO {
 	private void desalocaMemoria(int pid) {
 
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
-			if (it.getDado().pid == pid) {
-				it.getDado().pid = this.posicaoMemoriaVazia;
+			final Particao particao = it.getDado();
+			if (particao.getPid() == pid) {
+				particao.setProcesso(null);
+				particao.setPid(this.posicaoMemoriaVazia);
 				// "marca" como vazio
 
 				this.verificaEspacoLivreAdjacente();
-				this.reordenaListaMemoriaVazia();
+				this.listaMemoriaVazia.organizaCrascente();
 				return;
 			}
 		}
@@ -279,14 +272,15 @@ public class SimuladorSO {
 		for (int i = 1; i > (this.listaMemoria.tamanho()); i++) {
 
 			final Particao particaoAnterior = this.listaMemoria.obtem(i - 1);
-			if (particaoAnterior.pid == this.posicaoMemoriaVazia) {
+			if (particaoAnterior.getPid() == this.posicaoMemoriaVazia) {
 				// Verifica se a partição representa memoria vazia
 
 				final Particao particaoPosterior = this.listaMemoria.obtem(i);
-				if (particaoPosterior.pid == this.posicaoMemoriaVazia) {
+				if (particaoPosterior.getPid() == this.posicaoMemoriaVazia) {
 					// Verifica se a posição posterior é vazia também
 
-					particaoAnterior.tamanho += particaoPosterior.tamanho;
+					final int tamanhoConjunto = particaoAnterior.getTamanho() + particaoPosterior.getTamanho();
+					particaoAnterior.setTamanho(tamanhoConjunto);
 					this.listaMemoria.remove(i);// posterior
 				} // END if partiçãoPosterior
 			} // END if partiçãoAnterior
@@ -330,16 +324,16 @@ public class SimuladorSO {
 		execultaFila(filaEsperaES3, Programa.instrucaoES3, this.referenciaHardware.getAllClocksES()[2], 0);
 
 		// Para que as filas possam deixar de existir, mas os processo não
-		this.listaPrincipal.adiciona(filaProntoAlta.toVetor());
-		this.listaPrincipal.adiciona(filaProntoMedia.toVetor());
-		this.listaPrincipal.adiciona(filaProntoBaixa.toVetor());
-		this.listaPrincipal.adiciona(filaEsperaES1.toVetor());
-		this.listaPrincipal.adiciona(filaEsperaES2.toVetor());
-		this.listaPrincipal.adiciona(filaEsperaES3.toVetor());
+		this.listaPrincipal.adiciona(filaProntoAlta);
+		this.listaPrincipal.adiciona(filaProntoMedia);
+		this.listaPrincipal.adiciona(filaProntoBaixa);
+		this.listaPrincipal.adiciona(filaEsperaES1);
+		this.listaPrincipal.adiciona(filaEsperaES2);
+		this.listaPrincipal.adiciona(filaEsperaES3);
 	}
 
 	private Fila<Processo> filtroIntrucaoAtual(int intrucaoFiltro) {
-		Fila<Processo> fila = new Fila<>();
+		Fila<Processo> fila = new FilaEncadeada<>();
 
 		IteradorManipulador<Processo> it = listaPrincipal.inicio();
 		while (it.temProximo()) {
@@ -357,7 +351,7 @@ public class SimuladorSO {
 	}
 
 	private Fila<Processo> filtroPrioridade(Processo.Prioridade prioridade) {
-		Fila<Processo> fila = new Fila<>();
+		Fila<Processo> fila = new FilaEncadeada<>();
 
 		IteradorManipulador<Processo> it = listaPrincipal.inicio();
 		while (it.temProximo()) {
@@ -385,11 +379,10 @@ public class SimuladorSO {
 			for (int i = 0; i < fila.tamanho(); i++) {
 
 				// faz "copia" do processo para processamento
-				this.processando = fila.consultaProximoElemento();
+				this.processando = fila.remove();
 
 				// remove ela dos registros da fila, pois esta em
 				// "processamento"
-				fila.remove();
 
 				this.processando.incrementaEspera(tempoEsperaAtual, tipoDeIntrucao);
 				// incrementa as variaveis de estatistica

@@ -45,7 +45,7 @@ public class Processo {
 		}
 	}
 
-	// TODO estatistica de intruções feitas
+	// TODO Processo - Estatistica de intruções feitas
 
 	public void atualizarParaProximaIntrucao() {
 		this.contextoSoftware.instrucaoAtual++;

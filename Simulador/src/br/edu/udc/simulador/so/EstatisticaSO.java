@@ -1,6 +1,6 @@
 package br.edu.udc.simulador.so;
 
-import br.edu.udc.ed.vetor.ConjuntoAmostral;
+import br.edu.udc.ed.lista.vetor.ConjuntoAmostral;
 
 // Armazenamento de dados estatisticos
 // Podem ser declaradas por outras classes para "copiar" as estatisiticas

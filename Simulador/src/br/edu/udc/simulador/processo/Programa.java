@@ -1,10 +1,8 @@
 package br.edu.udc.simulador.processo;
 
-import br.edu.udc.ed.vetor.Vetor;
+import br.edu.udc.ed.lista.vetor.Vetor;
 
-public class Programa {
-
-	private Vetor<Integer> conjuntoIntrucoes = new Vetor<>();
+public class Programa extends Vetor<Integer>{
 
 	public final static int instrucaoCPU = 0;
 	public final static int instrucaoES1 = 1;
@@ -13,42 +11,35 @@ public class Programa {
 	public final static int instrucaoFIM = -1;
 
 	public Programa() {
-		this.conjuntoIntrucoes = new Vetor<>();
+		super();
 	}
 
 	public Programa(int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+		
+		super();
 
 		// PASSO 1 - incere o numero de intruções no vetor.
 		for (int i = 0; i < qtdCPU; i++) {
-			conjuntoIntrucoes.adiciona(Programa.instrucaoCPU);
+			super.adiciona(Programa.instrucaoCPU);
 		}
 
 		for (int i = 0; i < qtdIO1; i++) {
-			conjuntoIntrucoes.adiciona(Programa.instrucaoES1);
+			super.adiciona(Programa.instrucaoES1);
 		}
 
 		for (int i = 0; i < qtdIO2; i++) {
-			conjuntoIntrucoes.adiciona(Programa.instrucaoES2);
+			super.adiciona(Programa.instrucaoES2);
 		}
 
 		for (int i = 0; i < qtdIO3; i++) {
-			conjuntoIntrucoes.adiciona(Programa.instrucaoES3);
+			super.adiciona(Programa.instrucaoES3);
 		}
 
 		// PASSO 2- Embaralha as posições desse vetor.
-		conjuntoIntrucoes.randomiza();
+		super.randomiza();
 
 		// PASSO 3- Adiciona a intrução "fim" ao final de todas as
 		// intruções.
-		conjuntoIntrucoes.adiciona(Programa.instrucaoFIM);
-	}
-
-	public Vetor<Integer> toVetor() {
-		return this.conjuntoIntrucoes.clone();
-	}
-
-	public void adicionaIntrucao(int intrucao) {
-		conjuntoIntrucoes.adiciona(intrucao);
-		//adiciona ao fim do vetor
+		super.adiciona(Programa.instrucaoFIM);
 	}
 }
