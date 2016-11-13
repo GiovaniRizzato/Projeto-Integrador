@@ -268,8 +268,10 @@ public class SimuladorSO {
 	}
 
 	private void verificaEspacoLivreAdjacente() {
+		
+		//TODO concertar
 
-		for (int i = 1; i > (this.listaMemoria.tamanho()); i++) {
+		for (int i = 1; i < (this.listaMemoria.tamanho()); i++) {
 
 			final Particao particaoAnterior = this.listaMemoria.obtem(i - 1);
 			if (particaoAnterior.getPid() == this.posicaoMemoriaVazia) {

@@ -66,38 +66,18 @@ class Particao implements Comparavel {
 	}
 
 	// @Override de "Comparavel"
-	@Override
-	public boolean maior(Object objeto) {
-		if (this == objeto)
-			return false;
-		if (objeto == null)
-			return false;
-		if (getClass() != objeto.getClass())
-			return false;
-
-		Particao other = (Particao) objeto;
-		if (this.tamanho > other.tamanho) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 	@Override
-	public boolean menor(Object objeto) {
-		if (this == objeto)
-			return false;
-		if (objeto == null)
-			return false;
-		if (getClass() != objeto.getClass())
-			return false;
+	public int comparaCom(Object elemento) {
+		if (this == elemento)
+			return 0;
+		if (elemento == null)
+			throw new NullPointerException();
+		if (getClass() != elemento.getClass())
+			throw new IllegalArgumentException();
 
-		Particao other = (Particao) objeto;
-		if (this.tamanho < other.tamanho) {
-			return true;
-		} else {
-			return false;
-		}
+		Particao other = (Particao) elemento;
+		return this.tamanho - other.tamanho;
 	}
 
 	// @Override de "Object"
