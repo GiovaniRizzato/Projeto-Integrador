@@ -1,6 +1,6 @@
 package br.edu.udc.simulador.hardware;
 
-import br.edu.udc.ed.vetor.Vetor;
+import br.edu.udc.ed.lista.Lista;
 
 class Memoria {
 
@@ -14,7 +14,7 @@ class Memoria {
 		return this.posicoes[posicao];
 	}
 
-	public void preencheMemoria(int posicao, Vetor<Integer> programa) {
+	public void preencheMemoria(int posicao, Lista<Integer> programa) {
 		for (int i = posicao; i < (posicao + programa.tamanho()); i++) {
 			posicoes[i] = programa.obtem(i - posicao);
 		}

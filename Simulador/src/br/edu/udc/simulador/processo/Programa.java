@@ -1,43 +1,45 @@
 package br.edu.udc.simulador.processo;
 
-import br.edu.udc.ed.vetor.Vetor;
+import br.edu.udc.ed.lista.vetor.Vetor;
 
-public class Programa {
-	
+public class Programa extends Vetor<Integer>{
+
 	public final static int instrucaoCPU = 0;
 	public final static int instrucaoES1 = 1;
 	public final static int instrucaoES2 = 2;
 	public final static int instrucaoES3 = 3;
 	public final static int instrucaoFIM = -1;
-	
-	public static Vetor<Integer> criaPrograma(int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 
-		Vetor<Integer> programa = new Vetor<>();
+	public Programa() {
+		super();
+	}
+
+	public Programa(int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+		
+		super();
 
 		// PASSO 1 - incere o numero de intruções no vetor.
 		for (int i = 0; i < qtdCPU; i++) {
-			programa.adiciona(Programa.instrucaoCPU);
+			super.adiciona(Programa.instrucaoCPU);
 		}
 
 		for (int i = 0; i < qtdIO1; i++) {
-			programa.adiciona(Programa.instrucaoES1);
+			super.adiciona(Programa.instrucaoES1);
 		}
 
 		for (int i = 0; i < qtdIO2; i++) {
-			programa.adiciona(Programa.instrucaoES2);
+			super.adiciona(Programa.instrucaoES2);
 		}
 
 		for (int i = 0; i < qtdIO3; i++) {
-			programa.adiciona(Programa.instrucaoES3);
+			super.adiciona(Programa.instrucaoES3);
 		}
 
 		// PASSO 2- Embaralha as posições desse vetor.
-		programa.shuffle();
+		super.randomiza();
 
 		// PASSO 3- Adiciona a intrução "fim" ao final de todas as
 		// intruções.
-		programa.adiciona(Programa.instrucaoFIM);
-
-		return programa;
+		super.adiciona(Programa.instrucaoFIM);
 	}
 }

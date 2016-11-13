@@ -1,6 +1,6 @@
 package br.edu.udc.simulador.hardware;
 
-import br.edu.udc.ed.vetor.Vetor;
+import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.simulador.processo.Processo;
 
 public class Hardware {
@@ -51,7 +51,7 @@ public class Hardware {
 		for (int i = 0; i < qtdClockMaximo; i++) {
 
 			if (this.memoria.getPosicaoMemoria(programa.posicaoIntrucaoAtual()) == tipoDeIntrucao) {
-				programa.proximaIntrucao();
+				programa.atualizarParaProximaIntrucao();
 				qtdClocksRestantes--;
 			} else {
 				return qtdClocksRestantes;
@@ -61,7 +61,7 @@ public class Hardware {
 		return qtdClocksRestantes;
 	}
 
-	public void preencheMemoria(int posicao, Vetor<Integer> programa) throws IllegalArgumentException {
+	public void preencheMemoria(int posicao, Lista<Integer> programa) throws IllegalArgumentException {
 
 		this.memoria.preencheMemoria(posicao, programa);
 	}

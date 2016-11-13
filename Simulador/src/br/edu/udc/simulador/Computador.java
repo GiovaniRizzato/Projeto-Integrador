@@ -1,6 +1,7 @@
 package br.edu.udc.simulador;
 
 import br.edu.udc.ed.lista.Lista;
+import br.edu.udc.ed.lista.encadeada.ListaEncadeada;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.janela.AttView;
 import br.edu.udc.simulador.processo.Processo;
@@ -12,7 +13,7 @@ public class Computador {
 	private SimuladorSO simulador;
 	private Hardware hardware;
 	
-	private Lista<AttView> listaView = new Lista<>();
+	private Lista<AttView> listaView = new ListaEncadeada<>();
 	
 	public static final String prioridadeAlta = "Alta";
 	public static final String prioridadeMedia = "Media";
@@ -25,9 +26,7 @@ public class Computador {
 	public Computador() {
 		
 		this.hardware = new Hardware(500, 10, 10, 10, 10);
-		this.simulador = new SimuladorSO(hardware, 5);
-
-		//System.out.println(Processo.prioridade.ALTA);
+		this.simulador = new SimuladorSO(hardware, 5, 0.6F, 0.3F);
 	}
 	
 	public void adicionaView(AttView view){
@@ -42,21 +41,21 @@ public class Computador {
 		//TODO atualiza view...
 	}*/
 
-	public void criaProcesso(String prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3, String alocacao)
+	public void criaProcesso(String prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3, String estrategia)
 			throws RuntimeException {
 		switch (prioridade) {
 		case Computador.prioridadeAlta: {
-			this.simulador.criaNovoProcesso(Processo.prioridade.ALTA, qtdCPU, qtdIO1, qtdIO2, qtdIO3, alocacao);
+			this.simulador.criaNovoProcesso(Processo.Prioridade.ALTA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 			break;
 		}
 
 		case Computador.prioridadeMedia: {
-			this.simulador.criaNovoProcesso(Processo.prioridade.MEDIA, qtdCPU, qtdIO1, qtdIO2, qtdIO3, alocacao);
+			this.simulador.criaNovoProcesso(Processo.Prioridade.MEDIA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 			break;
 		}
 
 		case Computador.prioridadeBaixa: {
-			this.simulador.criaNovoProcesso(Processo.prioridade.BAIXA, qtdCPU, qtdIO1, qtdIO2, qtdIO3, alocacao);
+			this.simulador.criaNovoProcesso(Processo.Prioridade.BAIXA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 			break;
 		}
 		}
@@ -68,7 +67,7 @@ public class Computador {
 		// 2 - PosicaoIntruçãoAtaul
 		// 3 - "Estado do processo"
 
-		final Processo[] todosProcessos = this.simulador.listaTodos();
+		final Processo[] todosProcessos = this.simulador.listaTodosAtivos();
 		String[][] retorno = new String[todosProcessos.length][4];
 
 		for (int i = 0; i > todosProcessos.length; i++) {

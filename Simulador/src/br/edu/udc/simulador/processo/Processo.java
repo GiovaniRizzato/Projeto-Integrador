@@ -2,7 +2,7 @@ package br.edu.udc.simulador.processo;
 
 public class Processo {
 
-	public static enum prioridade {
+	public static enum Prioridade {
 		ALTA, MEDIA, BAIXA;
 	}
 
@@ -14,11 +14,11 @@ public class Processo {
 		public Integer[] ES = { 0, 0, 0 };
 		public Integer[] esperaES = { 0, 0, 0 };
 	}
-
+	
 	private ContextoSoftware contextoSoftware;
 	private ContextoMemoria contextoMemoria;
 
-	public Processo(int pid, prioridade prioridade, int endMem, int tamanhoPrograma) {
+	public Processo(int pid, Prioridade prioridade, int endMem, int tamanhoPrograma) {
 		this.contextoSoftware = new ContextoSoftware(pid, prioridade);
 		this.contextoMemoria = new ContextoMemoria(endMem, tamanhoPrograma);
 		this.contextoSoftware.dadosEstatisticos.qtdMemoria = tamanhoPrograma;
@@ -45,9 +45,9 @@ public class Processo {
 		}
 	}
 
-	// TODO estatistica de intruções feitas
+	// TODO Processo - Estatistica de intruções feitas
 
-	public void proximaIntrucao() {
+	public void atualizarParaProximaIntrucao() {
 		this.contextoSoftware.instrucaoAtual++;
 	}
 
@@ -55,8 +55,12 @@ public class Processo {
 		return this.contextoMemoria.posicaoInicial + this.contextoSoftware.instrucaoAtual;
 	}
 
-	public prioridade getPrioridade() {
+	public Prioridade getPrioridade() {
 		return this.contextoSoftware.prioridade;
+	}
+	
+	public void setPrioridade(Prioridade prioridade){
+		this.contextoSoftware.prioridade = prioridade;
 	}
 
 	public DadosEstatisticos getDadosEstatisticos() {
@@ -65,6 +69,19 @@ public class Processo {
 
 	public int getPID() {
 		return this.contextoSoftware.pid;
+	}
+
+	public int getInicioPrograma() {
+		return this.contextoMemoria.posicaoInicial;
+	}
+
+	public int getTamanho() {
+		return this.contextoMemoria.tamanhoPrograma;
+	}
+
+	public void setPosicaoMemoria(int endMemoria) {
+		final int tamanhoAtualPrograma = this.contextoMemoria.tamanhoPrograma;
+		this.contextoMemoria = new ContextoMemoria(endMemoria, tamanhoAtualPrograma);
 	}
 
 	@Override
