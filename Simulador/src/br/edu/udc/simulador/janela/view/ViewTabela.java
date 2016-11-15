@@ -1,8 +1,7 @@
-package br.edu.udc.simulador.janela;
+package br.edu.udc.simulador.janela.view;
 
 import java.awt.BorderLayout;
 
-import javax.management.monitor.CounterMonitorMBean;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;

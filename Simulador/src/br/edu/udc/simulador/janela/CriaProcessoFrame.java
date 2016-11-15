@@ -65,7 +65,8 @@ public class CriaProcessoFrame extends JFrame {
 		getContentPane().add(contentPane, BorderLayout.CENTER);
 		SpringLayout layout = new SpringLayout();
 		contentPane.setLayout(layout);
-
+		setResizable(false);
+		
 		JLabel prioridade = new JLabel("Prioridade");
 		contentPane.add(prioridade);
 

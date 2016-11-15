@@ -49,12 +49,14 @@ public class DialogAcoes extends JDialog {
 		setTitle(titulo);
 		;
 		SpringLayout layout = new SpringLayout();
+		
 		// setBounds(100, 100, 450, 300);
 		setBounds(100, 100, 285, 135);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(layout);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		setResizable(false);
 		
 		JLabel textPID = new JLabel("PID");
 		layout.putConstraint(SpringLayout.NORTH, textPID, 0, SpringLayout.NORTH, contentPanel);

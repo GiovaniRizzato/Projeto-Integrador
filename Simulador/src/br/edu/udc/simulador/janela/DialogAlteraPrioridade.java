@@ -62,6 +62,7 @@ public class DialogAlteraPrioridade extends JDialog {
 		contentPanel.setLayout(layout);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		setResizable(false);
 		
 		JLabel textPID = new JLabel("PID");
 		layout.putConstraint(SpringLayout.NORTH, textPID, 0, SpringLayout.NORTH,contentPanel);

@@ -3,7 +3,7 @@ package br.edu.udc.simulador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.lista.encadeada.ListaEncadeada;
 import br.edu.udc.simulador.hardware.Hardware;
-import br.edu.udc.simulador.janela.AttView;
+import br.edu.udc.simulador.janela.view.AttView;
 import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.processo.Programa;
 import br.edu.udc.simulador.so.SimuladorSO;

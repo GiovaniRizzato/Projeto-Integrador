@@ -2,10 +2,10 @@ package br.edu.udc.simulador.janela;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.ScrollPane;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -15,8 +15,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
 import br.edu.udc.simulador.Computador;
+import br.edu.udc.simulador.janela.view.ViewTabela;
 
 import java.awt.Canvas;
+import java.awt.Dimension;
 
 public class Interface0_1 extends JFrame {
 
@@ -25,7 +27,6 @@ public class Interface0_1 extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane = new JPanel();;
-	private JScrollPane scrollTabela = new JScrollPane();
 	private Computador computador = new Computador();
 	private ViewTabela viewTabela;
 
@@ -60,7 +61,8 @@ public class Interface0_1 extends JFrame {
 		contentPane.setLayout(layout);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-
+		//setResizable(false);
+		
 		JMenu processos = new JMenu("Processos");
 		menuBar.add(processos);
 
@@ -184,18 +186,22 @@ public class Interface0_1 extends JFrame {
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 
 		JPanel panel = new JPanel();
+		ScrollPane scrollpaneTabela = new ScrollPane();
 		tabbedPane.addTab("Detalhes", null, panel, null);
 
 		viewTabela = new ViewTabela(this.computador);
-		scrollTabela.setViewportView(viewTabela);
-
-		panel.add(viewTabela);
+		//scrollTabela.setViewportView(viewTabela);
+		//scrollpaneTabela.
+		scrollpaneTabela.add(viewTabela);
+		setPreferredSize(new Dimension(300,100));
+		panel.add(scrollpaneTabela,BorderLayout.CENTER);
 
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Grafico", null, panel_1, null);
 
 		Canvas canvas = new Canvas();
-		panel_1.add(canvas);
-
+		ScrollPane scrollpane = new ScrollPane();
+		//panel_1.add(scrollpane.add(canvas));
+		panel_1.add(scrollpane);
 	}
 }

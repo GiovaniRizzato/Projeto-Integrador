@@ -1,4 +1,4 @@
-package br.edu.udc.simulador.janela;
+package br.edu.udc.simulador.janela.view;
 
 public interface AttView {
 	public void atualizar();

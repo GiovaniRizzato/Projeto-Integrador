@@ -47,7 +47,7 @@ public class DialogAlteraClock extends JDialog {
 	 */
 	public DialogAlteraClock(String titulo) {
 		setTitle(titulo);
-		;
+		
 		SpringLayout layout = new SpringLayout();
 		// setBounds(100, 100, 450, 300);
 		setBounds(100, 100, 356, 150);
@@ -55,7 +55,8 @@ public class DialogAlteraClock extends JDialog {
 		contentPanel.setLayout(layout);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-
+		setResizable(false);
+		
 		JLabel numeroDeInstrucoesText = new JLabel("Numero de instrucoes");
 		layout.putConstraint(SpringLayout.NORTH, numeroDeInstrucoesText, 0, SpringLayout.NORTH, contentPanel);
 		layout.putConstraint(SpringLayout.EAST, numeroDeInstrucoesText, -10, SpringLayout.EAST, contentPanel);
