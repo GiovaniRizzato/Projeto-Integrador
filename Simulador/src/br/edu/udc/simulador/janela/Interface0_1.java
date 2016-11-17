@@ -185,23 +185,16 @@ public class Interface0_1 extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 
-		JPanel panel = new JPanel();
 		ScrollPane scrollpaneTabela = new ScrollPane();
-		tabbedPane.addTab("Detalhes", null, panel, null);
-
-		viewTabela = new ViewTabela(this.computador);
-		//scrollTabela.setViewportView(viewTabela);
-		//scrollpaneTabela.
+		tabbedPane.addTab("Detalhes", null, scrollpaneTabela, null);
+		viewTabela = new ViewTabela(this.computador);	
 		scrollpaneTabela.add(viewTabela);
 		setPreferredSize(new Dimension(300,100));
-		panel.add(scrollpaneTabela,BorderLayout.CENTER);
 
-		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("Grafico", null, panel_1, null);
-
-		Canvas canvas = new Canvas();
 		ScrollPane scrollpane = new ScrollPane();
-		//panel_1.add(scrollpane.add(canvas));
-		panel_1.add(scrollpane);
+		tabbedPane.addTab("Grafico", null, scrollpane, null);
+		Canvas canvas = new Canvas();
+		scrollpane.add(canvas);
+		
 	}
 }
