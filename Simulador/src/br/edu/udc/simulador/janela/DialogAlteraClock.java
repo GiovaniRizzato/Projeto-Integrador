@@ -59,25 +59,15 @@ public class DialogAlteraClock extends JDialog {
 		
 		JLabel numeroDeInstrucoesText = new JLabel("Numero de instrucoes");
 		layout.putConstraint(SpringLayout.NORTH, numeroDeInstrucoesText, 0, SpringLayout.NORTH, contentPanel);
-		layout.putConstraint(SpringLayout.EAST, numeroDeInstrucoesText, -10, SpringLayout.EAST, contentPanel);
+		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, numeroDeInstrucoesText, 0, SpringLayout.HORIZONTAL_CENTER, contentPanel);
 		contentPanel.add(numeroDeInstrucoesText);
 
 		JSpinner numeroDeInstruaoes = new JSpinner();
 		layout.putConstraint(SpringLayout.NORTH, numeroDeInstruaoes, 6, SpringLayout.SOUTH, numeroDeInstrucoesText);
-		layout.putConstraint(SpringLayout.WEST, numeroDeInstruaoes, -83, SpringLayout.EAST, contentPanel);
-		layout.putConstraint(SpringLayout.EAST, numeroDeInstruaoes, -30, SpringLayout.EAST, contentPanel);
+		layout.putConstraint(SpringLayout.WEST, numeroDeInstruaoes, 139, SpringLayout.WEST, contentPanel);
+		layout.putConstraint(SpringLayout.EAST, numeroDeInstruaoes, 78, SpringLayout.WEST, numeroDeInstrucoesText);
+		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, numeroDeInstrucoesText, 0, SpringLayout.HORIZONTAL_CENTER, contentPanel);
 		contentPanel.add(numeroDeInstruaoes);
-
-		JLabel textPID = new JLabel("PID");
-		layout.putConstraint(SpringLayout.NORTH, textPID, 0, SpringLayout.NORTH, numeroDeInstrucoesText);
-		layout.putConstraint(SpringLayout.WEST, textPID, 20, SpringLayout.WEST, contentPanel);
-		contentPanel.add(textPID);
-
-		JSpinner pid = new JSpinner();
-		layout.putConstraint(SpringLayout.NORTH, pid, 6, SpringLayout.SOUTH, textPID);
-		layout.putConstraint(SpringLayout.WEST, pid, 5, SpringLayout.WEST, contentPanel);
-		layout.putConstraint(SpringLayout.EAST, pid, 28, SpringLayout.EAST, textPID);
-		contentPanel.add(pid);
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -91,7 +81,7 @@ public class DialogAlteraClock extends JDialog {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					retonoPID = (int) pid.getValue();
+					
 
 					result = OK;
 					//System.out.print(getResult());
