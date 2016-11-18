@@ -21,10 +21,6 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 
 public class Interface0_1 extends JFrame {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane = new JPanel();;
 	private Computador computador = new Computador();
@@ -61,114 +57,154 @@ public class Interface0_1 extends JFrame {
 		contentPane.setLayout(layout);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		//setResizable(false);
-		
+		// setResizable(false);
+
 		JMenu processos = new JMenu("Processos");
 		menuBar.add(processos);
+		{
 
-		JMenuItem adicionar = new JMenuItem("Criar");
-		adicionar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				CriaProcessoFrame processo = new CriaProcessoFrame();
-				processo.setVisible(true);
-			}
-		});
-		processos.add(adicionar);
+			JMenuItem adicionar = new JMenuItem("Criar");
+			adicionar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					CriaProcessoFrame processo = new CriaProcessoFrame();
+					processo.setVisible(true);
+				}
+			});
+			processos.add(adicionar);
 
-		JMenuItem alterarPrioridade = new JMenuItem("Alterar prioridade");
-		processos.add(alterarPrioridade);
-		alterarPrioridade.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAlteraPrioridade alteraPrioridadeDialog = new DialogAlteraPrioridade("Altera prioridade");
-				alteraPrioridadeDialog.setVisible(true);
-			}
-		});
-		JMenuItem finalizar = new JMenuItem("Finalizar");
-		processos.add(finalizar);
-		finalizar.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAcoes finalizaProcesso = new DialogAcoes("Finalizar processo");
-				finalizaProcesso.setVisible(true);
-			}
-		});
+			JMenuItem alterarPrioridade = new JMenuItem("Alterar prioridade");
+			processos.add(alterarPrioridade);
+			alterarPrioridade.addActionListener(new ActionListener() {
 
-		JMenuItem pausa = new JMenuItem("Pausar");
-		processos.add(pausa);
-		pausa.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAcoes pausaProcesso = new DialogAcoes("Pausar Processo");
-				pausaProcesso.setVisible(true);
-			}
-		});
-		JMenuItem retomar = new JMenuItem("Retomar");
-		processos.add(retomar);
-		retomar.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAcoes retomaProcesso = new DialogAcoes("Retomar Processo");
-				retomaProcesso.setVisible(true);
-			}
-		});
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAlteraPrioridade alteraPrioridadeDialog = new DialogAlteraPrioridade("Altera prioridade");
+					alteraPrioridadeDialog.setVisible(true);
+				}
+			});
+			JMenuItem finalizar = new JMenuItem("Finalizar");
+			processos.add(finalizar);
+			finalizar.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAcoes finalizaProcesso = new DialogAcoes("Finalizar processo");
+					finalizaProcesso.setVisible(true);
+				}
+			});
+
+			JMenuItem pausa = new JMenuItem("Pausar");
+			processos.add(pausa);
+			pausa.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAcoes pausaProcesso = new DialogAcoes("Pausar Processo");
+					pausaProcesso.setVisible(true);
+				}
+			});
+			JMenuItem retomar = new JMenuItem("Retomar");
+			processos.add(retomar);
+			retomar.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAcoes retomaProcesso = new DialogAcoes("Retomar Processo");
+					retomaProcesso.setVisible(true);
+				}
+			});
+		}
 		JMenu hardware = new JMenu("Hardware");
 		menuBar.add(hardware);
+		{
+			JMenuItem alteraClockCpu = new JMenuItem("Altera clock CPU");
+			hardware.add(alteraClockCpu);
+			alteraClockCpu.addActionListener(new ActionListener() {
 
-		JMenuItem alteraClockCpu = new JMenuItem("Altera clock CPU");
-		hardware.add(alteraClockCpu);
-		alteraClockCpu.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAlteraClock alteraClock = new DialogAlteraClock("Altera numero de Intruçoes CPU");
+					alteraClock.setVisible(true);
+				}
+			});
+			JMenuItem alteraClockEs_1 = new JMenuItem("Altera clock E/S 1");
+			hardware.add(alteraClockEs_1);
+			alteraClockEs_1.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAlteraClock alteraClock = new DialogAlteraClock("Altera numero de Intruçoes CPU");
-				alteraClock.setVisible(true);
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAlteraClock alteraClockES1 = new DialogAlteraClock("Altera numero de Intruçoes E/S.1");
+					alteraClockES1.setVisible(true);
+				}
+			});
+
+			JMenuItem alteraClockEs_2 = new JMenuItem("Altera clock E/S 2");
+			hardware.add(alteraClockEs_2);
+			alteraClockEs_2.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAlteraClock alteraClockES2 = new DialogAlteraClock("Altera numero de Intruçoes E/S.2");
+					alteraClockES2.setVisible(true);
+				}
+			});
+			JMenuItem alteraClockEs_3 = new JMenuItem("Altera clock E/S 3");
+			hardware.add(alteraClockEs_3);
+			alteraClockEs_3.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					DialogAlteraClock alteraClockES3 = new DialogAlteraClock("Altera numero de Intruçoes E/S.3");
+					alteraClockES3.setVisible(true);
+
+				}
+			});
+			JMenu estrtegiaDeMemoria = new JMenu("Estrategia de memoria");
+			hardware.add(estrtegiaDeMemoria);
+			{
+
+				JMenuItem first_fit = new JMenuItem("First fit");
+				estrtegiaDeMemoria.add(first_fit);
+				first_fit.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
+				JMenuItem best_fit = new JMenuItem("Best fit");
+				estrtegiaDeMemoria.add(best_fit);
+				best_fit.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
+				JMenuItem worst_fit = new JMenuItem("Worst fit");
+				estrtegiaDeMemoria.add(worst_fit);
+				worst_fit.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+				});
 			}
-		});
-		JMenuItem alteraClockEs_1 = new JMenuItem("Altera clock E/S 1");
-		hardware.add(alteraClockEs_1);
-		alteraClockEs_1.addActionListener(new ActionListener() {
+			JMenuItem desfragmenta = new JMenuItem("Desfragmenta");
+			hardware.add(desfragmenta);
+			desfragmenta.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAlteraClock alteraClockES1 = new DialogAlteraClock("Altera numero de Intruçoes E/S.1");
-				alteraClockES1.setVisible(true);
-			}
-		});
-
-		JMenuItem alteraClockEs_2 = new JMenuItem("Altera clock E/S 2");
-		hardware.add(alteraClockEs_2);
-		alteraClockEs_2.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAlteraClock alteraClockES2 = new DialogAlteraClock("Altera numero de Intruçoes E/S.2");
-				alteraClockES2.setVisible(true);
-			}
-		});
-		JMenuItem alteraClockEs_3 = new JMenuItem("Altera clock E/S 3");
-		hardware.add(alteraClockEs_3);
-		alteraClockEs_3.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DialogAlteraClock alteraClockES3 = new DialogAlteraClock("Altera numero de Intruçoes E/S.3");
-				alteraClockES3.setVisible(true);
-
-			}
-		});
-		JMenuItem desfragmenta = new JMenuItem("Desfragmenta");
-		hardware.add(desfragmenta);
-		desfragmenta.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+				@Override
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+		}
 		JMenu Ajuda = new JMenu("Ajuda");
 		menuBar.add(Ajuda);
 
@@ -187,14 +223,14 @@ public class Interface0_1 extends JFrame {
 
 		ScrollPane scrollpaneTabela = new ScrollPane();
 		tabbedPane.addTab("Detalhes", null, scrollpaneTabela, null);
-		viewTabela = new ViewTabela(this.computador);	
+		viewTabela = new ViewTabela(this.computador);
 		scrollpaneTabela.add(viewTabela);
-		setPreferredSize(new Dimension(300,100));
+		setPreferredSize(new Dimension(300, 100));
 
 		ScrollPane scrollpane = new ScrollPane();
 		tabbedPane.addTab("Grafico", null, scrollpane, null);
 		Canvas canvas = new Canvas();
 		scrollpane.add(canvas);
-		
+
 	}
 }
