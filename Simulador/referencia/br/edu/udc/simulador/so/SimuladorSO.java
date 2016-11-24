@@ -126,16 +126,6 @@ public class SimuladorSO {
 		throw new RuntimeException("Não há partição livre grande o suficiente");
 	}
 
-	private IteradorManipulador<Particao> procuraPosicaoMemoria_best(int tamanhoPrograma) {
-		// TODO SO - Worst-fit
-		return null;
-	}
-
-	private IteradorManipulador<Particao> procuraPosicaoMemoria_worst(int tamanhoPrograma) {
-		// TODO SO - Best-fit
-		return null;
-	}
-
 	private void allocaMemoria(Processo processo, int tamanhoPrograma, IteradorManipulador<Particao> particaoLivre) {
 
 		processo.setPosicaoMemoria(particaoLivre.getDado().getPosicao());

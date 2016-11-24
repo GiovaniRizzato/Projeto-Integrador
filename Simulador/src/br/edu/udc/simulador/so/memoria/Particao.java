@@ -17,7 +17,7 @@ class Particao implements Comparavel {
 	}
 
 	public Particao(Processo processo, int tamanho, int posicao) {
-		this.processo = null;
+		this.processo = processo;
 		this.tamanho = tamanho;
 		this.posicao = posicao;
 	}
@@ -116,5 +116,11 @@ class Particao implements Comparavel {
 		}
 
 		return true;
+	}
+
+	// Para ajuda no debug
+	@Override
+	public String toString() {
+		return ("Posicao: " + this.posicao.toString() + ", Tamanho: " + this.tamanho + ", PID: " + this.getPid());
 	}
 }

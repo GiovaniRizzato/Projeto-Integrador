@@ -1,14 +1,12 @@
 package br.edu.udc.simulador.controle;
 
 import br.edu.udc.simulador.hardware.Hardware;
-import br.edu.udc.simulador.so.SimuladorSO;
 import br.edu.udc.simulador.so.SistemaOperacional;
 
 public class Computador {
 
 	private static Computador instancia;
 
-	@SuppressWarnings("unused")
 	private SistemaOperacional simulador;
 	private Hardware hardware;
 
@@ -21,7 +19,7 @@ public class Computador {
 	}
 
 	public Computador() {
-		this.hardware = new Hardware(10, 10, 10, 10, 100);
+		this.hardware = new Hardware(50, 20, 20, 20, 100);
 		this.simulador = new SistemaOperacional(10, 0.6F, 0.3F, this.hardware);
 	}
 

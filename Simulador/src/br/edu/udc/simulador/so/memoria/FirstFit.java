@@ -12,7 +12,7 @@ public class FirstFit extends GerenciadorMemoria {
 
 	@Override
 	public IteradorManipulador<Particao> procuraPosicaoVazia(int tamanhoPrograma) {
-		
+
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			// Procura por uma partição vazia
 			if (it.getDado().getPid() == SimuladorSO.POSICAO_MEMORIA_VAZIA) {
@@ -29,7 +29,20 @@ public class FirstFit extends GerenciadorMemoria {
 
 	@Override
 	public void desalocaMemoria(int pid) {
-		// TODO Auto-generated method stub
-	}
+		
+		for (IteradorManipulador<Particao> it = super.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
+			final Particao particao = it.getDado();
+			if (particao.getPid() == pid) {
+				particao.setProcesso(null);
+				// "marca" como vazio
 
+				this.listaMemoriaVazia.adiciona(particao);
+
+				this.verificaEspacoLivreAdjacente();
+				return;
+			}
+		}
+
+		throw new IllegalArgumentException("PID não esta na lista de memória");
+	}
 }

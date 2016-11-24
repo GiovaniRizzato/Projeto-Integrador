@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import br.edu.udc.simulador.controle.Computador;
-import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo.Prioridade;
 
 public class SoTeste {
@@ -13,8 +12,7 @@ public class SoTeste {
 	@Test
 	public void criaProcesso_casoFeliz() {
 		
-		Computador pc = Computador.getIntancia();
-		SistemaOperacional so = new SistemaOperacional(10, 0.6F, 0.3F, pc.getHardware());
+		SistemaOperacional so = Computador.getIntancia().getSimulador();
 
 		so.criaNovoProcesso(Prioridade.ALTA, 3, 0, 0, 0);
 		so.criaNovoProcesso(Prioridade.ALTA, 7, 0, 0, 0);

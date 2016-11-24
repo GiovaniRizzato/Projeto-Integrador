@@ -133,15 +133,26 @@ public class EscalonadorProcessos {
 				// "processamento"
 
 				this.processando.incrementaEspera(tempoEsperaAtual, tipoDeIntrucao);
-				// incrementa as variaveis de estatistica
-				// TODO fazer estatistica de espera APÓS ter sido execultado
+				// Incrementa as variaveis de estatistica
+				final int posicaoIntrucaoAnterior = this.processando.posicaoIntrucaoAtual();
+				// Para fazer a estatistica de intruções feitas
 
 				int clockNaoUsadosNestaOperacao = this.hardware.usarProcessamentoHardware(clockIndividual,
 						tipoDeIntrucao, this.processando);
 				// faz o processamento
 
-				final int instrucaoAtual = this.hardware
-						.getPosicaoMemoria(this.processando.posicaoIntrucaoAtual());
+				// Coletando todos as intruções feitas para fazer a estatistica
+				final int posicaoIntrucaoPosterior = this.processando.posicaoIntrucaoAtual();
+				final int quantidadeIntrucoes = posicaoIntrucaoAnterior - posicaoIntrucaoPosterior - 1;
+				final Integer[] intrucoesExecultadas = new Integer[quantidadeIntrucoes];
+				for (int j = 0; j < quantidadeIntrucoes; j++) {
+					final int instrucao = this.hardware.getPosicaoMemoria(posicaoIntrucaoAnterior + j);
+					intrucoesExecultadas[j] = instrucao;
+				}
+
+				this.processando.incrementaEstatisticaProcessada(intrucoesExecultadas);
+				
+				final int instrucaoAtual = this.hardware.getPosicaoMemoria(this.processando.posicaoIntrucaoAtual());
 
 				if (instrucaoAtual == tipoDeIntrucao) {
 					// se mesmo depois do processamento pertencer a esta
