@@ -28,8 +28,8 @@ public class SimuladorSO {
 	private Hardware referenciaHardware;
 
 	// Veriaveis lógicas
-	private final int posicaoMemoriaVazia = -1;
-	private final int pidSO = posicaoMemoriaVazia + 1;
+	public static final int posicaoMemoriaVazia = -1;
+	public static final int pidSO = posicaoMemoriaVazia + 1;
 	private Integer proximoPidDisponivel = this.pidSO + 1;
 
 	private Float porcentagemCPUAlta;
