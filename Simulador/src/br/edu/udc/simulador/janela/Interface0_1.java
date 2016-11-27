@@ -27,6 +27,7 @@ public class Interface0_1 extends JFrame {
 	private Computador computador = Computador.getInstancia();
 	private ViewTabela viewTabela;
 
+	
 	// TableModel tableModel;
 	/**
 	 * Launch the application.
