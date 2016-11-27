@@ -14,7 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
-import br.edu.udc.simulador.Computador;
+
+import br.edu.udc.simulador.controle.Computador;
 import br.edu.udc.simulador.janela.view.ViewTabela;
 
 import java.awt.Canvas;
@@ -22,8 +23,8 @@ import java.awt.Dimension;
 
 public class Interface0_1 extends JFrame {
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane = new JPanel();;
-	private Computador computador = new Computador();
+	private JPanel contentPane = new JPanel();
+	private Computador computador = Computador.getInstancia();
 	private ViewTabela viewTabela;
 
 	// TableModel tableModel;
@@ -32,11 +33,10 @@ public class Interface0_1 extends JFrame {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
-			Computador computador = new Computador();
 
 			public void run() {
 				try {
-					Interface0_1 frame = new Interface0_1(computador);
+					Interface0_1 frame = new Interface0_1();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -48,9 +48,8 @@ public class Interface0_1 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public Interface0_1(Computador computador) {
+	public Interface0_1() {
 		super("Simulador");
-		this.computador = computador;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		SpringLayout layout = new SpringLayout();
@@ -223,7 +222,7 @@ public class Interface0_1 extends JFrame {
 
 		ScrollPane scrollpaneTabela = new ScrollPane();
 		tabbedPane.addTab("Detalhes", null, scrollpaneTabela, null);
-		viewTabela = new ViewTabela(this.computador);
+		viewTabela = new ViewTabela();
 		scrollpaneTabela.add(viewTabela);
 		setPreferredSize(new Dimension(300, 100));
 
@@ -231,6 +230,7 @@ public class Interface0_1 extends JFrame {
 		tabbedPane.addTab("Grafico", null, scrollpane, null);
 		Canvas canvas = new Canvas();
 		scrollpane.add(canvas);
-
+		
+		this.computador.adicionaView(viewTabela);
 	}
 }
