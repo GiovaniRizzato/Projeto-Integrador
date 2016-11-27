@@ -15,7 +15,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
-import br.edu.udc.simulador.Computador;
+import br.edu.udc.simulador.controle.Computador;
 
 public class CriaProcessoFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -23,8 +23,7 @@ public class CriaProcessoFrame extends JFrame {
 	private int result = CANCEL;
 	public final static int OK = 1;
 	public final static int CANCEL = 0;
-	private Computador computador = new Computador();
-	
+
 	private JComboBox<?> estrategiaComboBox;
 	private JComboBox<?> prioridadeComboBox;
 
@@ -33,9 +32,8 @@ public class CriaProcessoFrame extends JFrame {
 	private JSpinner clockES2;
 	private JSpinner clockES3;
 	public int qtdInstrucoes;
-	private String nomesPrioridade[] = { Computador.prioridadeAlta, Computador.prioridadeMedia,
-			Computador.prioridadeBaixa };
-	private String nomesEstrategia[] = { Computador.first_fit, Computador.best_fit, Computador.worst_fit };
+	private String nomesPrioridade[] = { Computador.textoPrioridadeAlta, Computador.textoPrioridadeMedia,
+			Computador.textoPrioridadeBaixa };
 
 	/**
 	 * Launch the application.
@@ -66,7 +64,7 @@ public class CriaProcessoFrame extends JFrame {
 		SpringLayout layout = new SpringLayout();
 		contentPane.setLayout(layout);
 		setResizable(false);
-		
+
 		JLabel prioridade = new JLabel("Prioridade");
 		contentPane.add(prioridade);
 
@@ -77,19 +75,24 @@ public class CriaProcessoFrame extends JFrame {
 		prioridadeComboBox.setMaximumRowCount(3);
 		contentPane.add(prioridadeComboBox);
 
-		/*JLabel estrategia = new JLabel("Estrategia de Memoria");
-		layout.putConstraint(SpringLayout.NORTH, estrategia, 50, SpringLayout.NORTH, prioridade);
-		layout.putConstraint(SpringLayout.WEST, estrategia, 0, SpringLayout.WEST, prioridade);
-		contentPane.add(estrategia);
-		
-		TODO tirar daqui depois...
-		
-		estrategiaComboBox = new JComboBox(nomesEstrategia);
-		layout.putConstraint(SpringLayout.NORTH, estrategiaComboBox, 70, SpringLayout.NORTH, prioridade);
-		layout.putConstraint(SpringLayout.WEST, estrategiaComboBox, 0, SpringLayout.WEST, prioridade);
-		 
-		estrategiaComboBox.setMaximumRowCount(3);
-		contentPane.add(estrategiaComboBox);*/
+		/*
+		 * JLabel estrategia = new JLabel("Estrategia de Memoria");
+		 * layout.putConstraint(SpringLayout.NORTH, estrategia, 50,
+		 * SpringLayout.NORTH, prioridade);
+		 * layout.putConstraint(SpringLayout.WEST, estrategia, 0,
+		 * SpringLayout.WEST, prioridade); contentPane.add(estrategia);
+		 * 
+		 * TODO tirar daqui depois...
+		 * 
+		 * estrategiaComboBox = new JComboBox(nomesEstrategia);
+		 * layout.putConstraint(SpringLayout.NORTH, estrategiaComboBox, 70,
+		 * SpringLayout.NORTH, prioridade);
+		 * layout.putConstraint(SpringLayout.WEST, estrategiaComboBox, 0,
+		 * SpringLayout.WEST, prioridade);
+		 * 
+		 * estrategiaComboBox.setMaximumRowCount(3);
+		 * contentPane.add(estrategiaComboBox);
+		 */
 
 		JLabel numeroDeInstrucoesCPU = new JLabel("Numero de Instruçoes do CPU");
 		layout.putConstraint(SpringLayout.NORTH, numeroDeInstrucoesCPU, 0, SpringLayout.NORTH, contentPane);
@@ -177,16 +180,19 @@ public class CriaProcessoFrame extends JFrame {
 					final int instrucoesCPU = (int) clockCPU.getValue();
 					final int instrucoesES[] = { (int) clockES1.getValue(), (int) clockES2.getValue(),
 							(int) clockES3.getValue() };
-					final String estrategia = (String) estrategiaComboBox.getSelectedItem();
+					//final String estrategia = (String) estrategiaComboBox.getSelectedItem();
 					try {
-						CriaProcessoFrame.this.computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES[0], instrucoesES[1],
-								instrucoesES[2], estrategia);
+						final Computador computador = Computador.getInstancia();
+						computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES[0],
+								instrucoesES[1], instrucoesES[2]);
 					} catch (RuntimeException erro) {
 						System.out.println(erro.getMessage());
 					}
+					
+					Computador.getInstancia().atualizaViews();
 					result = OK;
 					setVisible(false);
-					
+
 				}
 			});
 
