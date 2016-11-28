@@ -10,6 +10,7 @@ import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.processo.Programa;
 import br.edu.udc.simulador.so.escalonador.EscalonadorProcessos;
+import br.edu.udc.simulador.so.escalonador.TimeSharing;
 import br.edu.udc.simulador.so.memoria.FirstFit;
 import br.edu.udc.simulador.so.memoria.GerenciadorMemoria;
 
@@ -43,7 +44,7 @@ public class SistemaOperacional {
 		if (porcBaixa < 0 || porcBaixa > 1) {
 			throw new IllegalArgumentException("Porcentagens inconcistentes");
 		}
-		this.escalonador = new EscalonadorProcessos(porcAlta, porcMedia, porcBaixa, listaPrincipal, hardware);
+		this.escalonador = new TimeSharing(porcAlta, porcMedia, porcBaixa, listaPrincipal, hardware);
 	}
 
 	public EstatisticaSO getEstatisticas() {
