@@ -143,7 +143,7 @@ public class EscalonadorProcessos {
 
 				// Coletando todos as intruções feitas para fazer a estatistica
 				final int posicaoIntrucaoPosterior = this.processando.posicaoIntrucaoAtual();
-				final int quantidadeIntrucoes = posicaoIntrucaoAnterior - posicaoIntrucaoPosterior - 1;
+				final int quantidadeIntrucoes = posicaoIntrucaoPosterior - posicaoIntrucaoAnterior - 1;
 				final Integer[] intrucoesExecultadas = new Integer[quantidadeIntrucoes];
 				for (int j = 0; j < quantidadeIntrucoes; j++) {
 					final int instrucao = this.hardware.getPosicaoMemoria(posicaoIntrucaoAnterior + j);
@@ -151,7 +151,7 @@ public class EscalonadorProcessos {
 				}
 
 				this.processando.incrementaEstatisticaProcessada(intrucoesExecultadas);
-				
+
 				final int instrucaoAtual = this.hardware.getPosicaoMemoria(this.processando.posicaoIntrucaoAtual());
 
 				if (instrucaoAtual == tipoDeIntrucao) {

@@ -39,7 +39,10 @@ public class SistemaOperacional {
 		// TODO implementar um modo de alternar os objetos de alocação
 		this.gerenciador = new FirstFit(tamanhoSO, hardware.tamanhoMemoria(), hardware);
 
-		final Float porcBaixa = ((porcAlta + porcMedia) - 1);
+		final Float porcBaixa = (1 - (porcAlta + porcMedia));
+		if (porcBaixa < 0 || porcBaixa > 1) {
+			throw new IllegalArgumentException("Porcentagens inconcistentes");
+		}
 		this.escalonador = new EscalonadorProcessos(porcAlta, porcMedia, porcBaixa, listaPrincipal, hardware);
 	}
 
@@ -63,16 +66,16 @@ public class SistemaOperacional {
 	public void criaNovoProcesso(Processo.Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 
 		final Programa programa = new Programa(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-		
-		//posicao 0 pois sera setado dentro do alocação de memoria
+
+		// posicao 0 pois sera setado dentro do alocação de memoria
 		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, 0, programa.tamanho());
 
-		try {
-			this.gerenciador.allocaMemoria(this.estadoCriacao, programa);
-		} catch (RuntimeException e) {
-			// TODO SO - Mensagem de erro, criarProcesso
-			return;
-		}
+		// try {
+		this.gerenciador.allocaMemoria(this.estadoCriacao, programa);
+		// } catch (RuntimeException e) {
+		// TODO SO - Mensagem de erro, criarProcesso
+		// return;
+		// }
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
 		this.estadoCriacao = null;
@@ -130,7 +133,7 @@ public class SistemaOperacional {
 		this.estatisticaSO.tempoDeES2.adiciona(estatistica.ES[1]);
 		this.estatisticaSO.tempoDeES3.adiciona(estatistica.ES[2]);
 
-		gerenciador.desalocaMemoria(this.estadoFinalizacao.getPID());
+		this.gerenciador.desalocaMemoria(this.estadoFinalizacao.getPID());
 
 		this.estadoFinalizacao = null;
 		// Forçando o garbege collector a deleta-lo

@@ -4,7 +4,7 @@ import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
 
-public class FirstFit extends GerenciadorMemoria {
+public class BestFit extends GerenciadorMemoria {
 
 	private class ParticaoFirst extends Particao {
 
@@ -26,11 +26,11 @@ public class FirstFit extends GerenciadorMemoria {
 				throw new IllegalArgumentException();
 
 			Particao other = (Particao) elemento;
-			return super.posicao - other.posicao;
+			return super.tamanho - other.tamanho;
 		}
 	}
 
-	public FirstFit(int tamanhoSO, int tamanhoMemoria, Hardware hardware) {
+	public BestFit(int tamanhoSO, int tamanhoMemoria, Hardware hardware) {
 		super(tamanhoSO, tamanhoMemoria, hardware);
 	}
 

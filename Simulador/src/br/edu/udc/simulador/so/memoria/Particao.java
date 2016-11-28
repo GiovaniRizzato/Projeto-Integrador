@@ -4,11 +4,11 @@ import br.edu.udc.ed.colecao.Comparavel;
 import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.so.SistemaOperacional;
 
-class Particao implements Comparavel {
+abstract class Particao implements Comparavel {
 	private Processo processo;
 	// referenca do processo para fazer a desfragmentação
-	private Integer tamanho;
-	private Integer posicao;
+	protected Integer tamanho;
+	protected Integer posicao;
 
 	public Particao(int tamanho, int posicao) {
 		this.processo = null;
@@ -61,19 +61,8 @@ class Particao implements Comparavel {
 	}
 
 	// @Override de "Comparavel"
-
 	@Override
-	public int comparaCom(Object elemento) {
-		if (this == elemento)
-			return 0;
-		if (elemento == null)
-			throw new NullPointerException();
-		if (getClass() != elemento.getClass())
-			throw new IllegalArgumentException();
-
-		Particao other = (Particao) elemento;
-		return this.tamanho - other.tamanho;
-	}
+	public abstract int comparaCom(Object elemento);
 
 	// @Override de "Object"
 	@Override

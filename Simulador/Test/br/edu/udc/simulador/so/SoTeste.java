@@ -28,12 +28,12 @@ public class SoTeste {
 	public void criaProcesso_desalocaMemoria() {
 
 		Computador pc = Computador.getIntancia();
-		SistemaOperacional so = new SistemaOperacional(10, 0.6F, 0.3F, pc.getHardware());
+		SistemaOperacional so = pc.getSimulador();
 
 		so.criaNovoProcesso(Prioridade.ALTA, 3, 0, 0, 0);
 		so.criaNovoProcesso(Prioridade.ALTA, 4, 0, 0, 0);
 		so.criaNovoProcesso(Prioridade.ALTA, 2, 0, 0, 0);
-		so.criaNovoProcesso(Prioridade.BAIXA, 26, 0, 0, 0);
+		so.criaNovoProcesso(Prioridade.BAIXA, 60, 0, 0, 0);
 		
 		so.execultarProcessos();
 

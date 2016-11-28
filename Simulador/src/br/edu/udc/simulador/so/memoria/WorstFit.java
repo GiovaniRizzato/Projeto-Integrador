@@ -4,15 +4,15 @@ import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
 
-public class FirstFit extends GerenciadorMemoria {
+public class WorstFit extends GerenciadorMemoria {
 
-	private class ParticaoFirst extends Particao {
+	private class ParticaoWorst extends Particao {
 
-		public ParticaoFirst(int tamanho, int posicao) {
+		public ParticaoWorst(int tamanho, int posicao) {
 			super(tamanho, posicao);
 		}
 
-		public ParticaoFirst(Processo processo, int tamanho, int posicao) {
+		public ParticaoWorst(Processo processo, int tamanho, int posicao) {
 			super(processo, tamanho, posicao);
 		}
 
@@ -26,40 +26,29 @@ public class FirstFit extends GerenciadorMemoria {
 				throw new IllegalArgumentException();
 
 			Particao other = (Particao) elemento;
-			return super.posicao - other.posicao;
+			return other.posicao - super.posicao;
 		}
 	}
 
-	public FirstFit(int tamanhoSO, int tamanhoMemoria, Hardware hardware) {
+	public WorstFit(int tamanhoSO, int tamanhoMemoria, Hardware hardware) {
 		super(tamanhoSO, tamanhoMemoria, hardware);
 	}
 
 	@Override
 	public Particao contrutorParticao(int tamanho, int posicao) {
-		return new ParticaoFirst(tamanho, posicao);
+		return new ParticaoWorst(tamanho, posicao);
 	}
 
 	@Override
 	public Particao contrutorParticao(Processo processo, int tamanho, int posicao) {
-		return new ParticaoFirst(processo, tamanho, posicao);
+		return new ParticaoWorst(processo, tamanho, posicao);
 	}
 
 	@Override
 	public IteradorManipulador<Particao> procuraPosicaoVazia(int tamanhoPrograma) {
 
-		Particao particaoIdeal = null;
-		for (IteradorManipulador<Particao> it = super.listaMemoriaVazia.inicio(); it.temProximo(); it.proximo()) {
-
-			// Verifica se a partição é grande o suficiente para allocação
-			Particao particao = it.getDado();
-			if (particao.getTamanho() >= tamanhoPrograma) {
-				particaoIdeal = particao;
-				break;
-			}
-		}
-
-		if (particaoIdeal == null) {
-			// não encontrou NENHUMA particao para o processo
+		final Particao particaoIdeal = super.listaMemoriaVazia.obtem(0);
+		if(particaoIdeal.getTamanho() < tamanhoPrograma){
 			throw new RuntimeException("Não há partição livre grande o suficiente");
 		}
 
