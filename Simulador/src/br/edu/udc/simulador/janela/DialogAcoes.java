@@ -7,12 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
+
+import br.edu.udc.simulador.controle.Computador;
+import br.edu.udc.simulador.processo.Processo;
 
 public class DialogAcoes extends JDialog {
 
@@ -27,10 +30,9 @@ public class DialogAcoes extends JDialog {
 	public final static int OK = 1;
 	public final static int CANCEL = 0;
 	private static int retonoPID;
-	
-	/**
-	 * Launch the application.
-	 */
+
+	private Integer[] opcoes;
+
 	public static void main(String[] args) {
 		try {
 			DialogAcoes dialog = new DialogAcoes("");
@@ -47,23 +49,35 @@ public class DialogAcoes extends JDialog {
 	 */
 	public DialogAcoes(String titulo) {
 		setTitle(titulo);
-		;
 		SpringLayout layout = new SpringLayout();
-		
-		// setBounds(100, 100, 450, 300);
+
+		// Pegando opções dos pids ativos
+		Processo[] todosProcessos = Computador.getInstancia().listaTodos();
+		this.opcoes = new Integer[todosProcessos.length];
+		for (int i = 0; i < todosProcessos.length; i++) {
+			this.opcoes[i] = todosProcessos[i].getPID();
+		}
+
 		setBounds(100, 100, 285, 135);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(layout);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		setResizable(false);
-		
+
 		JLabel textPID = new JLabel("PID");
 		layout.putConstraint(SpringLayout.NORTH, textPID, 0, SpringLayout.NORTH, contentPanel);
 		layout.putConstraint(SpringLayout.WEST, textPID, 10, SpringLayout.WEST, contentPanel);
 		contentPanel.add(textPID);
 
-		JSpinner pid = new JSpinner();
+		JComboBox<Integer> pid;
+
+		if (opcoes != null) {
+			pid = new JComboBox<>(opcoes);
+		} else {
+			pid = new JComboBox<>();
+		}
+
 		layout.putConstraint(SpringLayout.NORTH, pid, 6, SpringLayout.SOUTH, textPID);
 		layout.putConstraint(SpringLayout.EAST, pid, -177, SpringLayout.EAST, contentPanel);
 		layout.putConstraint(SpringLayout.WEST, pid, 10, SpringLayout.WEST, contentPanel);
@@ -81,10 +95,9 @@ public class DialogAcoes extends JDialog {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					retonoPID = (int) pid.getValue();
-
+					retonoPID = (int)pid.getSelectedIndex();
 					result = OK;
-					
+
 					setVisible(false);
 				}
 			});

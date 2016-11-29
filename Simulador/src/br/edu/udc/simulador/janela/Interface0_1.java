@@ -42,6 +42,7 @@ public class Interface0_1 extends JFrame {
 					Interface0_1 frame = new Interface0_1();
 					FrameMemoria memoria = new FrameMemoria();
 					frame.setVisible(true);
+					memoria.setBounds(600, 100,450,200);
 					memoria.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -94,6 +95,7 @@ public class Interface0_1 extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					DialogAcoes finalizaProcesso = new DialogAcoes("Finalizar processo");
 					finalizaProcesso.setVisible(true);
+					computador.finalizarProcesso(finalizaProcesso.getPID());
 				}
 			});
 

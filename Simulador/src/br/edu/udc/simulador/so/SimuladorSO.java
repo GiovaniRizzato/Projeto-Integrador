@@ -44,10 +44,10 @@ public class SimuladorSO {
 
 	public SimuladorSO(Hardware hardware, int tamanhoSO, float porcentagemAlta, float porcentagemMedia) {
 		this.referenciaHardware = hardware;
-		this.listaMemoria.adiciona(new Particao(this.pidSO, tamanhoSO, 0));
+		this.listaMemoria.adiciona(new Particao(SimuladorSO.pidSO, tamanhoSO, 0));
 
 		final int tamanhoEspacoVazio = this.referenciaHardware.tamanhoMemoria() - tamanhoSO;
-		final Particao particaoMemoriaVazia = new Particao(this.posicaoMemoriaVazia, tamanhoEspacoVazio, tamanhoSO);
+		final Particao particaoMemoriaVazia = new Particao(SimuladorSO.posicaoMemoriaVazia, tamanhoEspacoVazio, tamanhoSO);
 		this.listaMemoria.adiciona(particaoMemoriaVazia);
 		this.listaMemoriaVazia.adiciona(particaoMemoriaVazia);
 
@@ -114,7 +114,7 @@ public class SimuladorSO {
 
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
 			// Procura por uma partição vazia
-			if (it.getDado().getPid() == this.posicaoMemoriaVazia) {
+			if (it.getDado().getPid() == SimuladorSO.posicaoMemoriaVazia) {
 
 				// Verifica se a partição é grande o suficiente para allocação
 				if (it.getDado().getTamanho() >= tamanhoPrograma) {
@@ -124,16 +124,6 @@ public class SimuladorSO {
 		}
 
 		throw new RuntimeException("Não há partição livre grande o suficiente");
-	}
-
-	private IteradorManipulador<Particao> procuraPosicaoMemoria_best(int tamanhoPrograma) {
-		// TODO SO - Worst-fit
-		return null;
-	}
-
-	private IteradorManipulador<Particao> procuraPosicaoMemoria_worst(int tamanhoPrograma) {
-		// TODO SO - Best-fit
-		return null;
 	}
 
 	private void allocaMemoria(Processo processo, int tamanhoPrograma, IteradorManipulador<Particao> particaoLivre) {
@@ -215,7 +205,7 @@ public class SimuladorSO {
 
 		IteradorManipulador<Particao> it_vazio;
 		for (it_vazio = inicio; it_vazio.temProximo(); it_vazio.proximo()) {
-			if (it_vazio.getDado().getPid() == this.posicaoMemoriaVazia) {
+			if (it_vazio.getDado().getPid() == SimuladorSO.posicaoMemoriaVazia) {
 				// Encontrou uma posição vazia
 
 				IteradorManipulador<Particao> it_realocados;
@@ -224,7 +214,7 @@ public class SimuladorSO {
 					// sem espaços
 
 					final Particao realocada = it_realocados.getDado();
-					if (realocada.getPid() != this.posicaoMemoriaVazia) {
+					if (realocada.getPid() != SimuladorSO.posicaoMemoriaVazia) {
 						// A partição é um programa e deve ser realocado
 						final Processo processo = realocada.getProcesso();
 						final int tamanhoPrograma = processo.getInicioPrograma() - processo.getInicioPrograma();
@@ -259,7 +249,7 @@ public class SimuladorSO {
 			final Particao particao = it.getDado();
 			if (particao.getPid() == pid) {
 				particao.setProcesso(null);
-				particao.setPid(this.posicaoMemoriaVazia);
+				particao.setPid(SimuladorSO.posicaoMemoriaVazia);
 				// "marca" como vazio
 
 				this.verificaEspacoLivreAdjacente();
@@ -273,16 +263,14 @@ public class SimuladorSO {
 
 	private void verificaEspacoLivreAdjacente() {
 
-		// TODO concertar
-
 		for (int i = 1; i < (this.listaMemoria.tamanho()); i++) {
 
 			final Particao particaoAnterior = this.listaMemoria.obtem(i - 1);
-			if (particaoAnterior.getPid() == this.posicaoMemoriaVazia) {
+			if (particaoAnterior.getPid() == SimuladorSO.posicaoMemoriaVazia) {
 				// Verifica se a partição representa memoria vazia
 
 				final Particao particaoPosterior = this.listaMemoria.obtem(i);
-				if (particaoPosterior.getPid() == this.posicaoMemoriaVazia) {
+				if (particaoPosterior.getPid() == SimuladorSO.posicaoMemoriaVazia) {
 					// Verifica se a posição posterior é vazia também
 
 					final int tamanhoConjunto = particaoAnterior.getTamanho() + particaoPosterior.getTamanho();

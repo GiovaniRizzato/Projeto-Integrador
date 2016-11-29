@@ -1,5 +1,7 @@
 package br.edu.udc.simulador.controle;
 
+import java.util.concurrent.Semaphore;
+
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.lista.encadeada.ListaEncadeada;
@@ -23,6 +25,10 @@ public class Computador {
 	public final static String textoPrioridadeMedia = "Media";
 	public final static String textoPrioridadeBaixa = "Baixa";
 
+	// Controle de sincronismo
+	Semaphore semafaro = new Semaphore(1);
+	Boolean execultando = true;
+
 	public static Computador getInstancia() {
 		if (Computador.instancia == null) {
 			Computador.instancia = new Computador();
@@ -34,13 +40,33 @@ public class Computador {
 	private Computador() {
 		this.hardware = new Hardware(10, 10, 10, 10, 50);
 		this.simulador = new SimuladorSO(hardware, 10, 0.6F, 0.3F);
+		this.criaThread(1000);
 	}
-	
-	public SimuladorSO getSimulador(){
+
+	private void criaThread(int tempoEspera) {
+		new Runnable() {
+
+			@Override
+			public void run() {
+				while (execultando) {
+					Computador.this.semafaro.acquireUninterruptibly();
+
+					Computador.this.simulador.execultarProcessos();
+					Computador.this.atualizaViews();
+
+					Computador.this.semafaro.release();
+				}
+			}
+		};
+	}
+
+	public SimuladorSO getSimulador() {
 		return this.simulador;
 	}
 
 	public void criaProcesso(String prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+		this.semafaro.acquireUninterruptibly();
+
 		switch (prioridade) {
 		case Computador.textoPrioridadeAlta:
 			this.simulador.criaNovoProcesso(Processo.Prioridade.ALTA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
@@ -56,6 +82,8 @@ public class Computador {
 		}
 
 		this.atualizaViews();
+
+		this.semafaro.release();
 	}
 
 	public void adicionaView(AttView view) {
@@ -80,14 +108,28 @@ public class Computador {
 	}
 
 	public Vetor<Integer> getInstruçoesCPU() {
+		this.semafaro.acquireUninterruptibly();
 
 		EstatisticaSO estatisticas = this.simulador.getEstatisticas();
-		Vetor<Integer> vetor = estatisticas.tempoDeCPU;
-		
-		for (int i = 0; i < estatisticas.tempoDeCPU.tamanho(); i++) {
-			System.out.println(estatisticas.tempoDeCPU.obtem(i));
-		}
-		
+
+		this.semafaro.release();
+
 		return estatisticas.tempoDeCPU;
+	}
+
+	public void finalizarProcesso(int pid) {
+		this.semafaro.acquireUninterruptibly();
+
+		this.simulador.sinalFinalizacao(pid);
+
+		this.semafaro.release();
+	}
+
+	public void fimSimuladcao() {
+		this.semafaro.acquireUninterruptibly();
+
+		this.execultando = false;
+
+		this.semafaro.release();
 	}
 }
