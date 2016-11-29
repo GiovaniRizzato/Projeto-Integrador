@@ -3,9 +3,11 @@ package br.edu.udc.simulador.controle;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.lista.encadeada.ListaEncadeada;
+import br.edu.udc.ed.lista.vetor.Vetor;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.janela.view.AttView;
 import br.edu.udc.simulador.processo.Processo;
+import br.edu.udc.simulador.so.EstatisticaSO;
 import br.edu.udc.simulador.so.SimuladorSO;
 
 public class Computador {
@@ -39,19 +41,22 @@ public class Computador {
 		case Computador.textoPrioridadeAlta:
 			this.simulador.criaNovoProcesso(Processo.Prioridade.ALTA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 			break;
-			
+
 		case Computador.textoPrioridadeMedia:
 			this.simulador.criaNovoProcesso(Processo.Prioridade.MEDIA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 			break;
-			
+
 		case Computador.textoPrioridadeBaixa:
 			this.simulador.criaNovoProcesso(Processo.Prioridade.BAIXA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 			break;
 		}
+
+		this.atualizaViews();
 	}
 
 	public void adicionaView(AttView view) {
 		this.listaViews.adiciona(view);
+		view.atualizar();
 	}
 
 	public void atualizaViews() {
@@ -68,5 +73,17 @@ public class Computador {
 
 	public Processo[] listaTodos() {
 		return this.simulador.listaTodosAtivos();
+	}
+
+	public Vetor<Integer> getInstruçoesCPU() {
+
+		EstatisticaSO estatisticas = this.simulador.getEstatisticas();
+		Vetor<Integer> vetor = estatisticas.tempoDeCPU;
+		
+		for (int i = 0; i < estatisticas.tempoDeCPU.tamanho(); i++) {
+			System.out.println(estatisticas.tempoDeCPU.obtem(i));
+		}
+		
+		return estatisticas.tempoDeCPU;
 	}
 }
