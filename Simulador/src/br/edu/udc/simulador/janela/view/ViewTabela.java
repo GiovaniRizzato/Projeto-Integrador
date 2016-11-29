@@ -7,7 +7,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-
 import br.edu.udc.simulador.controle.Computador;
 import br.edu.udc.simulador.processo.Processo;
 
@@ -26,6 +25,8 @@ public class ViewTabela extends JPanel implements AttView {
 		table = new JTable();
 		table.setModel((TableModel) tbModel);
 		add(new JScrollPane(table), BorderLayout.CENTER);
+
+		Computador.getInstancia().adicionaView(this);
 	}
 
 	public void atualizar() {
@@ -42,10 +43,6 @@ class ViewTabelaModel extends AbstractTableModel {
 
 	Processo[] todoProcessos;
 
-	private String tabela[][] = { { "hola", "teste", "teste1", "teste2" }, { "hola", "teste", "teste1", "teste2" },
-			{ "hola", "teste", "teste1", "teste2" }, { "hola", "teste", "teste1", "teste2" },
-			{ "hola", "teste", "teste1", "teste2" } };
-
 	public Class<?> getColumnClass(int columnIndex) {
 		return columnTypes[columnIndex];
 	}
@@ -56,42 +53,37 @@ class ViewTabelaModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
 		return 4;
 	}
 
 	public void atualizar() {
-		Computador computador = Computador.getInstancia();
-		Processo[] todoProcessos = computador.listaTodos();
+		this.todoProcessos = Computador.getInstancia().listaTodos();
 		fireTableDataChanged();
 	}
 
 	@Override
 	public int getRowCount() {
-		return tabela.length;
+		return this.todoProcessos.length;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		// this.todoProcessos[rowIndex] processo na lista rowIndex
-	/*	switch (columnIndex) {
-		case 1:
+		switch (columnIndex) {
+		case 0:
 			return this.todoProcessos[rowIndex].getPID();
-
-		case 2:
+		case 1:
 			final Processo.Prioridade processo = this.todoProcessos[rowIndex].getPrioridade();
 			if (processo != null) {
 				return this.todoProcessos[rowIndex].getPrioridade();
 			} else {
 				return "SO";
 			}
-
-		case 3:
+		case 2:
 			return this.todoProcessos[rowIndex].getInicioPrograma();
-
-		case 4:
+		case 3:
 			return "Pronto";
-		}*/
+		}
 
 		return null;
 
