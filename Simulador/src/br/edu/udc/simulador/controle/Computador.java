@@ -35,6 +35,10 @@ public class Computador {
 		this.hardware = new Hardware(10, 10, 10, 10, 50);
 		this.simulador = new SimuladorSO(hardware, 10, 0.6F, 0.3F);
 	}
+	
+	public SimuladorSO getSimulador(){
+		return this.simulador;
+	}
 
 	public void criaProcesso(String prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 		switch (prioridade) {

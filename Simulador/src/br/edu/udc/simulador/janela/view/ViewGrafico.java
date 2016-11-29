@@ -16,6 +16,7 @@ public class ViewGrafico extends JPanel implements AttView {
 	@Override
 	public void paint(Graphics grafico){
 		super.paint(grafico);
+		
 		int a=10;
 		int b=10;
 		grafico.setColor(Color.red);

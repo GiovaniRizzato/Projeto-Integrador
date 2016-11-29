@@ -40,7 +40,9 @@ public class Interface0_1 extends JFrame {
 			public void run() {
 				try {
 					Interface0_1 frame = new Interface0_1();
+					FrameMemoria memoria = new FrameMemoria();
 					frame.setVisible(true);
+					memoria.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -16,6 +16,8 @@ import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
 import br.edu.udc.simulador.controle.Computador;
+import br.edu.udc.simulador.processo.Processo;
+import br.edu.udc.simulador.so.SimuladorSO;
 
 public class CriaProcessoFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -141,6 +143,8 @@ public class CriaProcessoFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				FrameSelectColor frameSelectColor = new FrameSelectColor();
+				SimuladorSO so = Computador.getInstancia().getSimulador();
+				SiloDeCor.getIntancia().adiciona(so.getProximoPid(), frameSelectColor.getColor());
 				panel_1.setBackground(frameSelectColor.getColor());
 			}
 		});
@@ -161,15 +165,16 @@ public class CriaProcessoFrame extends JFrame {
 					final int instrucoesCPU = (int) clockCPU.getValue();
 					final int instrucoesES[] = { (int) clockES1.getValue(), (int) clockES2.getValue(),
 							(int) clockES3.getValue() };
-					//final String estrategia = (String) estrategiaComboBox.getSelectedItem();
+					// final String estrategia = (String)
+					// estrategiaComboBox.getSelectedItem();
 					try {
 						final Computador computador = Computador.getInstancia();
-						computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES[0],
-								instrucoesES[1], instrucoesES[2]);
+						computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES[0], instrucoesES[1],
+								instrucoesES[2]);
 					} catch (RuntimeException erro) {
 						System.out.println(erro.getMessage());
 					}
-					
+
 					Computador.getInstancia().atualizaViews();
 					result = OK;
 					setVisible(false);

@@ -56,6 +56,10 @@ public class SimuladorSO {
 		this.porcentagemCPUBaixa = ((porcentagemAlta + porcentagemMedia) - 1);
 	}
 
+	public int getProximoPid() {
+		return this.proximoPidDisponivel;
+	}
+
 	public int qtdProcessosAtivos() {
 		return this.listaPrincipal.tamanho();
 	}
@@ -90,7 +94,7 @@ public class SimuladorSO {
 		try {
 			particaoLivre = procuraPosicaoMemoria_first(tamanhoPrograma);
 		} catch (RuntimeException e) {
-			//TODO SO - Mensagem de erro, criarProcesso
+			// TODO SO - Mensagem de erro, criarProcesso
 			return;
 		}
 
@@ -268,8 +272,8 @@ public class SimuladorSO {
 	}
 
 	private void verificaEspacoLivreAdjacente() {
-		
-		//TODO concertar
+
+		// TODO concertar
 
 		for (int i = 1; i < (this.listaMemoria.tamanho()); i++) {
 
