@@ -75,25 +75,6 @@ public class CriaProcessoFrame extends JFrame {
 		prioridadeComboBox.setMaximumRowCount(3);
 		contentPane.add(prioridadeComboBox);
 
-		/*
-		 * JLabel estrategia = new JLabel("Estrategia de Memoria");
-		 * layout.putConstraint(SpringLayout.NORTH, estrategia, 50,
-		 * SpringLayout.NORTH, prioridade);
-		 * layout.putConstraint(SpringLayout.WEST, estrategia, 0,
-		 * SpringLayout.WEST, prioridade); contentPane.add(estrategia);
-		 * 
-		 * TODO tirar daqui depois...
-		 * 
-		 * estrategiaComboBox = new JComboBox(nomesEstrategia);
-		 * layout.putConstraint(SpringLayout.NORTH, estrategiaComboBox, 70,
-		 * SpringLayout.NORTH, prioridade);
-		 * layout.putConstraint(SpringLayout.WEST, estrategiaComboBox, 0,
-		 * SpringLayout.WEST, prioridade);
-		 * 
-		 * estrategiaComboBox.setMaximumRowCount(3);
-		 * contentPane.add(estrategiaComboBox);
-		 */
-
 		JLabel numeroDeInstrucoesCPU = new JLabel("Numero de Instruçoes do CPU");
 		layout.putConstraint(SpringLayout.NORTH, numeroDeInstrucoesCPU, 0, SpringLayout.NORTH, contentPane);
 
