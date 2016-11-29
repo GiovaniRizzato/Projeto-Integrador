@@ -16,6 +16,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SpringLayout;
 
 import br.edu.udc.simulador.controle.Computador;
+import br.edu.udc.simulador.janela.view.ViewGrafico;
 import br.edu.udc.simulador.janela.view.ViewTabela;
 
 import java.awt.Canvas;
@@ -26,6 +27,7 @@ public class Interface0_1 extends JFrame {
 	private JPanel contentPane = new JPanel();
 	private Computador computador = Computador.getInstancia();
 	private ViewTabela viewTabela;
+	private ViewGrafico viewGrafico;
 
 	
 	// TableModel tableModel;
@@ -52,7 +54,7 @@ public class Interface0_1 extends JFrame {
 	public Interface0_1() {
 		super("Simulador");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 510, 300);
 		SpringLayout layout = new SpringLayout();
 		contentPane.setLayout(layout);
 		JMenuBar menuBar = new JMenuBar();
@@ -220,17 +222,18 @@ public class Interface0_1 extends JFrame {
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
+		
 
 		ScrollPane scrollpaneTabela = new ScrollPane();
 		tabbedPane.addTab("Detalhes", null, scrollpaneTabela, null);
 		viewTabela = new ViewTabela();
 		scrollpaneTabela.add(viewTabela);
-		setPreferredSize(new Dimension(300, 100));
+		setPreferredSize(new Dimension(100, 50));
 
 		ScrollPane scrollpane = new ScrollPane();
 		tabbedPane.addTab("Grafico", null, scrollpane, null);
-		Canvas canvas = new Canvas();
-		scrollpane.add(canvas);
+		viewGrafico = new ViewGrafico();
+		scrollpane.add(viewGrafico);
 		
 		this.computador.adicionaView(viewTabela);
 	}
