@@ -46,7 +46,7 @@ public class FrameMemoria extends JFrame implements AttView{
 		scrollpane = new JScrollPane();
 		viewMemoria = new ViewMemoria();
 		scrollpane.setViewportView(viewMemoria);
-		viewMemoria.setPreferredSize(new Dimension(800,600));
+		viewMemoria.setPreferredSize(new Dimension(1000,100));
 		contentPane.add(scrollpane);
 		
 	}
