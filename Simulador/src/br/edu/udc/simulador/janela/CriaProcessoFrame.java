@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpringLayout;
@@ -158,6 +159,16 @@ public class CriaProcessoFrame extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
+
+					SistemaOperacional so = Computador.getInstancia().getSimulador();
+					try {
+						SiloDeCor.getIntancia().obtem(so.getProximoPid());
+					} catch (IllegalArgumentException erro) {
+						JOptionPane.showMessageDialog(null, "Escolha uma cor.");
+						return;
+					}
+					// se foi escolhido alguma cor
+
 					final String strPrioridade = (String) prioridadeComboBox.getSelectedItem();
 					Prioridade prioridade = Prioridade.ALTA;
 					switch (strPrioridade) {
@@ -188,7 +199,6 @@ public class CriaProcessoFrame extends JFrame {
 
 					result = OK;
 					setVisible(false);
-
 				}
 			});
 
