@@ -9,7 +9,6 @@ import br.edu.udc.simulador.controle.Computador;
 import br.edu.udc.simulador.hardware.Hardware;
 import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.processo.Programa;
-import br.edu.udc.simulador.so.SimuladorSO;
 import br.edu.udc.simulador.so.SistemaOperacional;
 
 public abstract class GerenciadorMemoria {
@@ -24,7 +23,7 @@ public abstract class GerenciadorMemoria {
 		this.hardware = hardware;
 
 		// adicionando SO no contexto de memória do mesmo
-		Processo processoSO = new Processo(SimuladorSO.PID_SO, null, 0, tamanhoSO);
+		Processo processoSO = new Processo(SistemaOperacional.PID_SO, null, 0, tamanhoSO);
 		this.listaMemoria.adiciona(this.contrutorParticao(processoSO, tamanhoSO, 0));
 
 		// "adicionando" memoria vazia ao contexto de memória do SO
@@ -46,7 +45,7 @@ public abstract class GerenciadorMemoria {
 		final int posicaoAllocada = this.allocaMemoria(processo, programa.tamanho(), particaoLivre);
 
 		processo.setPosicaoMemoria(posicaoAllocada);
-		Computador.getIntancia().getHardware().preencheMemoria(posicaoAllocada, programa);
+		Computador.getInstancia().getHardware().preencheMemoria(posicaoAllocada, programa);
 	}
 
 	protected int allocaMemoria(Processo processo, int tamanhoPrograma, IteradorManipulador<Particao> particaoLivre) {
@@ -75,7 +74,7 @@ public abstract class GerenciadorMemoria {
 
 		return posicaoAllocada;
 	}
-	
+
 	public void desalocaMemoria(int pid) {
 
 		for (IteradorManipulador<Particao> it = this.listaMemoria.inicio(); it.temProximo(); it.proximo()) {
@@ -136,6 +135,7 @@ public abstract class GerenciadorMemoria {
 				this.desalocaMemoria(processo.getPID());
 
 				itVazio.adicionaAntes(this.contrutorParticao(processo, programa.tamanho(), particaoVazia.getPosicao()));
+				processo.setPosicaoMemoria(particaoVazia.getPosicao());
 
 				particaoVazia.setPosicao(particaoVazia.getPosicao() + programa.tamanho());
 				particaoVazia.setTamanho(particaoVazia.getTamanho() - programa.tamanho());
@@ -162,7 +162,7 @@ public abstract class GerenciadorMemoria {
 		for (itAnterior = this.listaMemoria.inicio(); itAnterior.temProximo(); itAnterior.proximo()) {
 
 			final Particao particaoAnterior = itAnterior.getDado();
-			if (particaoAnterior.getPid() == SimuladorSO.POSICAO_MEMORIA_VAZIA) {
+			if (particaoAnterior.getPid() == SistemaOperacional.POSICAO_MEMORIA_VAZIA) {
 				// Verifica se a partição representa memoria vazia
 
 				final IteradorManipulador<Particao> itPosterior = (IteradorManipulador<Particao>) itAnterior.clone();
@@ -174,7 +174,7 @@ public abstract class GerenciadorMemoria {
 					return;
 				}
 
-				if (particaoPosterior.getPid() == SimuladorSO.POSICAO_MEMORIA_VAZIA) {
+				if (particaoPosterior.getPid() == SistemaOperacional.POSICAO_MEMORIA_VAZIA) {
 					// Verifica se a posição posterior é vazia também
 
 					final int tamanhoConjunto = particaoAnterior.getTamanho() + particaoPosterior.getTamanho();

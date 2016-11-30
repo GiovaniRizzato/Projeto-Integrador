@@ -14,7 +14,8 @@ public class TimeSharing extends EscalonadorProcessos {
 		super(porceAlta, porceMedia, porceBaixa, listaPrincipal, hardware);
 	}
 
-	public void execultarProcessos() {
+	@Override
+	protected void escalonar() {
 
 		final int reservadoParaAlta = (int) (super.hardware.getClockCPU() * this.porcentagemCPUAlta);
 		final int reservadoParaMedia = (int) (super.hardware.getClockCPU() * this.porcentagemCPUMedia);
@@ -112,7 +113,7 @@ public class TimeSharing extends EscalonadorProcessos {
 
 					} else {
 						// fim do programa
-						Computador.getIntancia().getSimulador().matarProcesso(this.processando);
+						Computador.getInstancia().getSimulador().matarProcesso(this.processando);
 					}
 				}
 

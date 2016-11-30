@@ -4,6 +4,7 @@ import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.lista.encadeada.ListaEncadeada;
+import br.edu.udc.ed.lista.vetor.Vetor;
 import br.edu.udc.ed.mapa.Mapa;
 import br.edu.udc.simulador.controle.Computador;
 import br.edu.udc.simulador.hardware.Hardware;
@@ -11,10 +12,17 @@ import br.edu.udc.simulador.processo.Processo;
 import br.edu.udc.simulador.processo.Programa;
 import br.edu.udc.simulador.so.escalonador.EscalonadorProcessos;
 import br.edu.udc.simulador.so.escalonador.TimeSharing;
+import br.edu.udc.simulador.so.memoria.BestFit;
 import br.edu.udc.simulador.so.memoria.FirstFit;
 import br.edu.udc.simulador.so.memoria.GerenciadorMemoria;
+import br.edu.udc.simulador.so.memoria.WorstFit;
 
 public class SistemaOperacional {
+
+	// Escolha de estratégia
+	public enum Estrategia {
+		FIRST_FIT, BEST_FIT, WORST_FIT;
+	}
 
 	// Abstração de estados do processo
 	private Processo estadoCriacao;
@@ -35,10 +43,21 @@ public class SistemaOperacional {
 
 	private EstatisticaSO estatisticaSO = new EstatisticaSO();
 
-	public SistemaOperacional(int tamanhoSO, float porcAlta, float porcMedia, Hardware hardware) {
+	public SistemaOperacional(int tamanhoSO, float porcAlta, float porcMedia, Estrategia estrategia,
+			Hardware hardware) {
 
-		// TODO implementar um modo de alternar os objetos de alocação
-		this.gerenciador = new FirstFit(tamanhoSO, hardware.tamanhoMemoria(), hardware);
+		switch (estrategia) {
+		case FIRST_FIT: {
+			this.gerenciador = new FirstFit(tamanhoSO, hardware.tamanhoMemoria(), hardware);
+			break;
+		}
+		case BEST_FIT: {
+			this.gerenciador = new BestFit(tamanhoSO, hardware.tamanhoMemoria(), hardware);
+		}
+		case WORST_FIT: {
+			this.gerenciador = new WorstFit(tamanhoSO, hardware.tamanhoMemoria(), hardware);
+		}
+		}
 
 		final Float porcBaixa = (1 - (porcAlta + porcMedia));
 		if (porcBaixa < 0 || porcBaixa > 1) {
@@ -49,6 +68,14 @@ public class SistemaOperacional {
 
 	public EstatisticaSO getEstatisticas() {
 		return this.estatisticaSO.clone();
+	}
+
+	public int qtdProcessos() {
+		return (this.listaPrincipal.tamanho() + this.listaPausado.tamanho());
+	}
+	
+	public int getProximoPid() {
+		return this.proximoPidDisponivel;
 	}
 
 	public Processo[] listaTodosAtivos() {
@@ -64,6 +91,20 @@ public class SistemaOperacional {
 		return processos;
 	}
 
+	public Processo[] listaTodosPausados() {
+
+		Processo[] processos = new Processo[this.listaPausado.tamanho()];
+
+		final Vetor<Processo> vetor = this.listaPausado.todosValores();
+		Iterador<Processo> it = vetor.inicio();
+		for (int i = 0; i < vetor.tamanho(); i++) {
+			processos[i] = it.getDado();
+			it.proximo();
+		}
+
+		return processos;
+	}
+
 	public void criaNovoProcesso(Processo.Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 
 		final Programa programa = new Programa(qtdCPU, qtdIO1, qtdIO2, qtdIO3);
@@ -71,12 +112,7 @@ public class SistemaOperacional {
 		// posicao 0 pois sera setado dentro do alocação de memoria
 		this.estadoCriacao = new Processo(this.proximoPidDisponivel, prioridade, 0, programa.tamanho());
 
-		// try {
 		this.gerenciador.allocaMemoria(this.estadoCriacao, programa);
-		// } catch (RuntimeException e) {
-		// TODO SO - Mensagem de erro, criarProcesso
-		// return;
-		// }
 
 		this.listaPrincipal.adiciona(this.estadoCriacao);
 		this.estadoCriacao = null;
@@ -110,7 +146,7 @@ public class SistemaOperacional {
 				intrucaoFim.adiciona(Programa.instrucaoFIM);
 
 				// sobre escreve desde a posição
-				Hardware hardware = Computador.getIntancia().getHardware();
+				Hardware hardware = Computador.getInstancia().getHardware();
 				hardware.preencheMemoria(it.getDado().posicaoIntrucaoAtual(), intrucaoFim);
 				return;
 			}

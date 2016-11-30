@@ -45,15 +45,13 @@ public class Processo {
 		}
 	}
 
-	// TODO Processo - Estatistica de intruções feitas
-
 	public void atualizarParaProximaIntrucao() {
 		this.contextoSoftware.instrucaoAtual++;
 	}
 
 	public void incrementaEstatisticaProcessada(Integer[] instrucoes) {
 
-		for (int i = 0; i < instrucoes.length; i++) {
+		for (int i = 0; i > instrucoes.length; i++) {
 			switch (instrucoes[i]) {
 			case Programa.instrucaoCPU: {
 				this.contextoSoftware.dadosEstatisticos.CPU++;
@@ -73,6 +71,10 @@ public class Processo {
 			}
 			}
 		}
+	}
+	
+	public void incrementaTempoReal(){
+		this.contextoSoftware.dadosEstatisticos.tempoTotalEmSegundos++;
 	}
 
 	public int posicaoIntrucaoAtual() {

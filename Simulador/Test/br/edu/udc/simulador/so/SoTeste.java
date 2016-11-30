@@ -12,7 +12,7 @@ public class SoTeste {
 	@Test
 	public void criaProcesso_casoFeliz() {
 		
-		SistemaOperacional so = Computador.getIntancia().getSimulador();
+		SistemaOperacional so = Computador.getInstancia().getSimulador();
 
 		so.criaNovoProcesso(Prioridade.ALTA, 3, 0, 0, 0);
 		so.criaNovoProcesso(Prioridade.ALTA, 7, 0, 0, 0);
@@ -27,7 +27,7 @@ public class SoTeste {
 	@Test
 	public void criaProcesso_desalocaMemoria() {
 
-		Computador pc = Computador.getIntancia();
+		Computador pc = Computador.getInstancia();
 		SistemaOperacional so = pc.getSimulador();
 
 		so.criaNovoProcesso(Prioridade.ALTA, 3, 0, 0, 0);

@@ -2,6 +2,7 @@ package br.edu.udc.simulador.so.escalonador;
 
 import br.edu.udc.ed.fila.Fila;
 import br.edu.udc.ed.fila.encadeada.FilaEncadeada;
+import br.edu.udc.ed.iteradores.Iterador;
 import br.edu.udc.ed.iteradores.IteradorManipulador;
 import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.simulador.hardware.Hardware;
@@ -29,8 +30,17 @@ public abstract class EscalonadorProcessos {
 		this.porcentagemCPUBaixa = porceBaixa;
 		this.listaPrincipal = listaPrincipal;
 	}
-	
-	public abstract void execultarProcessos();
+
+	public void execultarProcessos() {
+		this.escalonar();
+
+		for (Iterador<Processo> it = this.listaPrincipal.inicio(); it.temProximo(); it.proximo()) {
+			final Processo processo = it.getDado();
+			processo.incrementaTempoReal();
+		}
+	}
+
+	protected abstract void escalonar();
 
 	protected Fila<Processo> filtroIntrucaoAtual(int intrucaoFiltro) {
 		Fila<Processo> fila = new FilaEncadeada<>();
