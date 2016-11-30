@@ -31,7 +31,7 @@ public class Computador {
 
 	// Controle de sincronismo
 	Semaphore semafaro = new Semaphore(1);
-	Boolean execultando = true;
+	Boolean fimDoPrograma = false;
 	Thread thread;
 
 	public static Computador getInstancia() {
@@ -43,7 +43,7 @@ public class Computador {
 	}
 
 	public Computador() {
-		this.hardware = new Hardware(50, 20, 20, 20, 100);
+		this.hardware = new Hardware(10, 10, 10, 10, 400);
 		Estrategia estrategia = EstrategiaSelect.escolha();
 		this.simulador = new SistemaOperacional(10, 0.6F, 0.3F, estrategia, this.hardware);
 
@@ -56,14 +56,14 @@ public class Computador {
 
 			@Override
 			public void run() {
-				while (execultando) {
+				while (!fimDoPrograma) {
 					Computador.this.semafaro.acquireUninterruptibly();
 
 					Computador.this.simulador.execultarProcessos();
 					Computador.this.atualizaViews();
 
 					Computador.this.semafaro.release();
-					
+
 					try {
 						Thread.sleep(tempoEspera);
 					} catch (InterruptedException e) {
@@ -129,10 +129,22 @@ public class Computador {
 		this.semafaro.release();
 	}
 
-	public void fimSimuladcao() {
+	public void fimSimulacao() {
 		this.semafaro.acquireUninterruptibly();
 
-		this.execultando = false;
+		this.fimDoPrograma = true;
+
+		this.semafaro.release();
+	}
+
+	public void touglePlay() {
+		this.semafaro.acquireUninterruptibly();
+
+		try {
+			this.thread.wait();
+		} catch (InterruptedException e) {
+			this.thread.notify();
+		}
 
 		this.semafaro.release();
 	}
