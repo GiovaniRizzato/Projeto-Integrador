@@ -14,6 +14,7 @@ import br.edu.udc.simulador.processo.Processo.Prioridade;
 import br.edu.udc.simulador.so.EstatisticaSO;
 import br.edu.udc.simulador.so.SistemaOperacional;
 import br.edu.udc.simulador.so.SistemaOperacional.Estrategia;
+import br.edu.udc.simulador.arquivo.RawMaterialProcesso;
 import br.edu.udc.simulador.controle.janela.EstrategiaSelect;
 
 public class Computador {
@@ -79,6 +80,10 @@ public class Computador {
 
 	public Hardware getHardware() {
 		return this.hardware;
+	}
+	
+	public void criaProcesso(RawMaterialProcesso informacoes){
+		
 	}
 
 	public void criaProcesso(Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
