@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.ScrollPane;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
@@ -13,6 +14,7 @@ import javax.swing.JMenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import br.edu.udc.simulador.controle.Computador;
@@ -27,6 +29,8 @@ public class Interface0_1 extends JFrame {
 	private Computador computador = Computador.getInstancia();
 	private ViewTabela viewTabela;
 	private ViewGrafico viewGrafico;
+	int i =10;
+	private JTextField textField;
 
 	
 	// TableModel tableModel;
@@ -226,18 +230,53 @@ public class Interface0_1 extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
 		
-
 		ScrollPane scrollpaneTabela = new ScrollPane();
 		tabbedPane.addTab("Detalhes", null, scrollpaneTabela, null);
 		viewTabela = new ViewTabela();
 		scrollpaneTabela.add(viewTabela);
 		setPreferredSize(new Dimension(100, 50));
 
+		
 		ScrollPane scrollpane = new ScrollPane();
 		tabbedPane.addTab("Grafico", null, scrollpane, null);
 		viewGrafico = new ViewGrafico();
 		scrollpane.add(viewGrafico);
+		SpringLayout layoutgrafico = new SpringLayout();
+		viewGrafico.setLayout(layoutgrafico);
+		
+		textField = new JTextField(media());
+		layoutgrafico.putConstraint(SpringLayout.NORTH, textField, 10, SpringLayout.NORTH, viewGrafico);
+		layoutgrafico.putConstraint(SpringLayout.WEST, textField, -80, SpringLayout.EAST, viewGrafico);
+		layoutgrafico.putConstraint(SpringLayout.EAST, textField, -10, SpringLayout.EAST, viewGrafico);
+		textField.setBackground(getBackground());
+		textField.setEditable(false);
+		viewGrafico.add(textField);
+		
+		textField = new JTextField(mediana());
+		layoutgrafico.putConstraint(SpringLayout.NORTH, textField, 30, SpringLayout.NORTH, viewGrafico);
+		layoutgrafico.putConstraint(SpringLayout.WEST, textField, -80, SpringLayout.EAST, viewGrafico);
+		layoutgrafico.putConstraint(SpringLayout.EAST, textField, -10, SpringLayout.EAST, viewGrafico);
+		textField.setBackground(getBackground());
+		textField.setEditable(false);
+		viewGrafico.add(textField);
+		
+		textField = new JTextField(moda());
+		layoutgrafico.putConstraint(SpringLayout.NORTH, textField, 50, SpringLayout.NORTH, viewGrafico);
+		layoutgrafico.putConstraint(SpringLayout.WEST, textField, -80, SpringLayout.EAST, viewGrafico);
+		layoutgrafico.putConstraint(SpringLayout.EAST, textField, -10, SpringLayout.EAST, viewGrafico);
+		textField.setBackground(getBackground());
+		textField.setEditable(false);
+		viewGrafico.add(textField);
 		
 		this.computador.adicionaView(viewTabela);
+	}
+	public String moda(){
+		return String.format("Moda:%d",i);
+	}
+	public String media(){
+		return String.format("media:%d", i);
+	}
+	public String mediana(){
+		return String.format("mediana:%d", i);
 	}
 }
