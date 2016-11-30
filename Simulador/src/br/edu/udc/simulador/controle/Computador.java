@@ -32,6 +32,7 @@ public class Computador {
 	// Controle de sincronismo
 	Semaphore semafaro = new Semaphore(1);
 	Boolean execultando = true;
+	Thread thread;
 
 	public static Computador getInstancia() {
 		if (Computador.instancia == null) {
@@ -46,11 +47,12 @@ public class Computador {
 		Estrategia estrategia = EstrategiaSelect.escolha();
 		this.simulador = new SistemaOperacional(10, 0.6F, 0.3F, estrategia, this.hardware);
 
-		// this.criaThread(1000);
+		this.thread = this.criaThread(10000);
+		this.thread.start();
 	}
 
-	private void criaThread(int tempoEspera) {
-		new Runnable() {
+	private Thread criaThread(int tempoEspera) {
+		return new Thread() {
 
 			@Override
 			public void run() {
@@ -61,9 +63,14 @@ public class Computador {
 					Computador.this.atualizaViews();
 
 					Computador.this.semafaro.release();
+					
+					try {
+						Thread.sleep(tempoEspera);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
-		}.run();
+		};
 	}
 
 	public SistemaOperacional getSimulador() {
