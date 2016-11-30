@@ -8,6 +8,7 @@ Para os códigos deste repositório foi utilizado algumas estruturas de dados: L
 
 # Grupo
 Giovani Rizzato<br />
-Gabriella<br />
-Lucas José<br />
-Ayrton
+Gabriella fernanda Marin Mello<br />
+Ayrton Geib<br />
+Igor Bogarin<br />
+Cleyber Faedo<br />
