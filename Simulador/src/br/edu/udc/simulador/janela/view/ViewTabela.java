@@ -1,22 +1,26 @@
 package br.edu.udc.simulador.janela.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import br.edu.udc.simulador.controle.Computador;
+import br.edu.udc.simulador.janela.SiloDeCor;
 import br.edu.udc.simulador.processo.Processo;
 
 public class ViewTabela extends JPanel implements AttView {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private JTable table;
 	private ViewTabelaModel tbModel;
+	private Processo[] todoProcessos;
 
 	public ViewTabela() {
 		setLayout(new BorderLayout(0, 0));
@@ -25,21 +29,40 @@ public class ViewTabela extends JPanel implements AttView {
 		table = new JTable();
 		table.setModel((TableModel) tbModel);
 		add(new JScrollPane(table), BorderLayout.CENTER);
+		
+		table.getColumnModel().getColumn(0).setCellRenderer( new DefaultTableCellRenderer() {
+		    /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public Component getTableCellRenderer(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+		        //super.getTableCellRenderer(table, value, isSelected, hasFocus, row, col);
+				
+		       // if (consulta no table model ou controler para saber a cor ) {
+			//	final Processo processo = this.todoProcessos[];
+				//setBackground( SiloDeCor.getIntancia().obtem(processo.getPID()));
+		        
+		        return this;
+		    }
+		});
 
 		Computador.getInstancia().adicionaView(this);
 	}
 
 	public void atualizar() {
-		tbModel.atualizar();
+		this.todoProcessos = Computador.getInstancia().listaTodos();
+		tbModel.atualizar(this.todoProcessos);
 	}
 }
 
 class ViewTabelaModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1;
-	private final String columnNames[] = new String[] { "pid", "prioridade", "PosicaoIntruçãoAtaul",
-			"Estado do processo" };
-	private final Class<?> columnTypes[] = new Class[] { String.class, String.class, String.class, String.class };
+	private final String columnNames[] = new String[] { "cor", "pid", "prioridade", "Posiçao de inicio", "tamanho",
+			"PosicaoIntruçãoAtaul", "Estado do processo", };
+	private final Class<?> columnTypes[] = new Class[] { Object.class, String.class, String.class, int.class, int.class,
+			String.class, String.class };
 
 	Processo[] todoProcessos;
 
@@ -53,11 +76,11 @@ class ViewTabelaModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 4;
+		return 7;
 	}
 
-	public void atualizar() {
-		this.todoProcessos = Computador.getInstancia().listaTodos();
+	public void atualizar(Processo[] processos) {
+		this.todoProcessos = processos;
 		fireTableDataChanged();
 	}
 
@@ -65,23 +88,35 @@ class ViewTabelaModel extends AbstractTableModel {
 	public int getRowCount() {
 		return this.todoProcessos.length;
 	}
+	public void mudaCorTabela(int rowIndex){
+		final Processo processo = this.todoProcessos[rowIndex];
+		SiloDeCor.getIntancia().obtem(processo.getPID());
+	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		// this.todoProcessos[rowIndex] processo na lista rowIndex
 		switch (columnIndex) {
 		case 0:
-			return this.todoProcessos[rowIndex].getPID();
+			final Processo processo = this.todoProcessos[rowIndex];
+			SiloDeCor.getIntancia().obtem(processo.getPID());
+			return "";
 		case 1:
-			final Processo.Prioridade processo = this.todoProcessos[rowIndex].getPrioridade();
-			if (processo != null) {
+			return this.todoProcessos[rowIndex].getPID();
+		case 2:
+			final Processo.Prioridade prioridade = this.todoProcessos[rowIndex].getPrioridade();
+			if (prioridade != null) {
 				return this.todoProcessos[rowIndex].getPrioridade();
 			} else {
 				return "SO";
 			}
-		case 2:
-			return this.todoProcessos[rowIndex].getInicioPrograma();
 		case 3:
+			return this.todoProcessos[rowIndex].getInicioPrograma();
+		case 4:
+			return this.todoProcessos[rowIndex].getTamanho();
+		case 5:
+			return this.todoProcessos[rowIndex].posicaoIntrucaoAtual();
+		case 6:
 			return "Pronto";
 		}
 
