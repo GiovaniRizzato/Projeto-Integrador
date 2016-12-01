@@ -1,10 +1,6 @@
 package br.edu.udc.simulador.janela.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -14,6 +10,7 @@ import javax.swing.table.TableModel;
 import br.edu.udc.simulador.controle.Computador;
 import br.edu.udc.simulador.janela.SiloDeCor;
 import br.edu.udc.simulador.processo.Processo;
+import br.edu.udc.simulador.processo.Programa;
 
 public class ViewTabela extends JPanel implements AttView {
 
@@ -29,22 +26,12 @@ public class ViewTabela extends JPanel implements AttView {
 		table = new JTable();
 		table.setModel((TableModel) tbModel);
 		add(new JScrollPane(table), BorderLayout.CENTER);
-		
-		table.getColumnModel().getColumn(0).setCellRenderer( new DefaultTableCellRenderer() {
-		    /**
+
+		table.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+			/**
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
-			public Component getTableCellRenderer(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
-		        //super.getTableCellRenderer(table, value, isSelected, hasFocus, row, col);
-				
-		       // if (consulta no table model ou controler para saber a cor ) {
-			//	final Processo processo = this.todoProcessos[];
-				//setBackground( SiloDeCor.getIntancia().obtem(processo.getPID()));
-		        
-		        return this;
-		    }
 		});
 
 		Computador.getInstancia().adicionaView(this);
@@ -88,7 +75,8 @@ class ViewTabelaModel extends AbstractTableModel {
 	public int getRowCount() {
 		return this.todoProcessos.length;
 	}
-	public void mudaCorTabela(int rowIndex){
+
+	public void mudaCorTabela(int rowIndex) {
 		final Processo processo = this.todoProcessos[rowIndex];
 		SiloDeCor.getIntancia().obtem(processo.getPID());
 	}
@@ -100,7 +88,7 @@ class ViewTabelaModel extends AbstractTableModel {
 		case 0:
 			final Processo processo = this.todoProcessos[rowIndex];
 			SiloDeCor.getIntancia().obtem(processo.getPID());
-			return "";
+			return SiloDeCor.getIntancia().obtem(processo.getPID()).toString();
 		case 1:
 			return this.todoProcessos[rowIndex].getPID();
 		case 2:
@@ -117,7 +105,13 @@ class ViewTabelaModel extends AbstractTableModel {
 		case 5:
 			return this.todoProcessos[rowIndex].posicaoIntrucaoAtual();
 		case 6:
-			return "Pronto";
+			final int PosicaoAtual = this.todoProcessos[rowIndex].posicaoIntrucaoAtual();
+			final int intrucao = Computador.getInstancia().getHardware().getPosicaoMemoria(PosicaoAtual);
+			if (intrucao == Programa.instrucaoCPU) {
+				return "Pronto";
+			} else {
+				return "Espera";
+			}
 		}
 
 		return null;

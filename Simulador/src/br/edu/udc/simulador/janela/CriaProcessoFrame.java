@@ -191,6 +191,13 @@ public class CriaProcessoFrame extends JFrame {
 							(int) clockES3.getValue() };
 					try {
 						final Computador computador = Computador.getInstancia();
+
+						final int qtdIntrucoes = instrucoesCPU + instrucoesES[0] + instrucoesES[1] + instrucoesES[2];
+						if (qtdIntrucoes <= 0) {
+							JOptionPane.showMessageDialog(null, "É necessario no minimo uma intrução.");
+							return;
+						}
+
 						computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES[0], instrucoesES[1],
 								instrucoesES[2]);
 					} catch (RuntimeException erro) {

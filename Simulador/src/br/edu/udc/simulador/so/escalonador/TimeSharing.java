@@ -91,13 +91,16 @@ public class TimeSharing extends EscalonadorProcessos {
 				// Coletando todos as intruções feitas para fazer a estatistica
 				final int posicaoIntrucaoPosterior = super.processando.posicaoIntrucaoAtual();
 				final int quantidadeIntrucoes = posicaoIntrucaoPosterior - posicaoIntrucaoAnterior - 1;
-				final Integer[] intrucoesExecultadas = new Integer[quantidadeIntrucoes];
-				for (int j = 0; j < quantidadeIntrucoes; j++) {
-					final int instrucao = super.hardware.getPosicaoMemoria(posicaoIntrucaoAnterior + j);
-					intrucoesExecultadas[j] = instrucao;
-				}
+				
+				if (quantidadeIntrucoes > 0) {
+					final Integer[] intrucoesExecultadas = new Integer[quantidadeIntrucoes];
+					for (int j = 0; j < quantidadeIntrucoes; j++) {
+						final int instrucao = super.hardware.getPosicaoMemoria(posicaoIntrucaoAnterior + j);
+						intrucoesExecultadas[j] = instrucao;
+					}
 
-				super.processando.incrementaEstatisticaProcessada(intrucoesExecultadas);
+					super.processando.incrementaEstatisticaProcessada(intrucoesExecultadas);
+				}
 
 				final int instrucaoAtual = super.hardware.getPosicaoMemoria(this.processando.posicaoIntrucaoAtual());
 

@@ -30,5 +30,4 @@ public class ViewGrafico extends JPanel implements AttView {
 		}
 		}
 	}
-
 }

@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.ScrollPane;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
@@ -29,10 +28,9 @@ public class Interface0_1 extends JFrame {
 	private Computador computador = Computador.getInstancia();
 	private ViewTabela viewTabela;
 	private ViewGrafico viewGrafico;
-	int i =10;
+	int i = 10;
 	private JTextField textField;
 
-	
 	// TableModel tableModel;
 	/**
 	 * Launch the application.
@@ -45,7 +43,7 @@ public class Interface0_1 extends JFrame {
 					Interface0_1 frame = new Interface0_1();
 					FrameMemoria memoria = new FrameMemoria();
 					frame.setVisible(true);
-					memoria.setBounds(600, 100,450,200);
+					memoria.setBounds(600, 100, 450, 200);
 					memoria.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -80,6 +78,15 @@ public class Interface0_1 extends JFrame {
 			});
 			processos.add(adicionar);
 
+			JMenuItem importarProcesso = new JMenuItem("Importar processos");
+			importarProcesso.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					CriaProcessoFrame processo = new CriaProcessoFrame();
+					processo.setVisible(true);
+				}
+			});
+			processos.add(importarProcesso);
+
 			JMenuItem alterarPrioridade = new JMenuItem("Alterar prioridade");
 			processos.add(alterarPrioridade);
 			alterarPrioridade.addActionListener(new ActionListener() {
@@ -88,6 +95,7 @@ public class Interface0_1 extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					DialogAlteraPrioridade alteraPrioridadeDialog = new DialogAlteraPrioridade("Altera prioridade");
 					alteraPrioridadeDialog.setVisible(true);
+					alteraPrioridadeDialog.getResult();
 				}
 			});
 			JMenuItem finalizar = new JMenuItem("Finalizar");
@@ -96,9 +104,13 @@ public class Interface0_1 extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					DialogAcoes finalizaProcesso = new DialogAcoes("Finalizar processo");
+					DialogFinaliza finalizaProcesso = new DialogFinaliza();
 					finalizaProcesso.setVisible(true);
-					computador.finalizarProcesso(finalizaProcesso.getPID());
+					if (finalizaProcesso.getResult() == 1) {
+						System.out.println(finalizaProcesso.getPID());
+						computador.finalizarProcesso(finalizaProcesso.getPID());
+					}
+
 				}
 			});
 
@@ -108,7 +120,7 @@ public class Interface0_1 extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					DialogAcoes pausaProcesso = new DialogAcoes("Pausar Processo");
+					DialogPausar pausaProcesso = new DialogPausar();
 					pausaProcesso.setVisible(true);
 				}
 			});
@@ -118,7 +130,7 @@ public class Interface0_1 extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					DialogAcoes retomaProcesso = new DialogAcoes("Retomar Processo");
+					DialogRetomar retomaProcesso = new DialogRetomar();
 					retomaProcesso.setVisible(true);
 				}
 			});
@@ -132,7 +144,10 @@ public class Interface0_1 extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					DialogAlteraClock alteraClock = new DialogAlteraClock("Altera numero de Intruçoes CPU");
+					DialogAlteraE_S1 alteraClock = new DialogAlteraE_S1("Altera numero de Intruçoes CPU");
+					
+					System.out.print(alteraClock.getValor());
+					
 					alteraClock.setVisible(true);
 				}
 			});
@@ -142,7 +157,7 @@ public class Interface0_1 extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					DialogAlteraClock alteraClockES1 = new DialogAlteraClock("Altera numero de Intruçoes E/S.1");
+					DialogAlteraE_S1 alteraClockES1 = new DialogAlteraE_S1("Altera numero de Intruçoes E/S.1");
 					alteraClockES1.setVisible(true);
 				}
 			});
@@ -153,7 +168,7 @@ public class Interface0_1 extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					DialogAlteraClock alteraClockES2 = new DialogAlteraClock("Altera numero de Intruçoes E/S.2");
+					DialogAlteraE_S1 alteraClockES2 = new DialogAlteraE_S1("Altera numero de Intruçoes E/S.2");
 					alteraClockES2.setVisible(true);
 				}
 			});
@@ -163,54 +178,29 @@ public class Interface0_1 extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					DialogAlteraClock alteraClockES3 = new DialogAlteraClock("Altera numero de Intruçoes E/S.3");
+					DialogAlteraE_S1 alteraClockES3 = new DialogAlteraE_S1("Altera numero de Intruçoes E/S.3");
 					alteraClockES3.setVisible(true);
 
 				}
 			});
-			JMenu estrtegiaDeMemoria = new JMenu("Estrategia de memoria");
+			JMenuItem estrtegiaDeMemoria = new JMenuItem("Pausar/resumir processamento");
 			hardware.add(estrtegiaDeMemoria);
-			{
-
-				JMenuItem first_fit = new JMenuItem("First fit");
-				estrtegiaDeMemoria.add(first_fit);
-				first_fit.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-
-					}
-				});
-
-				JMenuItem best_fit = new JMenuItem("Best fit");
-				estrtegiaDeMemoria.add(best_fit);
-				best_fit.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-
-					}
-				});
-
-				JMenuItem worst_fit = new JMenuItem("Worst fit");
-				estrtegiaDeMemoria.add(worst_fit);
-				worst_fit.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-
-					}
-				});
-			}
+			hardware.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					computador.touglePlay();	
+				}
+			});
+			
+				
 			JMenuItem desfragmenta = new JMenuItem("Desfragmenta");
 			hardware.add(desfragmenta);
 			desfragmenta.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					//TODO desfragmenta
 				}
 			});
 		}
@@ -229,21 +219,20 @@ public class Interface0_1 extends JFrame {
 
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
-		
+
 		ScrollPane scrollpaneTabela = new ScrollPane();
 		tabbedPane.addTab("Detalhes", null, scrollpaneTabela, null);
 		viewTabela = new ViewTabela();
 		scrollpaneTabela.add(viewTabela);
 		setPreferredSize(new Dimension(100, 50));
 
-		
 		ScrollPane scrollpane = new ScrollPane();
 		tabbedPane.addTab("Grafico", null, scrollpane, null);
 		viewGrafico = new ViewGrafico();
 		scrollpane.add(viewGrafico);
 		SpringLayout layoutgrafico = new SpringLayout();
 		viewGrafico.setLayout(layoutgrafico);
-		
+
 		textField = new JTextField(media());
 		layoutgrafico.putConstraint(SpringLayout.NORTH, textField, 10, SpringLayout.NORTH, viewGrafico);
 		layoutgrafico.putConstraint(SpringLayout.WEST, textField, -80, SpringLayout.EAST, viewGrafico);
@@ -251,7 +240,7 @@ public class Interface0_1 extends JFrame {
 		textField.setBackground(getBackground());
 		textField.setEditable(false);
 		viewGrafico.add(textField);
-		
+
 		textField = new JTextField(mediana());
 		layoutgrafico.putConstraint(SpringLayout.NORTH, textField, 30, SpringLayout.NORTH, viewGrafico);
 		layoutgrafico.putConstraint(SpringLayout.WEST, textField, -80, SpringLayout.EAST, viewGrafico);
@@ -259,7 +248,7 @@ public class Interface0_1 extends JFrame {
 		textField.setBackground(getBackground());
 		textField.setEditable(false);
 		viewGrafico.add(textField);
-		
+
 		textField = new JTextField(moda());
 		layoutgrafico.putConstraint(SpringLayout.NORTH, textField, 50, SpringLayout.NORTH, viewGrafico);
 		layoutgrafico.putConstraint(SpringLayout.WEST, textField, -80, SpringLayout.EAST, viewGrafico);
@@ -267,16 +256,19 @@ public class Interface0_1 extends JFrame {
 		textField.setBackground(getBackground());
 		textField.setEditable(false);
 		viewGrafico.add(textField);
-		
+
 		this.computador.adicionaView(viewTabela);
 	}
-	public String moda(){
-		return String.format("Moda:%d",i);
+	
+	public String moda() {
+		return String.format("Moda:%d", i);
 	}
-	public String media(){
+
+	public String media() {
 		return String.format("media:%d", i);
 	}
-	public String mediana(){
+
+	public String mediana() {
 		return String.format("mediana:%d", i);
 	}
 }

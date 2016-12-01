@@ -99,7 +99,7 @@ public class DialogAlteraPrioridade extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					retonoPID = (int) pid.getValue();
-
+					//TODO colocar Altera prioridade por pid
 					result = OK;
 					//System.out.print(getResult());
 					setVisible(false);
