@@ -30,7 +30,7 @@ public class SimuladorSO {
 	// Veriaveis lógicas
 	public static final int posicaoMemoriaVazia = -1;
 	public static final int pidSO = posicaoMemoriaVazia + 1;
-	private Integer proximoPidDisponivel = this.pidSO + 1;
+	private Integer proximoPidDisponivel = SimuladorSO.pidSO + 1;
 
 	private Float porcentagemCPUAlta;
 	private Float porcentagemCPUMedia;
@@ -47,7 +47,8 @@ public class SimuladorSO {
 		this.listaMemoria.adiciona(new Particao(SimuladorSO.pidSO, tamanhoSO, 0));
 
 		final int tamanhoEspacoVazio = this.referenciaHardware.tamanhoMemoria() - tamanhoSO;
-		final Particao particaoMemoriaVazia = new Particao(SimuladorSO.posicaoMemoriaVazia, tamanhoEspacoVazio, tamanhoSO);
+		final Particao particaoMemoriaVazia = new Particao(SimuladorSO.posicaoMemoriaVazia, tamanhoEspacoVazio,
+				tamanhoSO);
 		this.listaMemoria.adiciona(particaoMemoriaVazia);
 		this.listaMemoriaVazia.adiciona(particaoMemoriaVazia);
 
