@@ -14,7 +14,7 @@ public class Processo {
 		public Integer[] ES = { 0, 0, 0 };
 		public Integer[] esperaES = { 0, 0, 0 };
 	}
-	
+
 	private ContextoSoftware contextoSoftware;
 	private ContextoMemoria contextoMemoria;
 
@@ -45,10 +45,36 @@ public class Processo {
 		}
 	}
 
-	// TODO Processo - Estatistica de intruções feitas
-
 	public void atualizarParaProximaIntrucao() {
 		this.contextoSoftware.instrucaoAtual++;
+	}
+
+	public void incrementaEstatisticaProcessada(Integer[] instrucoes) {
+
+		for (int i = 0; i > instrucoes.length; i++) {
+			switch (instrucoes[i]) {
+			case Programa.instrucaoCPU: {
+				this.contextoSoftware.dadosEstatisticos.CPU++;
+				break;
+			}
+			case Programa.instrucaoES1: {
+				this.contextoSoftware.dadosEstatisticos.ES[0]++;
+				break;
+			}
+			case Programa.instrucaoES2: {
+				this.contextoSoftware.dadosEstatisticos.ES[1]++;
+				break;
+			}
+			case Programa.instrucaoES3: {
+				this.contextoSoftware.dadosEstatisticos.ES[2]++;
+				break;
+			}
+			}
+		}
+	}
+	
+	public void incrementaTempoReal(){
+		this.contextoSoftware.dadosEstatisticos.tempoTotalEmSegundos++;
 	}
 
 	public int posicaoIntrucaoAtual() {
@@ -58,8 +84,8 @@ public class Processo {
 	public Prioridade getPrioridade() {
 		return this.contextoSoftware.prioridade;
 	}
-	
-	public void setPrioridade(Prioridade prioridade){
+
+	public void setPrioridade(Prioridade prioridade) {
 		this.contextoSoftware.prioridade = prioridade;
 	}
 

@@ -7,23 +7,32 @@ import br.edu.udc.ed.lista.Lista;
 import br.edu.udc.ed.lista.encadeada.ListaEncadeada;
 import br.edu.udc.ed.lista.vetor.Vetor;
 import br.edu.udc.simulador.hardware.Hardware;
+import br.edu.udc.simulador.janela.MainMenu;
 import br.edu.udc.simulador.janela.view.AttView;
 import br.edu.udc.simulador.processo.Processo;
+import br.edu.udc.simulador.processo.Processo.Prioridade;
 import br.edu.udc.simulador.so.EstatisticaSO;
-import br.edu.udc.simulador.so.SimuladorSO;
+import br.edu.udc.simulador.so.SistemaOperacional;
+import br.edu.udc.simulador.so.SistemaOperacional.Estrategia;
+import br.edu.udc.simulador.controle.janela.EstrategiaSelect;
 
 public class Computador {
+
+	public static void main(String[] args) {
+		MainMenu.main(null);
+	}
 
 	private static Computador instancia;
 
 	private Lista<AttView> listaViews = new ListaEncadeada<>();
 
-	private SimuladorSO simulador;
+	private SistemaOperacional simulador;
 	private Hardware hardware;
 
 	// Controle de sincronismo
 	Semaphore semafaro = new Semaphore(1);
-	Boolean execultando = true;
+	Boolean fimDoPrograma = false;
+	Thread thread;
 
 	public static Computador getInstancia() {
 		if (Computador.instancia == null) {
@@ -33,34 +42,46 @@ public class Computador {
 		return Computador.instancia;
 	}
 
-	private Computador() {
-		this.hardware = new Hardware(10, 10, 10, 10, 50);
-		this.simulador = new SimuladorSO(hardware, 10, 0.6F, 0.3F);
-		this.criaThread(1000);
+	public Computador() {
+		this.hardware = new Hardware(10, 10, 10, 10, 400);
+		Estrategia estrategia = EstrategiaSelect.escolha();
+		this.simulador = new SistemaOperacional(10, 0.6F, 0.3F, estrategia, this.hardware);
+
+		this.thread = this.criaThread(10000);
+		this.thread.start();
 	}
 
-	private void criaThread(int tempoEspera) {
-		new Runnable() {
+	private Thread criaThread(int tempoEspera) {
+		return new Thread() {
 
 			@Override
 			public void run() {
-				while (execultando) {
+				while (!fimDoPrograma) {
 					Computador.this.semafaro.acquireUninterruptibly();
 
 					Computador.this.simulador.execultarProcessos();
 					Computador.this.atualizaViews();
 
 					Computador.this.semafaro.release();
+
+					try {
+						Thread.sleep(tempoEspera);
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		};
 	}
 
-	public SimuladorSO getSimulador() {
+	public SistemaOperacional getSimulador() {
 		return this.simulador;
 	}
 
-	public void criaProcesso(Processo.Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+	public Hardware getHardware() {
+		return this.hardware;
+	}
+
+	public void criaProcesso(Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 		this.semafaro.acquireUninterruptibly();
 
 		this.simulador.criaNovoProcesso(prioridade, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
@@ -108,10 +129,22 @@ public class Computador {
 		this.semafaro.release();
 	}
 
-	public void fimSimuladcao() {
+	public void fimSimulacao() {
 		this.semafaro.acquireUninterruptibly();
 
-		this.execultando = false;
+		this.fimDoPrograma = true;
+
+		this.semafaro.release();
+	}
+
+	public void touglePlay() {
+		this.semafaro.acquireUninterruptibly();
+
+		try {
+			this.thread.wait();
+		} catch (InterruptedException e) {
+			this.thread.notify();
+		}
 
 		this.semafaro.release();
 	}
