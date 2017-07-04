@@ -21,10 +21,6 @@ public class Computador {
 	private SimuladorSO simulador;
 	private Hardware hardware;
 
-	public final static String textoPrioridadeAlta = "Alta";
-	public final static String textoPrioridadeMedia = "Media";
-	public final static String textoPrioridadeBaixa = "Baixa";
-
 	// Controle de sincronismo
 	Semaphore semafaro = new Semaphore(1);
 	Boolean execultando = true;
@@ -64,23 +60,10 @@ public class Computador {
 		return this.simulador;
 	}
 
-	public void criaProcesso(String prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
+	public void criaProcesso(Processo.Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
 		this.semafaro.acquireUninterruptibly();
 
-		switch (prioridade) {
-		case Computador.textoPrioridadeAlta:
-			this.simulador.criaNovoProcesso(Processo.Prioridade.ALTA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-			break;
-
-		case Computador.textoPrioridadeMedia:
-			this.simulador.criaNovoProcesso(Processo.Prioridade.MEDIA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-			break;
-
-		case Computador.textoPrioridadeBaixa:
-			this.simulador.criaNovoProcesso(Processo.Prioridade.BAIXA, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
-			break;
-		}
-
+		this.simulador.criaNovoProcesso(prioridade, qtdCPU, qtdIO1, qtdIO2, qtdIO3);
 		this.atualizaViews();
 
 		this.semafaro.release();

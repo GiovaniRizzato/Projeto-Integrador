@@ -4,23 +4,23 @@ import java.awt.Color;
 import br.edu.udc.ed.mapa.Mapa;
 import br.edu.udc.simulador.so.SimuladorSO;
 
-public class SiloDeCor {
+public class Cores {
 
 	private Mapa<Integer, Color> silo = new Mapa<>();
 
-	private static SiloDeCor instanciaUnica;
+	private static Cores instanciaUnica;
 
-	private SiloDeCor() {
+	private Cores() {
 	}// Tornar o contrutor privado
 
-	public static SiloDeCor getIntancia() {
+	public static Cores getIntancia() {
 		if (instanciaUnica == null) {
-			SiloDeCor.instanciaUnica = new SiloDeCor();
-			SiloDeCor.instanciaUnica.adiciona(SimuladorSO.posicaoMemoriaVazia, Color.white);
-			SiloDeCor.instanciaUnica.adiciona(SimuladorSO.pidSO, Color.red);
+			Cores.instanciaUnica = new Cores();
+			Cores.instanciaUnica.adiciona(SimuladorSO.posicaoMemoriaVazia, Color.white);
+			Cores.instanciaUnica.adiciona(SimuladorSO.pidSO, Color.red);
 		}
 
-		return SiloDeCor.instanciaUnica;
+		return Cores.instanciaUnica;
 	}
 
 	public void adiciona(Integer pid, Color cor) {

@@ -8,7 +8,7 @@ public class SiloDeCorTest {
 	//TODO fazer em Singletown... e falar com miguel na sexta
 	@Test
 	public void obtemCor_casoFeliz() {
-		SiloDeCor silo = SiloDeCor.getIntancia();
+		Cores silo = Cores.getIntancia();
 		silo.adiciona(2, Color.red);
 		silo.adiciona(3, Color.blue);
 		silo.adiciona(4, Color.green);

@@ -100,7 +100,7 @@ public class MainMenu extends JFrame {
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
+
 		JMenu mnSimulador = new JMenu("Simulador");
 		menuBar.add(mnSimulador);
 
@@ -108,6 +108,11 @@ public class MainMenu extends JFrame {
 		menuBar.add(menu_Processo);
 
 		JMenuItem subMenu_AdicionarProcesso = new JMenuItem("Adicionar processo");
+		subMenu_AdicionarProcesso.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new CriarProcesso(MainMenu.this).setVisible(true);
+			}
+		});
 		menu_Processo.add(subMenu_AdicionarProcesso);
 
 		JMenuItem mntmAlterarPrioridade = new JMenuItem("Alterar Prioridade");
