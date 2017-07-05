@@ -25,7 +25,7 @@ import javax.swing.JTable;
 
 public class MainMenu extends JFrame {
 	private static final long serialVersionUID = 1L;
-	private JTable table;
+	private JTable tabelaProcesso;
 
 	// TableModel tableModel;
 	public static void main(String[] args) {
@@ -91,9 +91,8 @@ public class MainMenu extends JFrame {
 
 		JScrollPane tabelaTab = new JScrollPane();
 		mainTabPane.addTab("Tabela de processos", new ImageIcon("ExtensionFiles/processo.png"), tabelaTab, null);
-
-		table = new JTable(new TabelaProcessos());
-		tabelaTab.setViewportView(table);
+		this.tabelaProcesso = new TabelaProcessos();
+		tabelaTab.setViewportView(tabelaProcesso);
 
 		JPanel gaficoTab = new JPanel();
 		mainTabPane.addTab("Grafico de memoria", new ImageIcon("ExtensionFiles/memoria.png"), gaficoTab, null);
