@@ -150,13 +150,12 @@ public class CriarProcesso extends JDialog {
 					final int instrucoesES3 = (int) clockES1.getValue();
 
 					try {
-						final Computador computador = Computador.getInstancia();
-						computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES1, instrucoesES2, instrucoesES3);
-
 						// Adicionando a cor ao "catalogo" entre cor e processo
 						final int proximoPid = Computador.getInstancia().getSimulador().getProximoPid();
 						Cores.getIntancia().adiciona(proximoPid, CriarProcesso.this.cor);
 
+						final Computador computador = Computador.getInstancia();
+						computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES1, instrucoesES2, instrucoesES3);
 					} catch (RuntimeException erro) {
 						// TODO substituir por janela de erro
 						JOptionPane.showMessageDialog(CriarProcesso.this, erro.getMessage());
