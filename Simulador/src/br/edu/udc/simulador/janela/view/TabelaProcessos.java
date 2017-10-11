@@ -39,9 +39,11 @@ public class TabelaProcessos extends JTable implements AttView {
 		private static final long serialVersionUID = -2962043956136706401L;
 		private final String nomeColunas[] = new String[] { "PID", "Prioridade", "Posicao Intrução Ataul",
 				"Estado do processo", "Cor" };
-		private final Class<?> tipoColunas[] = new Class[] { Integer.class, String.class, String.class, String.class,
+		private final Class<?> tipoColunas[] = new Class[] { Integer.class, String.class, Integer.class, String.class,
 				Color.class };
-		private Vetor<Processo> todoProcessos;
+		private Vetor<Processo> todosProcessos;
+		private int posicaoInicioAtivos;
+		private int posicaoInicioPausados;
 
 		public AbstractTabelaProcessos() {
 			super();
@@ -50,19 +52,34 @@ public class TabelaProcessos extends JTable implements AttView {
 
 		private void atualizaProcessos() {
 
-			// Refaz a listaTodos
-			this.todoProcessos = new Vetor<Processo>();
+			Computador pc = Computador.getInstancia();
 
-			for (Processo processo : Computador.getInstancia().listaTodos()) {
-				this.todoProcessos.adiciona(processo);
+			if (pc.processoEmAndamento() != null) {
+				this.todosProcessos.adiciona(pc.processoEmAndamento());
+				this.posicaoInicioAtivos = 1;
+			} else {
+				this.posicaoInicioAtivos = 0;
+			}
+
+			// Refaz a listaTodos
+			this.todosProcessos = new Vetor<Processo>();
+
+			for (Processo processo : pc.listaTodosAtivos()) {
+				this.todosProcessos.adiciona(processo);
+			}
+
+			this.posicaoInicioPausados = this.todosProcessos.tamanho();
+
+			for (Processo processo : pc.listaTodosPausados()) {
+				this.todosProcessos.adiciona(processo);
 			}
 
 			this.fireTableDataChanged();
 		}
 
 		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return this.tipoColunas[columnIndex];
+		public Class<?> getColumnClass(int column) {
+			return this.tipoColunas[column];
 		}
 
 		@Override
@@ -84,25 +101,29 @@ public class TabelaProcessos extends JTable implements AttView {
 
 		@Override
 		public int getRowCount() {
-			return this.todoProcessos.tamanho();
+			return this.todosProcessos.tamanho();
 		}
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
+
+			Processo processo = this.todosProcessos.obtem(rowIndex);
+
 			switch (columnIndex) {
 			case 0:
-				return this.todoProcessos.obtem(rowIndex).getPID();
+				return processo.getPID();
 			case 1:
-				final Processo.Prioridade processo = this.todoProcessos.obtem(rowIndex).getPrioridade();
-				if (processo != null) {
-					return this.todoProcessos.obtem(rowIndex).getPrioridade();
-				} else {
-					return "Sistema Operacional";
-				}
+				final Processo.Prioridade prioridade = processo.getPrioridade();
+				return prioridade;
 			case 2:
-				return this.todoProcessos.obtem(rowIndex).getInicioPrograma();
+				return processo.getInicioPrograma();
 			case 3:
-				return "Pronto";
+				if (rowIndex < this.posicaoInicioAtivos)
+					return "Em Processamento";
+				else if (rowIndex > this.posicaoInicioPausados)
+					return "Pausado";
+				else
+					return "Em espera";
 			case 4:
 				return "";
 			}
@@ -124,13 +145,9 @@ public class TabelaProcessos extends JTable implements AttView {
 			final Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
 					column);
 
-			final Color corLinha = Cores.getIntancia().obtem((Integer) table.getValueAt(row, 0));
-
 			if (column == 4) {
+				final Color corLinha = Cores.getIntancia().obtem((Integer) table.getValueAt(row, 0));
 				component.setBackground(corLinha);
-				return component;
-			} else {
-				component.setBackground(table.getBackground());
 			}
 
 			return component;

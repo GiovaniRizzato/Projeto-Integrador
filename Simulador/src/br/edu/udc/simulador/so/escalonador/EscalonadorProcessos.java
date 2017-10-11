@@ -30,6 +30,10 @@ public abstract class EscalonadorProcessos {
 		this.porcentagemCPUBaixa = porceBaixa;
 		this.listaPrincipal = listaPrincipal;
 	}
+	
+	public Processo processoAtivo() {
+		return this.processando;
+	}
 
 	public void execultarProcessos() {
 		this.escalonar();

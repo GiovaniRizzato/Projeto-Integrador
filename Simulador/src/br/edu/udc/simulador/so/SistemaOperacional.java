@@ -73,7 +73,7 @@ public class SistemaOperacional {
 	public int qtdProcessos() {
 		return (this.listaPrincipal.tamanho() + this.listaPausado.tamanho());
 	}
-	
+
 	public int getProximoPid() {
 		return this.proximoPidDisponivel;
 	}
@@ -103,6 +103,10 @@ public class SistemaOperacional {
 		}
 
 		return processos;
+	}
+
+	public Processo getEmProcessamento() {
+		return this.escalonador.processoAtivo();
 	}
 
 	public void criaNovoProcesso(Processo.Prioridade prioridade, int qtdCPU, int qtdIO1, int qtdIO2, int qtdIO3) {
