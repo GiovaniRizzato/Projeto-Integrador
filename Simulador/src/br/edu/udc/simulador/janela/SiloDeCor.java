@@ -2,7 +2,7 @@ package br.edu.udc.simulador.janela;
 
 import java.awt.Color;
 import br.edu.udc.ed.mapa.Mapa;
-import br.edu.udc.simulador.so.SimuladorSO;
+import br.edu.udc.simulador.so.SistemaOperacional;
 
 public class SiloDeCor {
 
@@ -16,8 +16,8 @@ public class SiloDeCor {
 	public static SiloDeCor getIntancia() {
 		if (instanciaUnica == null) {
 			SiloDeCor.instanciaUnica = new SiloDeCor();
-			SiloDeCor.instanciaUnica.adiciona(SimuladorSO.posicaoMemoriaVazia, Color.white);
-			SiloDeCor.instanciaUnica.adiciona(SimuladorSO.pidSO, Color.red);
+			SiloDeCor.instanciaUnica.adiciona(SistemaOperacional.POSICAO_MEMORIA_VAZIA, Color.white);
+			SiloDeCor.instanciaUnica.adiciona(SistemaOperacional.PID_SO, Color.red);
 		}
 
 		return SiloDeCor.instanciaUnica;
@@ -28,7 +28,7 @@ public class SiloDeCor {
 	}
 
 	public void remove(Integer pid) {
-		// TODO
+		this.remove(pid);
 	}
 
 	public Color obtem(Integer pid) {

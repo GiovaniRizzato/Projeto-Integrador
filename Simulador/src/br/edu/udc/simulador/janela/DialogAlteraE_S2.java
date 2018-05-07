@@ -14,7 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
-public class DialogAlteraClock extends JDialog {
+public class DialogAlteraE_S2 extends JDialog {
 
 	/**
 	 * 
@@ -33,7 +33,7 @@ public class DialogAlteraClock extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			DialogAlteraE_S1 dialog = new DialogAlteraE_S1("Altera Clock");
+			DialogAlteraClock dialog = new DialogAlteraClock("Altera Clock");
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setResizable(false);
 			dialog.setVisible(true);
@@ -45,7 +45,7 @@ public class DialogAlteraClock extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public DialogAlteraClock(String titulo) {
+	public DialogAlteraE_S2(String titulo) {
 		setTitle(titulo);
 		
 		SpringLayout layout = new SpringLayout();
@@ -82,7 +82,7 @@ public class DialogAlteraClock extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					valor = (int) numeroDeInstruaoes.getValue();
-					//TODO altera Clock
+					//TODO altera E/S 2
 					result = OK;
 					
 					setVisible(false);

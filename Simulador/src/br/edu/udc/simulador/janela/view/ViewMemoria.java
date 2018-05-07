@@ -25,8 +25,9 @@ public class ViewMemoria extends JPanel implements AttView {
 	@Override
 	public void paint(Graphics grafico) {
 		super.paint(grafico);
+		final int tamanhoMemoria = Computador.getInstancia().getHardware().tamanhoMemoria();
 
-		grafico.drawRect(10, 10, 400, 60);
+		grafico.drawRect(10, 10, tamanhoMemoria, 60);
 
 		if (this.todosProcessos == null) {
 			return;

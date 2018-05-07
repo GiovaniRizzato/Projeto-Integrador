@@ -79,7 +79,7 @@ public class DialogAlteraPrioridade extends JDialog {
 		layout.putConstraint(SpringLayout.NORTH, alteraPrioridadeText, 0, SpringLayout.NORTH, textPID);
 		contentPanel.add(alteraPrioridadeText);
 
-		JComboBox<?> alteraPrioridade = new JComboBox(nomesPrioridade);
+		JComboBox<?> alteraPrioridade = new JComboBox<String>(nomesPrioridade);
 		layout.putConstraint(SpringLayout.NORTH, alteraPrioridade, 6, SpringLayout.SOUTH, alteraPrioridadeText);
 		layout.putConstraint(SpringLayout.WEST, alteraPrioridadeText, 0, SpringLayout.WEST, alteraPrioridade);
 		layout.putConstraint(SpringLayout.WEST, alteraPrioridade, -83, SpringLayout.EAST, contentPanel);
@@ -99,7 +99,7 @@ public class DialogAlteraPrioridade extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					retonoPID = (int) pid.getValue();
-
+					//TODO colocar Altera prioridade por pid
 					result = OK;
 					//System.out.print(getResult());
 					setVisible(false);

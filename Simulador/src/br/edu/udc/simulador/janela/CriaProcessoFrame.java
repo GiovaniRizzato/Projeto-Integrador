@@ -10,14 +10,15 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
 import br.edu.udc.simulador.controle.Computador;
-import br.edu.udc.simulador.processo.Processo;
-import br.edu.udc.simulador.so.SimuladorSO;
+import br.edu.udc.simulador.processo.Processo.Prioridade;
+import br.edu.udc.simulador.so.SistemaOperacional;
 
 public class CriaProcessoFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -26,7 +27,6 @@ public class CriaProcessoFrame extends JFrame {
 	public final static int OK = 1;
 	public final static int CANCEL = 0;
 
-	private JComboBox<?> estrategiaComboBox;
 	private JComboBox<?> prioridadeComboBox;
 
 	private JSpinner clockCPU;
@@ -34,8 +34,7 @@ public class CriaProcessoFrame extends JFrame {
 	private JSpinner clockES2;
 	private JSpinner clockES3;
 	public int qtdInstrucoes;
-	private String nomesPrioridade[] = { Computador.textoPrioridadeAlta, Computador.textoPrioridadeMedia,
-			Computador.textoPrioridadeBaixa };
+	private String nomesPrioridade[] = { "Alta", "Média", "Baixa" };
 
 	/**
 	 * Launch the application.
@@ -70,7 +69,7 @@ public class CriaProcessoFrame extends JFrame {
 		JLabel prioridade = new JLabel("Prioridade");
 		contentPane.add(prioridade);
 
-		prioridadeComboBox = new JComboBox(nomesPrioridade);
+		prioridadeComboBox = new JComboBox<String>(nomesPrioridade);
 		layout.putConstraint(SpringLayout.NORTH, prioridadeComboBox, 6, SpringLayout.SOUTH, prioridade);
 		layout.putConstraint(SpringLayout.WEST, prioridadeComboBox, 0, SpringLayout.WEST, prioridade);
 
@@ -141,9 +140,8 @@ public class CriaProcessoFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
 				FrameSelectColor frameSelectColor = new FrameSelectColor();
-				SimuladorSO so = Computador.getInstancia().getSimulador();
+				SistemaOperacional so = Computador.getInstancia().getSimulador();
 				SiloDeCor.getIntancia().adiciona(so.getProximoPid(), frameSelectColor.getColor());
 				panel_1.setBackground(frameSelectColor.getColor());
 			}
@@ -161,24 +159,53 @@ public class CriaProcessoFrame extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					final String prioridade = (String) prioridadeComboBox.getSelectedItem();
+
+					SistemaOperacional so = Computador.getInstancia().getSimulador();
+					try {
+						SiloDeCor.getIntancia().obtem(so.getProximoPid());
+					} catch (IllegalArgumentException erro) {
+						JOptionPane.showMessageDialog(null, "Escolha uma cor.");
+						return;
+					}
+					// se foi escolhido alguma cor
+
+					final String strPrioridade = (String) prioridadeComboBox.getSelectedItem();
+					Prioridade prioridade = Prioridade.ALTA;
+					switch (strPrioridade) {
+					case "Alta": {
+						prioridade = Prioridade.ALTA;
+						break;
+					}
+					case "Média": {
+						prioridade = Prioridade.MEDIA;
+						break;
+					}
+					case "Baixa": {
+						prioridade = Prioridade.BAIXA;
+						break;
+					}
+					}
+
 					final int instrucoesCPU = (int) clockCPU.getValue();
 					final int instrucoesES[] = { (int) clockES1.getValue(), (int) clockES2.getValue(),
 							(int) clockES3.getValue() };
-					// final String estrategia = (String)
-					// estrategiaComboBox.getSelectedItem();
 					try {
 						final Computador computador = Computador.getInstancia();
+
+						final int qtdIntrucoes = instrucoesCPU + instrucoesES[0] + instrucoesES[1] + instrucoesES[2];
+						if (qtdIntrucoes <= 0) {
+							JOptionPane.showMessageDialog(null, "É necessario no minimo uma intrução.");
+							return;
+						}
+
 						computador.criaProcesso(prioridade, instrucoesCPU, instrucoesES[0], instrucoesES[1],
 								instrucoesES[2]);
 					} catch (RuntimeException erro) {
 						System.out.println(erro.getMessage());
 					}
 
-					Computador.getInstancia().atualizaViews();
 					result = OK;
 					setVisible(false);
-
 				}
 			});
 

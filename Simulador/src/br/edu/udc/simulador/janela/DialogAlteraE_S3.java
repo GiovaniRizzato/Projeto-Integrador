@@ -7,17 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.SpringLayout;
 import javax.swing.border.EmptyBorder;
 
-import br.edu.udc.simulador.controle.Computador;
-import br.edu.udc.simulador.processo.Processo;
-
-public class DialogAcoes extends JDialog {
+public class DialogAlteraE_S3 extends JDialog {
 
 	/**
 	 * 
@@ -29,13 +26,14 @@ public class DialogAcoes extends JDialog {
 	private int result = CANCEL;
 	public final static int OK = 1;
 	public final static int CANCEL = 0;
-	private static int retonoPID;
+	private static int valor;
 
-	private Integer[] opcoes;
-
+	/**
+	 * Launch the application.
+	 */
 	public static void main(String[] args) {
 		try {
-			DialogAcoes dialog = new DialogAcoes("");
+			DialogAlteraClock dialog = new DialogAlteraClock("Altera Clock");
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setResizable(false);
 			dialog.setVisible(true);
@@ -47,41 +45,29 @@ public class DialogAcoes extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public DialogAcoes(String titulo) {
+	public DialogAlteraE_S3(String titulo) {
 		setTitle(titulo);
+		
 		SpringLayout layout = new SpringLayout();
-
-		// Pegando opções dos pids ativos
-		Processo[] todosProcessos = Computador.getInstancia().listaTodos();
-		this.opcoes = new Integer[todosProcessos.length];
-		for (int i = 0; i < todosProcessos.length; i++) {
-			this.opcoes[i] = todosProcessos[i].getPID();
-		}
-
-		setBounds(100, 100, 285, 135);
+		// setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 356, 150);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(layout);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		setResizable(false);
+		
+		JLabel numeroDeInstrucoesText = new JLabel("Numero de instrucoes");
+		layout.putConstraint(SpringLayout.NORTH, numeroDeInstrucoesText, 0, SpringLayout.NORTH, contentPanel);
+		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, numeroDeInstrucoesText, 0, SpringLayout.HORIZONTAL_CENTER, contentPanel);
+		contentPanel.add(numeroDeInstrucoesText);
 
-		JLabel textPID = new JLabel("PID");
-		layout.putConstraint(SpringLayout.NORTH, textPID, 0, SpringLayout.NORTH, contentPanel);
-		layout.putConstraint(SpringLayout.WEST, textPID, 10, SpringLayout.WEST, contentPanel);
-		contentPanel.add(textPID);
-
-		JComboBox<Integer> pid;
-
-		if (opcoes != null) {
-			pid = new JComboBox<>(opcoes);
-		} else {
-			pid = new JComboBox<>();
-		}
-
-		layout.putConstraint(SpringLayout.NORTH, pid, 6, SpringLayout.SOUTH, textPID);
-		layout.putConstraint(SpringLayout.EAST, pid, -177, SpringLayout.EAST, contentPanel);
-		layout.putConstraint(SpringLayout.WEST, pid, 10, SpringLayout.WEST, contentPanel);
-		contentPanel.add(pid);
+		JSpinner numeroDeInstruaoes = new JSpinner();
+		layout.putConstraint(SpringLayout.NORTH, numeroDeInstruaoes, 6, SpringLayout.SOUTH, numeroDeInstrucoesText);
+		layout.putConstraint(SpringLayout.WEST, numeroDeInstruaoes, 139, SpringLayout.WEST, contentPanel);
+		layout.putConstraint(SpringLayout.EAST, numeroDeInstruaoes, 78, SpringLayout.WEST, numeroDeInstrucoesText);
+		layout.putConstraint(SpringLayout.HORIZONTAL_CENTER, numeroDeInstrucoesText, 0, SpringLayout.HORIZONTAL_CENTER, contentPanel);
+		contentPanel.add(numeroDeInstruaoes);
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -95,9 +81,10 @@ public class DialogAcoes extends JDialog {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					retonoPID = (int)pid.getSelectedIndex();
+					valor = (int) numeroDeInstruaoes.getValue();
+					//TODO altera E/S 3
 					result = OK;
-
+					
 					setVisible(false);
 				}
 			});
@@ -122,9 +109,9 @@ public class DialogAcoes extends JDialog {
 		return result;
 	}
 
-	public int getPID() {
+	public int getValor() {
 		if (result == OK)
-			return retonoPID;
+			return valor;
 		return 0;
 	}
 

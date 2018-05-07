@@ -1,25 +1,23 @@
-package br.edu.udc.simulador.so;
+package br.edu.udc.simulador.so.memoria;
 
 import br.edu.udc.ed.colecao.Comparavel;
 import br.edu.udc.simulador.processo.Processo;
+import br.edu.udc.simulador.so.SistemaOperacional;
 
-class Particao implements Comparavel {
+abstract class Particao implements Comparavel {
 	private Processo processo;
 	// referenca do processo para fazer a desfragmentação
-	private Integer pid;
-	private Integer tamanho;
-	private Integer posicao;
+	protected Integer tamanho;
+	protected Integer posicao;
 
-	public Particao(int pid, int tamanho, int posicao) {
+	public Particao(int tamanho, int posicao) {
 		this.processo = null;
-		this.pid = pid;
 		this.tamanho = tamanho;
 		this.posicao = posicao;
 	}
 
 	public Particao(Processo processo, int tamanho, int posicao) {
-		this.processo = null;
-		this.pid = processo.getPID();
+		this.processo = processo;
 		this.tamanho = tamanho;
 		this.posicao = posicao;
 	}
@@ -29,7 +27,11 @@ class Particao implements Comparavel {
 	}
 
 	public Integer getPid() {
-		return this.pid;
+		if (this.processo != null) {
+			return this.processo.getPID();
+		} else {
+			return SistemaOperacional.POSICAO_MEMORIA_VAZIA;
+		}
 	}
 
 	public Integer getTamanho() {
@@ -38,13 +40,6 @@ class Particao implements Comparavel {
 
 	public void setProcesso(Processo processo) {
 		this.processo = processo;
-	}
-
-	public void setPid(Integer pid) {
-		if (pid != null)
-			this.pid = pid;
-		else
-			throw new NullPointerException("Partição - PID não pode ser null");
 	}
 
 	public void setTamanho(Integer tamanho) {
@@ -66,26 +61,14 @@ class Particao implements Comparavel {
 	}
 
 	// @Override de "Comparavel"
-
 	@Override
-	public int comparaCom(Object elemento) {
-		if (this == elemento)
-			return 0;
-		if (elemento == null)
-			throw new NullPointerException();
-		if (getClass() != elemento.getClass())
-			throw new IllegalArgumentException();
-
-		Particao other = (Particao) elemento;
-		return this.tamanho - other.tamanho;
-	}
+	public abstract int comparaCom(Object elemento);
 
 	// @Override de "Object"
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((pid == null) ? 0 : pid.hashCode());
 		result = prime * result + ((posicao == null) ? 0 : posicao.hashCode());
 		result = prime * result + ((processo == null) ? 0 : processo.hashCode());
 		result = prime * result + ((tamanho == null) ? 0 : tamanho.hashCode());
@@ -101,11 +84,6 @@ class Particao implements Comparavel {
 		if (getClass() != obj.getClass())
 			return false;
 		Particao other = (Particao) obj;
-
-		// PID
-		if (!pid.equals(other.pid)) {
-			return false;
-		}
 
 		// Posicao
 		if (!posicao.equals(other.posicao)) {
@@ -127,5 +105,11 @@ class Particao implements Comparavel {
 		}
 
 		return true;
+	}
+
+	// Para ajuda no debug
+	@Override
+	public String toString() {
+		return ("Posicao: " + this.posicao.toString() + ", Tamanho: " + this.tamanho + ", PID: " + this.getPid());
 	}
 }
